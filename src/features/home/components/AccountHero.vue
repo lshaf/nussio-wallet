@@ -57,8 +57,16 @@ const chips = computed(() => {
         <div v-if="data" class="rise-in mt-1.5">
           <Amount :value="data.balance" :size="compact ? 'lg' : 'hero'" />
         </div>
-        <div v-else-if="overview.query.isError.value" class="text-destructive mt-2 text-sm">
-          {{ t('overview_error') }}
+        <div
+          v-else-if="overview.query.isError.value || overview.query.isSuccess.value"
+          class="text-destructive mt-2 text-sm"
+        >
+          {{ overview.query.isError.value ? t('overview_error') : t('overview_not_found') }}
+          <span
+            v-if="overview.query.error.value"
+            class="text-muted-foreground block font-mono text-xs"
+            >{{ overview.query.error.value.message }}</span
+          >
         </div>
         <div v-else class="bg-muted mt-2 h-9 w-48 animate-pulse rounded" />
       </div>

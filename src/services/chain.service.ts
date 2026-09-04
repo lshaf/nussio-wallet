@@ -63,10 +63,14 @@ const SERVICE_KEY = 'ChainService';
 export async function ensureSeededChains(): Promise<Blockchain[]> {
   const existing = await blockchainsItem.getValue();
   const known = new Set(existing.map((chain) => chain.chainId));
+  const repaired = existing.flatMap((stored) => {
+    const builtin = builtinChains.find((chain) => chain.chainId === stored.chainId);
+    const parsed = blockchainSchema.safeParse(builtin ? { ...builtin, ...stored } : stored);
+    return parsed.success ? [parsed.data] : [];
+  });
   const missing = builtinChains.filter((chain) => !known.has(chain.chainId));
-  if (missing.length === 0) return existing;
-  const merged = [...existing, ...missing];
-  await blockchainsItem.setValue(merged);
+  const merged = [...repaired, ...missing];
+  if (JSON.stringify(merged) !== JSON.stringify(existing)) await blockchainsItem.setValue(merged);
   return merged;
 }
 

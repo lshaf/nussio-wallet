@@ -113,7 +113,10 @@ const items = computed<DataListItem[]>(() => {
       v-if="query.isError.value || (query.isSuccess.value && !data)"
       class="text-destructive mt-2 text-sm"
     >
-      {{ t('overview_error') }}
+      {{ query.isError.value ? t('overview_error') : t('overview_not_found') }}
+      <span v-if="query.error.value" class="text-muted-foreground block font-mono text-xs">{{
+        query.error.value.message
+      }}</span>
     </p>
     <p v-else-if="!data" class="text-muted-foreground mt-2 text-sm">{{ t('overview_loading') }}</p>
     <p v-else-if="items.length === 0" class="text-muted-foreground mt-2 text-sm">

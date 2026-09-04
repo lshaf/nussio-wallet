@@ -48,7 +48,12 @@ const ago = useTimeAgo(computed(() => data.value?.fetchedAt ?? 0));
     </TableCell>
 
     <template v-if="query.isError.value || (query.isSuccess.value && !data)">
-      <TableCell :colspan="8" class="text-destructive text-sm">{{ t('overview_error') }}</TableCell>
+      <TableCell :colspan="8" class="text-destructive text-sm">
+        {{ query.isError.value ? t('overview_error') : t('overview_not_found') }}
+        <span v-if="query.error.value" class="text-muted-foreground ml-2 font-mono text-xs">{{
+          query.error.value.message
+        }}</span>
+      </TableCell>
     </template>
     <template v-else-if="!data">
       <TableCell :colspan="8" class="text-muted-foreground text-sm">{{
