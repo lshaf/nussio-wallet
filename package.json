@@ -1,0 +1,92 @@
+{
+  "name": "anchor-extension",
+  "description": "Antelope wallet and signing request authenticator as a browser extension",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "pnpm typecheck && pnpm lint && pnpm test",
+    "postinstall": "wxt prepare",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@greymass/anchor-link-session-manager": "^0.4.0",
+    "@lucide/vue": "^1.40.0",
+    "@tanstack/vue-query": "^5.102.8",
+    "@vee-validate/zod": "^4.15.1",
+    "@vueuse/core": "^14.4.0",
+    "@webext-core/messaging": "^4.0.0",
+    "@webext-core/proxy-service": "^3.0.2",
+    "@wharfkit/antelope": "^1.2.0",
+    "@wharfkit/resources": "^1.6.0",
+    "@wharfkit/signing-request": "^3.4.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "i18next": "^26.4.1",
+    "i18next-sprintf-postprocessor": "^0.2.2",
+    "i18next-vue": "^5.4.0",
+    "lucide-vue-next": "^1.0.0",
+    "pako": "^3.0.1",
+    "pinia": "^4.0.3",
+    "qrcode": "^1.5.4",
+    "reka-ui": "^2.10.4",
+    "tailwind-merge": "^3.6.0",
+    "vee-validate": "^4.15.1",
+    "vue": "^3.5.29",
+    "vue-router": "^5.3.1",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/pako": "^3.0.0",
+    "@types/qrcode": "^1.5.6",
+    "@vue/test-utils": "^2.5.0",
+    "@webext-core/fake-browser": "^2.0.1",
+    "@wxt-dev/module-vue": "^1.0.3",
+    "eslint": "^10.9.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.10.0",
+    "globals": "^17.12.0",
+    "husky": "^9.1.7",
+    "jsdom": "^30.0.1",
+    "lint-staged": "^17.4.1",
+    "prettier": "^3.9.6",
+    "tailwindcss": "^4.3.3",
+    "tw-animate-css": "^1.4.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.69.0",
+    "vite": "^8.1.5",
+    "vitest": "^5.0.0",
+    "vue-tsc": "^3.2.5",
+    "web-ext": "^10.5.0",
+    "wxt": "^0.21.3"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@11.25.0",
+  "lint-staged": {
+    "*.{ts,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
