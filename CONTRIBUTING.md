@@ -13,6 +13,10 @@ Node 22, pnpm (`corepack enable pnpm`). `pnpm install` runs `wxt prepare` and in
 5. Add i18n keys to `src/locales/en-US/<namespace>.json`.
 6. Tests: `*.test.ts` next to the code; `pnpm check` before pushing.
 
+## Build output
+
+`pnpm build` writes to `dist/<browser>-<mv>/` (visible in Finder, unlike WXT's default `.output`). Load `dist/chrome-mv3` as an unpacked extension.
+
 ## Conventions
 
 - Vue: `<script setup lang="ts">`, Composition API only, `defineProps<{}>()`, `defineEmits<{}>()`.

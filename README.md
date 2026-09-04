@@ -14,9 +14,37 @@ WXT · Vue 3 (`<script setup>`) · TypeScript · Pinia · Vue Router · TanStack
 pnpm install
 pnpm dev            # Chrome with HMR
 pnpm dev:firefox
-pnpm check          # typecheck + lint + test
-pnpm zip            # .output/*.zip
+pnpm check          # typecheck + lint + unit tests
+pnpm build && pnpm test:e2e   # Playwright against dist/chrome-mv3 (needs `pnpm exec playwright install chromium`)
+pnpm zip            # dist/*.zip
 ```
+
+## Testing
+
+### Automated
+
+```bash
+pnpm check                      # typecheck + lint + unit tests (vitest)
+pnpm build && pnpm test:e2e     # Playwright loads dist/chrome-mv3 into Chromium and walks onboarding on Jungle4
+E2E_SHOTS=./shots pnpm test:e2e # same, with screenshots per step
+```
+
+First time: `pnpm exec playwright install chromium`.
+
+### Manual (Chrome / Edge / Brave)
+
+1. `pnpm dev` — WXT builds to `dist/chrome-mv3` and opens a Chromium profile with the extension loaded and hot reload.
+   Or build once (`pnpm build`) and load it yourself: `chrome://extensions` → Developer mode → Load unpacked → `dist/chrome-mv3`.
+2. Click the Anchor toolbar icon → **Open wallet** (or open `chrome-extension://<id>/app.html`).
+3. Set a password → enable **Jungle 4 (EOS Testnet)** → Validate the node → Enable.
+4. Import an account:
+   - **Watch**: any existing account, e.g. `eosio`.
+   - **Private key**: a Jungle4 account you own (create one at https://monitor4.jungletestnet.io and paste its active key).
+5. Home shows the selected wallet; use the top bar to switch chain/account and lock/unlock; Settings → Danger zone resets everything.
+
+### Manual (Firefox)
+
+`pnpm dev:firefox`, or `pnpm build:firefox` then `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → `dist/firefox-mv2/manifest.json`.
 
 ## Layout
 

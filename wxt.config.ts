@@ -3,6 +3,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   srcDir: 'src',
+  publicDir: 'src/public',
+  outDir: 'dist',
   modules: ['@wxt-dev/module-vue'],
   imports: false,
   vite: () => ({

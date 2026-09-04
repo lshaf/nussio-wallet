@@ -20,9 +20,12 @@
     "test:watch": "vitest",
     "check": "pnpm typecheck && pnpm lint && pnpm test",
     "postinstall": "wxt prepare",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/red-hat-mono": "^5.3.0",
     "@greymass/anchor-link-session-manager": "^0.4.0",
     "@lucide/vue": "^1.40.0",
     "@tanstack/vue-query": "^5.102.8",
@@ -35,6 +38,7 @@
     "@wharfkit/signing-request": "^3.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
     "i18next": "^26.4.1",
     "i18next-sprintf-postprocessor": "^0.2.2",
     "i18next-vue": "^5.4.0",
@@ -51,7 +55,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.3.3",
+    "@types/crypto-js": "^4.2.2",
     "@types/pako": "^3.0.0",
     "@types/qrcode": "^1.5.6",
     "@vue/test-utils": "^2.5.0",

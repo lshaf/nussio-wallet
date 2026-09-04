@@ -6,7 +6,7 @@ import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 
 export default defineConfig([
-  { ignores: ['.output/**', '.wxt/**', 'node_modules/**', 'coverage/**'] },
+  { ignores: ['.output/**', 'dist/**', '.wxt/**', 'node_modules/**', 'coverage/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
@@ -25,6 +25,10 @@ export default defineConfig([
   {
     files: ['src/components/ui/**/*.vue'],
     rules: { 'vue/require-default-prop': 'off' },
+  },
+  {
+    files: ['tests/e2e/**/*.ts'],
+    rules: { 'no-empty-pattern': 'off' },
   },
   prettier,
 ]);
