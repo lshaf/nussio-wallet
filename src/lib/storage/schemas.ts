@@ -41,14 +41,22 @@ export const blockchainSchema = z.object({
 export type Blockchain = z.infer<typeof blockchainSchema>;
 export type BlockchainInput = z.input<typeof blockchainSchema>;
 
-export const walletSchema = z.object({
-  account: accountNameSchema,
-  authorization: permissionNameSchema,
-  chainId: chainIdSchema,
-  pubkey: z.string().min(1),
-  mode: walletModeSchema,
-  path: z.string().optional(),
-});
+export const walletSchema = z
+  .object({
+    account: accountNameSchema,
+    authorization: permissionNameSchema,
+    chainId: chainIdSchema,
+    pubkey: z.string().default(''),
+    mode: walletModeSchema,
+    path: z.string().optional(),
+  })
+  .refine(
+    (wallet) => wallet.mode === 'watch' || wallet.mode === 'auth' || wallet.pubkey.length > 0,
+    {
+      message: 'pubkey_required',
+      path: ['pubkey'],
+    },
+  );
 export type Wallet = z.infer<typeof walletSchema>;
 
 export const settingsSchema = z.object({

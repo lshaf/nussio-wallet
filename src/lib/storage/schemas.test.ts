@@ -34,6 +34,8 @@ describe('schemas', () => {
     };
     expect(walletSchema.safeParse(wallet).success).toBe(true);
     expect(walletSchema.safeParse({ ...wallet, account: 'UPPER' }).success).toBe(false);
+    expect(walletSchema.safeParse({ ...wallet, pubkey: '' }).success).toBe(false);
+    expect(walletSchema.safeParse({ ...wallet, pubkey: '', mode: 'watch' }).success).toBe(true);
   });
 });
 

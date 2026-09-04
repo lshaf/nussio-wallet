@@ -35,6 +35,11 @@ export const keyringItem = storage.defineItem<KeyringEnvelope | null>('local:key
   version: 1,
 });
 
+export const publicKeysItem = storage.defineItem<string[]>('local:publicKeys', {
+  fallback: [],
+  version: 1,
+});
+
 export const sessionsItem = storage.defineItem<SessionsState>('local:sessions', {
   fallback: sessionsStateSchema.parse({}),
   version: 1,
