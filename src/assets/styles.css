@@ -1,51 +1,72 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import '@fontsource-variable/archivo/standard.css';
+@import '@fontsource-variable/red-hat-mono/index.css';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --radius: 0.625rem;
+  --background: #f2f5f9;
+  --foreground: #0c1830;
+  --card: #ffffff;
+  --card-foreground: #0c1830;
+  --popover: #ffffff;
+  --popover-foreground: #0c1830;
+  --primary: #2b4fa8;
+  --primary-foreground: #ffffff;
+  --secondary: #e4eaf3;
+  --secondary-foreground: #1c2c4c;
+  --muted: #e9eef5;
+  --muted-foreground: #5c6b84;
+  --accent: #e9eef5;
+  --accent-foreground: #0c1830;
+  --destructive: #c8323f;
+  --destructive-foreground: #ffffff;
+  --warning: #d9720f;
+  --warning-foreground: #ffffff;
+  --positive: #1b8a6b;
+  --positive-foreground: #ffffff;
+  --border: #d7dee9;
+  --input: #cfd8e5;
+  --ring: #2b4fa8;
+  --gauge-track: #dfe6f0;
+  --gauge-tick: rgba(12, 24, 48, 0.18);
+  --waterline: rgba(255, 255, 255, 0.7);
+  --radius: 0.5rem;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: #0a1220;
+  --foreground: #e6ecf5;
+  --card: #111b2e;
+  --card-foreground: #e6ecf5;
+  --popover: #111b2e;
+  --popover-foreground: #e6ecf5;
+  --primary: #6e96ff;
+  --primary-foreground: #0a1220;
+  --secondary: #1b2740;
+  --secondary-foreground: #e6ecf5;
+  --muted: #182339;
+  --muted-foreground: #8c9ab2;
+  --accent: #1b2740;
+  --accent-foreground: #e6ecf5;
+  --destructive: #f0596a;
+  --destructive-foreground: #0a1220;
+  --warning: #f5a04a;
+  --warning-foreground: #0a1220;
+  --positive: #3fbf9a;
+  --positive-foreground: #0a1220;
+  --border: rgba(255, 255, 255, 0.09);
+  --input: rgba(255, 255, 255, 0.14);
+  --ring: #6e96ff;
+  --gauge-track: #1b2740;
+  --gauge-tick: rgba(230, 236, 245, 0.16);
+  --waterline: rgba(255, 255, 255, 0.55);
+}
+
+@theme {
+  --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Red Hat Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
 @theme inline {
@@ -65,6 +86,10 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-positive: var(--positive);
+  --color-positive-foreground: var(--positive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -78,7 +103,89 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-variation-settings: 'wdth' 100;
+  }
+  :focus-visible {
+    @apply outline-ring outline-2 outline-offset-2;
+  }
+}
+
+@utility eyebrow {
+  @apply text-muted-foreground text-[11px] font-semibold tracking-[0.08em] uppercase;
+  font-stretch: 88%;
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility display-num {
+  font-variant-numeric: tabular-nums;
+  font-stretch: 110%;
+  letter-spacing: -0.01em;
+}
+
+@utility gauge {
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--gauge-track);
+}
+
+@utility gauge-fill {
+  height: 100%;
+  border-right: 2px solid var(--waterline);
+  background: var(--primary);
+  transition: width 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@utility gauge-warn {
+  & .gauge-fill {
+    background: var(--warning);
+  }
+}
+
+@utility gauge-ticks {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(10% - 1px),
+    var(--gauge-tick) calc(10% - 1px),
+    var(--gauge-tick) 10%
+  );
+}
+
+@utility rise-in {
+  animation: rise-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gauge-fill,
+  .rise-in {
+    animation: none;
+    transition: none;
   }
 }

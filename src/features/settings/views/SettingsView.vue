@@ -1,0 +1,173 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useTranslation } from 'i18next-vue';
+import PageHeader from '@/components/shared/PageHeader.vue';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useSettingsService } from '@/composables/useServices';
+import type { Settings } from '@/lib/storage/schemas';
+import { useAppStore } from '@/stores/app.store';
+
+const { t } = useTranslation('ext');
+const router = useRouter();
+const app = useAppStore();
+const settingsService = useSettingsService();
+
+const idleOptions = [0, 5, 15, 30, 60];
+const refreshOptions = [0, 10, 30, 60, 120, 300];
+const resetText = ref('');
+
+type BooleanSetting = {
+  [K in keyof Settings]: Settings[K] extends boolean ? K : never;
+}[keyof Settings];
+
+const toggles: { section: string; items: { key: BooleanSetting; label: string }[] }[] = [
+  {
+    section: 'settings_interface',
+    items: [
+      { key: 'advancedOptions', label: 'settings_advanced' },
+      { key: 'displayTestNetworks', label: 'settings_testnets' },
+      { key: 'skipLinkModal', label: 'settings_skip_link' },
+      { key: 'displayResourcesAvailable', label: 'settings_resources_available' },
+    ],
+  },
+  {
+    section: 'settings_wallet',
+    items: [
+      { key: 'allowSigningRequests', label: 'settings_signing_requests' },
+      { key: 'promptCloseOnComplete', label: 'settings_close_on_complete' },
+      { key: 'transactionFees', label: 'settings_fees' },
+    ],
+  },
+  {
+    section: 'settings_developer',
+    items: [{ key: 'allowDangerousTransactions', label: 'settings_dangerous' }],
+  },
+];
+
+function setToggle(key: BooleanSetting, value: boolean | 'indeterminate'): void {
+  void app.updateSettings({ [key]: value === true });
+}
+
+function setNumber(key: 'idleTimeoutMinutes' | 'refreshRateSeconds', value: unknown): void {
+  if (typeof value === 'string') void app.updateSettings({ [key]: Number(value) });
+}
+
+async function reset(): Promise<void> {
+  if (resetText.value !== 'RESET') return;
+  await settingsService.resetApplication();
+  await app.load();
+  await router.push('/setup');
+}
+</script>
+
+<template>
+  <div class="flex max-w-2xl flex-col gap-6 md:gap-8">
+    <PageHeader :title="t('settings_title')" />
+
+    <section v-for="group in toggles" :key="group.section" class="flex flex-col gap-3">
+      <h2 class="eyebrow">{{ t(group.section) }}</h2>
+      <div class="bg-card divide-y rounded-lg border">
+        <label
+          v-for="item in group.items"
+          :key="item.key"
+          :for="`setting-${item.key}`"
+          class="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm"
+        >
+          <Checkbox
+            :id="`setting-${item.key}`"
+            :model-value="app.settings[item.key]"
+            @update:model-value="(value) => setToggle(item.key, value)"
+          />
+          <span>{{ t(item.label) }}</span>
+        </label>
+        <div
+          v-if="group.section === 'settings_wallet'"
+          class="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+        >
+          <Label>{{ t('settings_idle') }}</Label>
+          <Select
+            :model-value="String(app.settings.idleTimeoutMinutes)"
+            @update:model-value="(value) => setNumber('idleTimeoutMinutes', value)"
+          >
+            <SelectTrigger class="w-44" size="sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="minutes in idleOptions" :key="minutes" :value="String(minutes)">
+                {{
+                  minutes === 0
+                    ? t('settings_idle_never')
+                    : t('settings_idle_minutes', { count: minutes })
+                }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <h2 class="eyebrow">{{ t('settings_connection') }}</h2>
+      <div class="bg-card divide-y rounded-lg border">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+          <Label>{{ t('settings_refresh') }}</Label>
+          <Select
+            :model-value="String(app.settings.refreshRateSeconds)"
+            @update:model-value="(value) => setNumber('refreshRateSeconds', value)"
+          >
+            <SelectTrigger class="w-44" size="sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="seconds in refreshOptions" :key="seconds" :value="String(seconds)">
+                {{
+                  seconds === 0
+                    ? t('settings_refresh_off')
+                    : t('settings_refresh_seconds', { count: seconds })
+                }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+          <Label for="setting-link-url">{{ t('settings_link_url') }}</Label>
+          <Input
+            id="setting-link-url"
+            class="w-full font-mono sm:w-64"
+            :model-value="app.settings.anchorLinkServiceUrl"
+            @change="
+              (event: Event) =>
+                app.updateSettings({
+                  anchorLinkServiceUrl: (event.target as HTMLInputElement).value,
+                })
+            "
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <h2 class="eyebrow text-destructive">{{ t('settings_danger') }}</h2>
+      <div class="border-destructive/40 bg-card flex flex-col gap-3 rounded-lg border p-4">
+        <p class="text-muted-foreground text-sm">{{ t('settings_reset_description') }}</p>
+        <div class="flex flex-wrap gap-2">
+          <Input
+            v-model="resetText"
+            class="w-full font-mono sm:w-52"
+            :placeholder="t('settings_reset_confirm')"
+          />
+          <Button variant="destructive" :disabled="resetText !== 'RESET'" @click="reset">{{
+            t('action_reset')
+          }}</Button>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>

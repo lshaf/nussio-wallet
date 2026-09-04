@@ -3,10 +3,12 @@ import { createPinia } from 'pinia';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import '@/assets/styles.css';
 import { setupI18n } from '@/lib/i18n';
+import { followSystemTheme } from '@/lib/theme';
 import App from './App.vue';
 import { router } from './router';
 
 async function bootstrap(): Promise<void> {
+  followSystemTheme();
   const app = createApp(App);
   app.use(createPinia());
   app.use(VueQueryPlugin);
