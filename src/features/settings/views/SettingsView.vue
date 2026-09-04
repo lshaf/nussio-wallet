@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTranslation } from 'i18next-vue';
+import { RouterLink } from 'vue-router';
+import { ChevronRight, Network } from 'lucide-vue-next';
 import PageHeader from '@/components/shared/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -74,6 +76,15 @@ async function reset(): Promise<void> {
 <template>
   <div class="flex max-w-2xl flex-col gap-6 md:gap-8">
     <PageHeader :title="t('settings_title')" />
+
+    <RouterLink
+      to="/chains"
+      class="bg-card flex items-center gap-3 rounded-lg border px-4 py-3 text-sm md:hidden"
+    >
+      <Network class="text-muted-foreground size-4" />
+      <span class="flex-1 font-medium">{{ t('nav_chains') }}</span>
+      <ChevronRight class="text-muted-foreground size-4" />
+    </RouterLink>
 
     <section v-for="group in toggles" :key="group.section" class="flex flex-col gap-3">
       <h2 class="eyebrow">{{ t(group.section) }}</h2>

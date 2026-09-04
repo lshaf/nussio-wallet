@@ -50,6 +50,25 @@ test('fresh install walks password → chains → import → home', async ({ app
     page.getByText('Price per KB').locator('xpath=following-sibling::dd[1]'),
   ).toContainText('EOS', { timeout: 30_000 });
   await shot(page, '07-resources');
+  await page.getByRole('button', { name: 'Stake', exact: true }).first().click();
+  await expect(page.getByRole('heading', { name: 'Stake to CPU' })).toBeVisible();
+  await page.getByRole('button', { name: 'Cancel' }).click();
+
+  await page.getByRole('link', { name: 'Send', exact: true }).click();
+  await expect(page).toHaveURL(/#\/send$/);
+  await page.locator('#send-to').fill('greymassfuel');
+  await page.locator('#send-quantity').fill('1');
+  await expect(page.getByText(/available$/)).toBeVisible({ timeout: 30_000 });
+  await page.getByRole('button', { name: 'Review' }).click();
+  await expect(page.getByText('Review transfer')).toBeVisible();
+  const send = page.getByRole('button', { name: 'Send', exact: true });
+  await expect(send).toBeEnabled({ timeout: 10_000 });
+  await send.click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByText('Ready to sign elsewhere')).toBeVisible({ timeout: 30_000 });
+  await expect(dialog.getByText(/^esr:/)).toBeVisible();
+  await shot(page, '08-send-unsigned');
+  await dialog.getByRole('button', { name: 'Close', exact: true }).first().click();
   await page.getByRole('link', { name: 'Home' }).click();
 
   await page.getByRole('button', { name: 'Lock' }).click();

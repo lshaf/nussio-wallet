@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useTranslation } from 'i18next-vue';
 import { useNavLinks } from './useNavLinks';
 
 const { t } = useTranslation('ext');
-const links = useNavLinks();
+const all = useNavLinks();
+const links = computed(() =>
+  all.value.length > 5 ? all.value.filter((link) => link.to !== '/chains') : all.value,
+);
 </script>
 
 <template>

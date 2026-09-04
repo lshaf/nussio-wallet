@@ -14,7 +14,15 @@ import {
 import type { AccountData } from '@/services/account.service';
 import { useAppStore } from '@/stores/app.store';
 
-const props = defineProps<{ data: AccountData; kind: 'cpu' | 'net' }>();
+const props = withDefaults(
+  defineProps<{ data: AccountData; kind: 'cpu' | 'net'; canSign?: boolean }>(),
+  { canSign: false },
+);
+const emit = defineEmits<{
+  stake: [kind: 'cpu' | 'net'];
+  unstake: [kind: 'cpu' | 'net'];
+  claim: [];
+}>();
 const { t } = useTranslation('ext');
 const app = useAppStore();
 
@@ -94,13 +102,17 @@ const stakeItems = computed<DataListItem[]>(() => {
       <Button v-if="features.includes('rex')" size="sm" variant="secondary" disabled>{{
         t('resources_action_rent')
       }}</Button>
-      <Button size="sm" variant="outline" disabled>{{ t('resources_action_stake') }}</Button>
-      <Button size="sm" variant="outline" disabled>{{ t('resources_action_unstake') }}</Button>
+      <Button size="sm" variant="outline" :disabled="!canSign" @click="emit('stake', kind)">{{
+        t('resources_action_stake')
+      }}</Button>
+      <Button size="sm" variant="outline" :disabled="!canSign" @click="emit('unstake', kind)">{{
+        t('resources_action_unstake')
+      }}</Button>
       <Button
         v-if="refundReadyAt && refundReadyAt.getTime() <= Date.now()"
         size="sm"
-        variant="outline"
-        disabled
+        :disabled="!canSign"
+        @click="emit('claim')"
       >
         {{ t('resources_action_claim') }}
       </Button>

@@ -1,5 +1,5 @@
 import { computed, type Component } from 'vue';
-import { Gauge, Home, Network, Settings, Wallet } from 'lucide-vue-next';
+import { Gauge, Home, Network, SendHorizontal, Settings, Wallet } from 'lucide-vue-next';
 import { useAppStore } from '@/stores/app.store';
 
 export interface NavLink {
@@ -12,10 +12,9 @@ export interface NavLink {
 export function useNavLinks() {
   const app = useAppStore();
   return computed<NavLink[]>(() => {
-    const items: NavLink[] = [
-      { to: '/', icon: Home, label: 'nav_home', exact: true },
-      { to: '/wallets', icon: Wallet, label: 'nav_wallets' },
-    ];
+    const items: NavLink[] = [{ to: '/', icon: Home, label: 'nav_home', exact: true }];
+    if (app.currentWallet) items.push({ to: '/send', icon: SendHorizontal, label: 'nav_send' });
+    items.push({ to: '/wallets', icon: Wallet, label: 'nav_wallets' });
     if (app.currentChain?.stakedResources && app.currentWallet) {
       items.push({
         to: `/account/${app.currentWallet.account}`,

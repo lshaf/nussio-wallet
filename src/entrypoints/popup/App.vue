@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { browser } from 'wxt/browser';
 import { useTranslation } from 'i18next-vue';
-import { ExternalLink, Gauge, Lock, LockOpen } from 'lucide-vue-next';
+import { ExternalLink, Gauge, Lock, LockOpen, SendHorizontal } from 'lucide-vue-next';
 import AppMark from '@/components/shared/AppMark.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -96,6 +96,16 @@ onMounted(() => {
       />
       <div class="grid grid-cols-2 gap-2">
         <Button
+          v-if="app.currentWallet"
+          variant="outline"
+          size="sm"
+          :class="app.currentChain?.stakedResources ? '' : 'col-span-2'"
+          @click="open('/send')"
+        >
+          <SendHorizontal />
+          {{ t('nav_send') }}
+        </Button>
+        <Button
           v-if="app.currentChain?.stakedResources && app.currentWallet"
           variant="outline"
           size="sm"
@@ -104,11 +114,7 @@ onMounted(() => {
           <Gauge />
           {{ t('nav_resources') }}
         </Button>
-        <Button
-          size="sm"
-          :class="app.currentChain?.stakedResources ? '' : 'col-span-2'"
-          @click="open('/')"
-        >
+        <Button size="sm" class="col-span-2" @click="open('/')">
           <ExternalLink />
           {{ t('action_open_wallet') }}
         </Button>

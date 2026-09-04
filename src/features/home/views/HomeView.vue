@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTranslation } from 'i18next-vue';
 import { useQueryClient } from '@tanstack/vue-query';
-import { RefreshCw, Users } from 'lucide-vue-next';
+import { Radio, RefreshCw, Users } from 'lucide-vue-next';
 import PageHeader from '@/components/shared/PageHeader.vue';
 import EmptyState from '@/components/shared/EmptyState.vue';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import AccountHints from '../components/AccountHints.vue';
 import OverviewCard from '../components/OverviewCard.vue';
 import OverviewRow from '../components/OverviewRow.vue';
 import PriceBadge from '../components/PriceBadge.vue';
+import BroadcastDialog from '@/features/transactions/components/BroadcastDialog.vue';
 
 type Tab = 'systemtokens' | 'balances' | 'resources' | 'governance';
 
@@ -25,6 +26,7 @@ const router = useRouter();
 const app = useAppStore();
 const queryClient = useQueryClient();
 const tab = ref<Tab>('systemtokens');
+const broadcastOpen = ref(false);
 
 const feed = usePriceFeed(() => app.settings.chainId);
 const usd = computed(() => feed.data.value?.usd);
@@ -93,6 +95,16 @@ function refreshAll(): void {
           <Users />
           {{ t('overview_manage_accounts') }}
         </Button>
+        <Button
+          v-if="chain"
+          variant="outline"
+          size="sm"
+          :aria-label="t('broadcast_title')"
+          @click="broadcastOpen = true"
+        >
+          <Radio />
+          <span class="hidden sm:inline">{{ t('overview_broadcast') }}</span>
+        </Button>
       </template>
     </PageHeader>
 
@@ -159,5 +171,6 @@ function refreshAll(): void {
         t('action_import_account')
       }}</Button>
     </EmptyState>
+    <BroadcastDialog v-model:open="broadcastOpen" />
   </div>
 </template>

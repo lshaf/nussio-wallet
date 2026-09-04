@@ -36,6 +36,11 @@ export const router = createRouter({
       children: [
         { path: '', name: 'home', component: () => import('@/features/home/views/HomeView.vue') },
         {
+          path: 'send',
+          name: 'send',
+          component: () => import('@/features/wallet/views/SendView.vue'),
+        },
+        {
           path: 'wallets',
           name: 'wallets',
           component: () => import('@/features/wallets/views/WalletsView.vue'),
