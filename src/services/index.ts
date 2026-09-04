@@ -3,6 +3,7 @@ import { registerChainService } from './chain.service';
 import { registerRequestService } from './request.service';
 import { registerSessionService } from './session.service';
 import { registerSettingsService } from './settings.service';
+import { registerTransactionService } from './transaction.service';
 import { registerWalletService } from './wallet.service';
 
 export function registerServices(): void {
@@ -12,4 +13,5 @@ export function registerServices(): void {
   registerSettingsService();
   registerRequestService();
   registerSessionService();
+  registerTransactionService();
 }
