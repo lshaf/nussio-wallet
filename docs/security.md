@@ -45,6 +45,22 @@ unless:
 Other message types pass through untouched. A unit test asserts the key list matches the
 `SERVICE_KEY` constant in every `*.service.ts` file, so a new service cannot silently escape it.
 
+## Request provenance
+
+`request:open` records the sender's origin (`sender.url`, never a value from the payload — the
+Coin98 mistake) on the pending request, and the prompt shows it as "Sent by". The app name in an
+anchor-link request and the ESR callback origin are both chosen by whoever built the request, so
+they cannot be trusted on their own. `ProviderCall` no longer carries an `origin` field for the
+same reason.
+
+At most five non-final requests can be queued at once, so a page cannot bury the user in prompt
+windows even within the rate limit.
+
+## Session storage
+
+The background worker calls `storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' })`
+at startup, so unlocked keys stay unreachable from content scripts even if that default changes.
+
 ## Signing request parsing
 
 `parseSigningRequest` refuses URIs over 16 KB, and the zlib provider refuses any payload that
@@ -69,6 +85,17 @@ throws malformed, truncated and bomb payloads at both. Forbidden actions (`updat
 
 Narrowing `<all_urls>` is open work: Firefox should move the host access to
 `optional_host_permissions`, and link capture could use `activeTab` if store review pushes back.
+
+## Dependency audit
+
+`pnpm audit --prod --audit-level moderate` runs in CI. Current state:
+
+- `uuid` was pulled in at 8.3.2 by the session manager, affected by a moderate bounds-check
+  advisory; a workspace override pins it to 11.1.1. The library only calls `v4()`, which the
+  advisory does not cover, but the override removes the question.
+- `elliptic` (via `@wharfkit/antelope`) carries a low advisory with no patched release. It is used
+  for secp256k1 signing; the advisory concerns lenient signature decoding on verification, a path
+  this wallet does not take. Revisit when wharfkit ships a fix.
 
 ## Accepted risks
 

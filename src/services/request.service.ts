@@ -71,6 +71,7 @@ export interface RequestView {
   expiration: string | null;
   broadcast: boolean;
   appName: string | null;
+  requester: string | null;
   callback: { url: string; background: boolean; origin: string } | null;
   forbidden: string[];
   dangerousAllowed: boolean;
@@ -101,7 +102,7 @@ export type RequestOutcome =
   | { status: 'error'; error: TxError };
 
 export interface RequestService {
-  open(uri: string): Promise<{ id: string }>;
+  open(uri: string, requester?: string | null): Promise<{ id: string }>;
   get(id: string): Promise<PendingRequest | undefined>;
   list(): Promise<PendingRequest[]>;
   resolve(id: string, signer?: RequestSigner): Promise<RequestView>;
@@ -118,6 +119,7 @@ export interface RequestService {
 }
 
 const SERVICE_KEY = 'RequestService';
+const MAX_OPEN_REQUESTS = 5;
 const PROMPT_WIDTH = 420;
 const PROMPT_HEIGHT = 620;
 const PROMPT_HEIGHT_SINGLE = 540;
@@ -372,6 +374,7 @@ async function viewFrom(context: Context): Promise<RequestView> {
     expiration: resolved && !identity ? String(resolved.transaction.expiration) : null,
     broadcast: request ? request.shouldBroadcast() && !identity : false,
     appName: request ? linkAppName(request) : null,
+    requester: context.record.requester ?? null,
     callback: request ? callbackOf(request) : null,
     forbidden: chain ? forbiddenActions(context.actions, chain.systemContract) : [],
     dangerousAllowed: settings.allowDangerousTransactions,
@@ -390,10 +393,18 @@ function badgeApi(): typeof browser.action | undefined {
 }
 
 export const requestService: RequestService = {
-  async open(uri) {
+  async open(uri, requester = null) {
     const id = crypto.randomUUID();
-    const request: PendingRequest = { id, uri, receivedAt: Date.now(), status: 'received' };
+    const request: PendingRequest = {
+      id,
+      uri,
+      receivedAt: Date.now(),
+      status: 'received',
+      requester,
+    };
     const requests = await pendingRequestsItem.getValue();
+    const waiting = requests.filter((entry) => !FINAL_STATUSES.has(entry.status));
+    if (waiting.length >= MAX_OPEN_REQUESTS) throw new Error('too_many_requests');
     await pendingRequestsItem.setValue([...requests, request]);
     const windowId = await openPromptWindow(id, promptHeightFor(uri));
     await patchRecord(id, { windowId });

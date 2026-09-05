@@ -45,6 +45,9 @@ function onChain(value: unknown): void {
           {{ t('prompt_identity_title', { app: view.appName ?? view.callback?.origin ?? '' }) }}
         </h2>
         <p class="text-muted-foreground text-xs">{{ t('prompt_identity_description') }}</p>
+        <p v-if="view.requester" class="text-muted-foreground truncate font-mono text-[11px]">
+          {{ t('prompt_requester') }}: {{ view.requester }}
+        </p>
       </div>
     </div>
     <div class="bg-card flex flex-col gap-3 rounded-lg border p-3">

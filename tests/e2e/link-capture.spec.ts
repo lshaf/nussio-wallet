@@ -74,6 +74,7 @@ test('captures a signing request link inside a closed shadow root', async ({
   await expect(prompt.getByRole('heading', { name: 'Login request' })).toBeVisible({
     timeout: 30_000,
   });
+  await expect(prompt.getByText(`Sent by: ${new URL(dapp.url).origin}`)).toBeVisible();
   await expect(site).toHaveURL(dapp.url);
   dapp.close();
 });

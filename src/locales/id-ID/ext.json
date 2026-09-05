@@ -694,5 +694,6 @@
   "abis_clear": "Bersihkan cache",
   "abis_empty": "Belum ada yang tersimpan",
   "settings_language_label": "Bahasa antarmuka",
-  "node_url_label": "URL node API"
+  "node_url_label": "URL node API",
+  "prompt_requester": "Dikirim oleh"
 }

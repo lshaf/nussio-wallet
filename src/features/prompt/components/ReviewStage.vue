@@ -121,6 +121,12 @@ function setCloseOnComplete(value: boolean | 'indeterminate'): void {
           {{ view.appName ?? view.callback.origin }}
         </dd>
       </template>
+      <template v-if="view.requester">
+        <dt>{{ t('prompt_requester') }}</dt>
+        <dd class="text-foreground truncate text-right font-mono" :title="view.requester">
+          {{ view.requester }}
+        </dd>
+      </template>
     </dl>
 
     <label class="flex items-center gap-2 px-1 text-xs">

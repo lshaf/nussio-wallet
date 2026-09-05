@@ -24,10 +24,17 @@ async function applyIdleTimeout(): Promise<void> {
   browser.idle.setDetectionInterval(Math.max(MIN_IDLE_SECONDS, idleTimeoutMinutes * 60));
 }
 
-async function openIfAllowed(uri: string): Promise<{ id: string }> {
+async function openIfAllowed(
+  uri: string,
+  requester: string | null = null,
+): Promise<{ id: string }> {
   const settings = await settingsItem.getValue();
   if (!settings.allowSigningRequests) return { id: '' };
-  return requestService.open(uri);
+  try {
+    return await requestService.open(uri, requester);
+  } catch {
+    return { id: '' };
+  }
 }
 
 function installContextMenu(): void {
@@ -40,12 +47,21 @@ function installContextMenu(): void {
   });
 }
 
+function restrictSessionStorage(): void {
+  const session = browser.storage.session as unknown as {
+    setAccessLevel?: (options: { accessLevel: string }) => Promise<void>;
+  };
+  void session.setAccessLevel?.({ accessLevel: 'TRUSTED_CONTEXTS' }).catch(() => undefined);
+}
+
 export default defineBackground(() => {
+  restrictSessionStorage();
   registerServices();
 
   onMessage('request:open', ({ data, sender }) => {
-    if (!openLimiter.allow(originOf(sender?.url))) return { id: '' };
-    return openIfAllowed(data);
+    const requester = originOf(sender?.url);
+    if (!openLimiter.allow(requester)) return { id: '' };
+    return openIfAllowed(data, requester === 'unknown' ? null : requester);
   });
 
   browser.runtime.onInstalled.addListener(() => {

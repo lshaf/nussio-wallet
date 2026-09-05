@@ -184,6 +184,7 @@ export const pendingRequestSchema = z.object({
   id: z.string().min(1),
   uri: z.string().min(1),
   receivedAt: z.number(),
+  requester: z.string().nullable().default(null),
   status: requestStatusSchema,
   error: z.string().optional(),
   chainId: chainIdSchema.optional(),

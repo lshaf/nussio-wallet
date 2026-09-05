@@ -325,95 +325,6 @@
         }
       }
 
-      .mock {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 1rem;
-        box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.9);
-      }
-
-      .mock-bar {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.75rem;
-        color: var(--muted-foreground);
-        padding-bottom: 0.75rem;
-        margin-bottom: 0.875rem;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .dot {
-        width: 0.5rem;
-        height: 0.5rem;
-        border-radius: 999px;
-        background: var(--positive);
-      }
-
-      .mock-amount {
-        font-stretch: 125%;
-        font-weight: 700;
-        font-size: 2.25rem;
-        font-variant-numeric: tabular-nums;
-        letter-spacing: -0.03em;
-        line-height: 1;
-      }
-
-      .mock-amount span {
-        font-size: 1.125rem;
-        font-weight: 500;
-        color: var(--muted-foreground);
-        margin-left: 0.3rem;
-      }
-
-      .gauges {
-        margin-top: 1.25rem;
-        display: grid;
-        gap: 0.75rem;
-      }
-
-      .gauge-row {
-        display: grid;
-        grid-template-columns: 2.5rem 1fr auto;
-        align-items: center;
-        gap: 0.75rem;
-        font-size: 0.75rem;
-        color: var(--muted-foreground);
-        font-variant-numeric: tabular-nums;
-      }
-
-      .gauge {
-        position: relative;
-        height: 0.625rem;
-        border-radius: 999px;
-        background: var(--track);
-        overflow: hidden;
-      }
-
-      .gauge > i {
-        position: absolute;
-        inset: 0 auto 0 0;
-        display: block;
-        border-radius: 999px;
-        background: var(--primary);
-      }
-
-      .gauge.warn > i {
-        background: var(--warning);
-      }
-
-      .gauge::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image: repeating-linear-gradient(
-          to right,
-          rgba(255, 255, 255, 0.18) 0 1px,
-          transparent 1px 10%
-        );
-      }
-
       ul.checks {
         list-style: none;
         margin: 0;
@@ -585,6 +496,48 @@
         display: none !important;
       }
 
+      .narrow-shots {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .narrow-shots img,
+      .shots img,
+      .setup-shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card);
+        box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.95);
+      }
+
+      figure {
+        margin: 0;
+      }
+
+      figcaption {
+        margin-top: 0.625rem;
+        font-size: 0.8125rem;
+        color: var(--muted-foreground);
+      }
+
+      .shots {
+        display: grid;
+        gap: 1.75rem 1.25rem;
+        grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+      }
+
+      .setup-shot {
+        margin-bottom: 2rem;
+      }
+
+      .setup-shot img {
+        max-width: 46rem;
+      }
+
       .notice {
         border: 1px solid var(--border);
         border-left: 3px solid var(--warning);
@@ -640,6 +593,7 @@
         </a>
         <nav class="site">
           <a class="hide-sm" href="#features">Features</a>
+          <a class="hide-sm" href="#screens">Screens</a>
           <a class="hide-sm" href="#security">Security</a>
           <a class="hide-sm" href="#install">Install</a>
           <a class="cta" href="https://github.com/lshaf/nussio-wallet">GitHub</a>
@@ -851,31 +805,84 @@
               </li>
             </ul>
           </div>
-          <div class="mock" aria-hidden="true">
-            <div class="mock-bar">
-              <span class="dot"></span>
-              <span class="mono">WAX</span>
-              <span class="mono">myaccount@active</span>
-            </div>
-            <p class="eyebrow" style="margin-bottom: 0.35rem">Balance</p>
-            <div class="mock-amount">1,284<span>.0417 WAX</span></div>
-            <div class="gauges">
-              <div class="gauge-row">
-                <span class="mono">CPU</span>
-                <span class="gauge"><i style="width: 62%"></i></span>
-                <span>62%</span>
-              </div>
-              <div class="gauge-row">
-                <span class="mono">NET</span>
-                <span class="gauge"><i style="width: 28%"></i></span>
-                <span>28%</span>
-              </div>
-              <div class="gauge-row">
-                <span class="mono">RAM</span>
-                <span class="gauge warn"><i style="width: 91%"></i></span>
-                <span>91%</span>
-              </div>
-            </div>
+          <div class="narrow-shots">
+            <figure>
+              <img
+                src="screenshots/home-narrow.png"
+                width="760"
+                height="1240"
+                loading="lazy"
+                alt="The wallet at popup width: chain and account switchers, balance, CPU, NET and RAM gauges, bottom tab bar."
+              />
+              <figcaption>Popup width, 380 px</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="screenshots/prompt.png"
+                width="760"
+                height="1040"
+                loading="lazy"
+                alt="A signing prompt showing an eosio.token::transfer action with from, to, quantity and memo, the account to sign as, and a countdown."
+              />
+              <figcaption>Signing prompt</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section id="screens">
+        <div class="shell">
+          <p class="eyebrow">Screens</p>
+          <h2>What it looks like</h2>
+          <p class="section-lede">
+            Captured from the built extension running against Jungle 4, the EOS testnet — no
+            renders, no mockups.
+          </p>
+          <div class="shots">
+            <figure>
+              <img
+                src="screenshots/home.png"
+                width="2320"
+                height="1520"
+                loading="lazy"
+                alt="Overview screen: available balance, total and staked, CPU, NET and RAM gauges, a warning that owner and active share a key, and the accounts table."
+              />
+              <figcaption>
+                Overview — balances, resources and every account on the chain.
+              </figcaption>
+            </figure>
+            <figure>
+              <img
+                src="screenshots/resources.png"
+                width="2320"
+                height="1400"
+                loading="lazy"
+                alt="Resources screen with CPU, NET and RAM cards, each showing available, used, allowed, stake split and stake, unstake, buy and sell actions."
+              />
+              <figcaption>
+                Resources — stake, unstake, buy and sell RAM at the live price.
+              </figcaption>
+            </figure>
+            <figure>
+              <img
+                src="screenshots/send-review.png"
+                width="2320"
+                height="1120"
+                loading="lazy"
+                alt="Send screen reviewing a transfer, with recipient, amount, memo and the actions about to be signed."
+              />
+              <figcaption>Send — review every action before it is signed.</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="screenshots/tools.png"
+                width="2320"
+                height="1400"
+                loading="lazy"
+                alt="Tools screen listing backup and restore, manage keys, contacts, custom tokens, permissions, history, contract, ping and pending requests."
+              />
+              <figcaption>Tools — the wallet maintenance screens in one place.</figcaption>
+            </figure>
           </div>
         </div>
       </section>
@@ -1034,6 +1041,19 @@
           </div>
 
           <p class="alt-link" data-alt hidden></p>
+
+          <figure class="setup-shot">
+            <img
+              src="screenshots/setup-chains.png"
+              width="2320"
+              height="1520"
+              loading="lazy"
+              alt="Setup screen listing blockchains with Jungle 4 selected and its node validated, showing Connected, chain id matches."
+            />
+            <figcaption>
+              First run: pick your chains and validate the node before anything else.
+            </figcaption>
+          </figure>
 
           <pre><code><span class="c"># or build from source</span>
 git clone https://github.com/lshaf/nussio-wallet.git

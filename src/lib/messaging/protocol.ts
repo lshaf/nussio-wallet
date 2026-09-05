@@ -1,7 +1,6 @@
 import { defineExtensionMessaging } from '@webext-core/messaging';
 
 export interface ProviderCall {
-  origin: string;
   method: string;
   params: unknown[];
 }
