@@ -63,9 +63,9 @@ export interface RamQuote {
 }
 
 export interface ResourcesService {
-  getState(chainId: string): Promise<ResourceState>;
-  quotePowerUp(chainId: string, ms: number, kb: number): Promise<PowerUpQuote>;
-  quoteRex(chainId: string, ms: number, kb: number): Promise<RexQuote>;
+  getState(chainId: string, sample?: string): Promise<ResourceState>;
+  quotePowerUp(chainId: string, ms: number, kb: number, sample?: string): Promise<PowerUpQuote>;
+  quoteRex(chainId: string, ms: number, kb: number, sample?: string): Promise<RexQuote>;
   quoteRamBuy(chainId: string, input: { bytes?: number; amount?: number }): Promise<RamQuote>;
   quoteRamSell(chainId: string, bytes: number): Promise<RamQuote>;
 }
@@ -88,13 +88,17 @@ function resourcesFor(chain: Blockchain, sampleAccount: string): Resources {
 
 const samples = new Map<string, { usage: SampleUsage; account: string; fetchedAt: number }>();
 
-async function sampleFor(chain: Blockchain): Promise<{ usage: SampleUsage; resources: Resources }> {
+async function sampleFor(
+  chain: Blockchain,
+  preferred?: string,
+): Promise<{ usage: SampleUsage; resources: Resources }> {
   const cached = samples.get(chain.chainId);
   if (cached && Date.now() - cached.fetchedAt < STATE_TTL_MS) {
     return { usage: cached.usage, resources: resourcesFor(chain, cached.account) };
   }
   let lastError: unknown;
-  for (const account of SAMPLE_ACCOUNTS) {
+  const candidates = preferred ? [preferred, ...SAMPLE_ACCOUNTS] : SAMPLE_ACCOUNTS;
+  for (const account of candidates) {
     const resources = resourcesFor(chain, account);
     try {
       const usage = await resources.getSampledUsage();
@@ -107,8 +111,8 @@ async function sampleFor(chain: Blockchain): Promise<{ usage: SampleUsage; resou
   throw lastError instanceof Error ? lastError : new Error('no_sample_account');
 }
 
-async function ramMarketFor(chain: Blockchain): Promise<RamMarket | null> {
-  const { resources } = await sampleFor(chain);
+async function ramMarketFor(chain: Blockchain, sample?: string): Promise<RamMarket | null> {
+  const { resources } = await sampleFor(chain, sample);
   const state = await resources.v1.ram.get_state();
   if (!state) return null;
   return {
@@ -143,11 +147,11 @@ function quantityFor(chain: Blockchain, amount: number): string {
 }
 
 export const resourcesService: ResourcesService = {
-  async getState(chainId) {
+  async getState(chainId, sample) {
     const chain = await chainFor(chainId);
-    const { usage, resources } = await sampleFor(chain);
+    const { usage, resources } = await sampleFor(chain, sample);
 
-    const market = await ramMarketFor(chain).catch(() => null);
+    const market = await ramMarketFor(chain, sample).catch(() => null);
     const ram: RamMarketState | null = market
       ? {
           pricePerByte: ramPricePerByte(market),
@@ -201,9 +205,9 @@ export const resourcesService: ResourcesService = {
     };
   },
 
-  async quotePowerUp(chainId, ms, kb) {
+  async quotePowerUp(chainId, ms, kb, sample) {
     const chain = await chainFor(chainId);
-    const { usage, resources } = await sampleFor(chain);
+    const { usage, resources } = await sampleFor(chain, sample);
     const state = await resources.v1.powerup.get_state();
     if (!state) throw new Error('powerup_unavailable');
     const cpuCost = ms > 0 ? quoted(() => state.cpu.price_per_ms(usage, ms)) : 0;
@@ -219,9 +223,9 @@ export const resourcesService: ResourcesService = {
     };
   },
 
-  async quoteRex(chainId, ms, kb) {
+  async quoteRex(chainId, ms, kb, sample) {
     const chain = await chainFor(chainId);
-    const { usage, resources } = await sampleFor(chain);
+    const { usage, resources } = await sampleFor(chain, sample);
     const state = await resources.v1.rex.get_state();
     if (!state) throw new Error('rex_unavailable');
     const cost =

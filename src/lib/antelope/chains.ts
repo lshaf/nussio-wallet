@@ -36,7 +36,7 @@ const seeds: BlockchainInput[] = [
     symbol: 'WAX',
     tokenPrecision: 8,
     voteDecayPeriodWeeks: 13,
-    features: ['bidname', 'producerinfo', 'delphioracle', 'greymassfuel'],
+    features: ['bidname', 'powerup', 'producerinfo', 'delphioracle', 'greymassfuel'],
   },
   {
     id: 'wax-testnet',
@@ -47,7 +47,7 @@ const seeds: BlockchainInput[] = [
     tokenPrecision: 8,
     voteDecayPeriodWeeks: 13,
     testnet: true,
-    features: ['bidname'],
+    features: ['bidname', 'powerup'],
   },
   {
     id: 'telos',

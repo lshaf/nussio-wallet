@@ -68,8 +68,8 @@ const quote = useDebounceFn(async () => {
   try {
     const result =
       props.mode === 'powerup'
-        ? await service.quotePowerUp(props.chain.chainId, ms, kb)
-        : await service.quoteRex(props.chain.chainId, ms, kb);
+        ? await service.quotePowerUp(props.chain.chainId, ms, kb, props.signer.actor)
+        : await service.quoteRex(props.chain.chainId, ms, kb, props.signer.actor);
     if (token !== quoteToken) return;
     cost.value = result.cost;
   } catch (failure) {
@@ -100,7 +100,7 @@ async function submit(): Promise<void> {
   const { ms, kb } = legs();
   const authorization = [props.signer];
   if (props.mode === 'powerup') {
-    const result = await service.quotePowerUp(props.chain.chainId, ms, kb);
+    const result = await service.quotePowerUp(props.chain.chainId, ms, kb, props.signer.actor);
     emit('confirm', [
       {
         account: props.chain.systemContract,
@@ -117,7 +117,7 @@ async function submit(): Promise<void> {
       },
     ]);
   } else {
-    const result = await service.quoteRex(props.chain.chainId, ms, kb);
+    const result = await service.quoteRex(props.chain.chainId, ms, kb, props.signer.actor);
     emit('confirm', [
       {
         account: props.chain.systemContract,

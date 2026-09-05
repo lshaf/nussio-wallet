@@ -35,14 +35,15 @@ export function useRamPrice(chainId: Maybe) {
   );
 }
 
-export function useResourceState(chainId: Maybe) {
+export function useResourceState(chainId: Maybe, sample?: Maybe) {
   const resourcesService = useResourcesService();
   return useQuery(
     computed(() => {
       const chain = toValue(chainId);
+      const account = toValue(sample) ?? undefined;
       return {
-        queryKey: ['resource-state', chain],
-        queryFn: () => resourcesService.getState(chain!),
+        queryKey: ['resource-state', chain, account],
+        queryFn: () => resourcesService.getState(chain!, account),
         enabled: Boolean(chain),
         refetchInterval: 60_000,
         retry: 1,

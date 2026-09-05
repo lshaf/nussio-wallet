@@ -147,6 +147,16 @@ async function fetchRexFund(chain: Blockchain, account: string): Promise<string 
   }
 }
 
+function coreBalanceFor(chain: Blockchain, value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  try {
+    const asset = Asset.from(String(value));
+    return asset.symbol.name === chain.symbol ? String(asset) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchSystemBalance(chain: Blockchain, account: string): Promise<string> {
   try {
     const balances = await clientFor(chain.node).v1.chain.get_currency_balance(
@@ -221,7 +231,7 @@ export const accountService: AccountService = {
       return {
         account: String(result.account_name),
         chainId,
-        balance: result.core_liquid_balance ? String(result.core_liquid_balance) : undefined,
+        balance: coreBalanceFor(chain, result.core_liquid_balance) ?? undefined,
         permissions: summarizePermissions(result.permissions),
       };
     } catch {
@@ -237,10 +247,9 @@ export const accountService: AccountService = {
     } catch {
       return undefined;
     }
+    const core = coreBalanceFor(chain, result.core_liquid_balance);
     const [balance, delegatedToOthers, rexFund] = await Promise.all([
-      result.core_liquid_balance
-        ? Promise.resolve(String(result.core_liquid_balance))
-        : fetchSystemBalance(chain, account),
+      core ? Promise.resolve(core) : fetchSystemBalance(chain, account),
       chain.stakedResources ? fetchDelegatedToOthers(chain, account) : Promise.resolve(null),
       chain.features.includes('rex') ? fetchRexFund(chain, account) : Promise.resolve(null),
     ]);

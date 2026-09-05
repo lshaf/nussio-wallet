@@ -1,8 +1,20 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
+import { watch } from 'vue';
+import { RouterView, useRouter } from 'vue-router';
+import { useAppStore } from '@/stores/app.store';
 import BottomNav from './BottomNav.vue';
 import SideNav from './SideNav.vue';
 import TopBar from './TopBar.vue';
+
+const app = useAppStore();
+const router = useRouter();
+
+watch(
+  () => app.setupRoute,
+  (route) => {
+    if (route) void router.push(route);
+  },
+);
 </script>
 
 <template>

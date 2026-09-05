@@ -57,7 +57,10 @@ const refundReadyAt = computed(() => {
   return new Date(Date.parse(`${props.data.refund.requestTime}Z`) + 72 * 3600 * 1000);
 });
 
-const state = useResourceState(() => app.settings.chainId);
+const state = useResourceState(
+  () => app.settings.chainId,
+  () => app.currentWallet?.account,
+);
 const powerupPrice = computed(() => {
   const info = state.data.value?.powerup;
   if (!info) return undefined;
