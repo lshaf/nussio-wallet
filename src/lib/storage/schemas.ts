@@ -85,6 +85,7 @@ export const settingsSchema = z.object({
   transactionFees: z.boolean().default(false),
   skipLinkModal: z.boolean().default(false),
   blockExplorers: z.record(chainIdSchema, z.string()).default({}),
+  recentBids: z.record(chainIdSchema, z.array(accountNameSchema)).default({}),
   anchorLinkServiceUrl: z.string().default('cb.anchor.link'),
   lastBackupAt: z.number().nullable().default(null),
   filterSpamTransfersUnder: z.number().min(0).default(0),

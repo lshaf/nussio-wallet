@@ -23,6 +23,7 @@ export {
 } from '@/services/resources.service';
 export { useSessionService, type LinkInfo } from '@/services/session.service';
 export { useSettingsService } from '@/services/settings.service';
+export { useSystemService, type NameBid, type NameStatus } from '@/services/system.service';
 export { useWalletService } from '@/services/wallet.service';
 export { useTokensService, type ScannedToken } from '@/services/tokens.service';
 export { useTransactionService } from '@/services/transaction.service';

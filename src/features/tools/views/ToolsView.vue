@@ -7,8 +7,11 @@ import {
   Coins,
   Contact,
   DatabaseBackup,
+  Gavel,
   KeyRound,
   ListChecks,
+  ShieldCheck,
+  UserPlus,
 } from 'lucide-vue-next';
 import PageHeader from '@/components/shared/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
@@ -35,12 +38,27 @@ const tools = computed(() => [
   },
   { to: '/tools/keys', icon: KeyRound, title: t('keys_title'), hint: t('tools_keys_hint') },
   {
+    to: '/tools/permissions',
+    icon: ShieldCheck,
+    title: t('permissions_title'),
+    hint: t('tools_permissions_hint'),
+  },
+  {
+    to: '/tools/create-account',
+    icon: UserPlus,
+    title: t('create_direct_title'),
+    hint: t('tools_create_hint'),
+  },
+  {
     to: '/tools/contacts',
     icon: Contact,
     title: t('contacts_title'),
     hint: t('tools_contacts_hint'),
   },
   { to: '/tools/tokens', icon: Coins, title: t('tokens_title'), hint: t('tools_tokens_hint') },
+  ...(app.currentChain?.features.includes('bidname')
+    ? [{ to: '/tools/bidname', icon: Gavel, title: t('bid_title'), hint: t('tools_bid_hint') }]
+    : []),
   {
     to: '/tools/pending',
     icon: ListChecks,

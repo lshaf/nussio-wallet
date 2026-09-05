@@ -8,6 +8,7 @@ import { registerRequestService } from './request.service';
 import { registerResourcesService } from './resources.service';
 import { registerSessionService } from './session.service';
 import { registerSettingsService } from './settings.service';
+import { registerSystemService } from './system.service';
 import { registerTokensService } from './tokens.service';
 import { registerTransactionService } from './transaction.service';
 import { registerWalletService } from './wallet.service';
@@ -26,4 +27,5 @@ export function registerServices(): void {
   registerPendingService();
   registerResourcesService();
   registerGovernanceService();
+  registerSystemService();
 }

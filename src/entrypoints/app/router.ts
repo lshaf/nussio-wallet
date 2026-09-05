@@ -91,6 +91,21 @@ export const router = createRouter({
           component: () => import('@/features/tools/views/TokensView.vue'),
         },
         {
+          path: 'tools/permissions',
+          name: 'tools-permissions',
+          component: () => import('@/features/tools/views/PermissionsView.vue'),
+        },
+        {
+          path: 'tools/bidname',
+          name: 'tools-bidname',
+          component: () => import('@/features/tools/views/NameBidView.vue'),
+        },
+        {
+          path: 'tools/create-account',
+          name: 'tools-create-account',
+          component: () => import('@/features/tools/views/CreateAccountView.vue'),
+        },
+        {
           path: 'tools/pending',
           name: 'tools-pending',
           component: () => import('@/features/tools/views/PendingView.vue'),
