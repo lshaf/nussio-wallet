@@ -498,7 +498,7 @@
 
       .narrow-shots {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
         gap: 1rem;
       }
 
@@ -527,11 +527,11 @@
       .shots {
         display: grid;
         gap: 1.75rem 1.25rem;
-        grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(26rem, 100%), 1fr));
       }
 
       .setup-shot {
-        margin-bottom: 2rem;
+        margin: 2rem 0;
       }
 
       .setup-shot img {
@@ -1083,6 +1083,11 @@ pnpm build:firefox  <span class="c"># dist/firefox-mv2</span></code></pre>
           <a href="https://github.com/lshaf/nussio-wallet/releases">Releases</a>
           <a href="https://github.com/lshaf/nussio-wallet/blob/main/docs/security.md"
             >Threat model</a
+          >
+          <a href="https://github.com/lshaf/nussio-wallet/blob/main/PRIVACY.md">Privacy</a>
+          <a href="https://github.com/lshaf/nussio-wallet/blob/main/CHANGELOG.md">Changelog</a>
+          <a href="https://github.com/lshaf/nussio-wallet/blob/main/docs/dapp-integration.md"
+            >For dApps</a
           >
           <a href="https://github.com/lshaf/nussio-wallet/blob/main/CONTRIBUTING.md"
             >Contributing</a

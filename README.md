@@ -19,6 +19,7 @@ pnpm build && pnpm test:e2e   # Playwright against dist/chrome-mv3 (needs `pnpm 
 pnpm test:e2e:edge            # same suite in Microsoft Edge; test:e2e:brave for Brave
 pnpm check:bundle             # entry-point size budgets
 pnpm zip            # dist/*.zip
+pnpm shots          # rebuild and recapture site/screenshots against Jungle 4
 ```
 
 ## Testing

@@ -22,6 +22,7 @@
     "postinstall": "wxt prepare",
     "prepare": "husky",
     "test:e2e": "playwright test",
+    "shots": "wxt build && node scripts/capture-site-shots.mjs",
     "check:bundle": "node scripts/check-bundle.mjs",
     "test:e2e:edge": "E2E_CHANNEL=msedge playwright test",
     "test:e2e:brave": "E2E_BROWSER_PATH=\"/Applications/Brave Browser.app/Contents/MacOS/Brave Browser\" playwright test"

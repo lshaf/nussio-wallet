@@ -695,5 +695,6 @@
   "abis_empty": "Belum ada yang tersimpan",
   "settings_language_label": "Bahasa antarmuka",
   "node_url_label": "URL node API",
-  "prompt_requester": "Dikirim oleh"
+  "prompt_requester": "Dikirim oleh",
+  "popup_side_panel": "Buka di panel samping"
 }

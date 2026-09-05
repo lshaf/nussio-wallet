@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { browser } from 'wxt/browser';
 import { useTranslation } from 'i18next-vue';
-import { ExternalLink, Gauge, Lock, LockOpen, SendHorizontal } from 'lucide-vue-next';
+import { ExternalLink, Gauge, Lock, LockOpen, PanelRight, SendHorizontal } from 'lucide-vue-next';
 import AppMark from '@/components/shared/AppMark.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,19 @@ const usd = computed(() => feed.data.value?.usd);
 
 async function open(path: string): Promise<void> {
   await browser.tabs.create({ url: browser.runtime.getURL(`/app.html#${path}`) });
+  window.close();
+}
+
+const sidePanel = (
+  browser as unknown as {
+    sidePanel?: { open(options: { windowId: number }): Promise<void> };
+  }
+).sidePanel;
+
+async function openSidePanel(): Promise<void> {
+  const current = await browser.windows.getCurrent();
+  if (!sidePanel || current.id === undefined) return;
+  await sidePanel.open({ windowId: current.id });
   window.close();
 }
 
@@ -115,6 +128,16 @@ onMounted(() => {
         >
           <Gauge />
           {{ t('nav_resources') }}
+        </Button>
+        <Button
+          v-if="sidePanel"
+          variant="outline"
+          size="sm"
+          class="col-span-2"
+          @click="openSidePanel"
+        >
+          <PanelRight />
+          {{ t('popup_side_panel') }}
         </Button>
         <Button size="sm" class="col-span-2" @click="open('/')">
           <ExternalLink />

@@ -695,5 +695,6 @@
   "abis_empty": "Nothing cached yet",
   "settings_language_label": "Interface language",
   "node_url_label": "API node URL",
-  "prompt_requester": "Sent by"
+  "prompt_requester": "Sent by",
+  "popup_side_panel": "Open in side panel"
 }
