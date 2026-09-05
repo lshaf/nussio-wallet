@@ -127,33 +127,28 @@ onMounted(async () => {
 
 <template>
   <div class="flex h-screen flex-col">
-    <header class="bg-card flex min-h-14 flex-wrap items-center gap-3 border-b px-4 py-2">
+    <header class="bg-card flex h-12 shrink-0 items-center gap-2 border-b px-3">
       <AppMark size="sm" :wordmark="false" />
-      <h1 class="font-semibold">{{ title }}</h1>
-      <span v-if="prompt.view.value?.chain" class="flex items-center gap-1.5 text-sm">
+      <h1 class="truncate text-sm font-semibold">{{ title }}</h1>
+      <div class="flex-1" />
+      <Badge
+        v-if="prompt.view.value && prompt.view.value.kind === 'transaction'"
+        variant="secondary"
+        class="text-[10px]"
+        >{{ t('tx_actions_count', { count: prompt.view.value.actions.length }) }}</Badge
+      >
+      <span v-if="prompt.view.value?.chain" class="flex items-center gap-1.5 text-xs">
         <img
           v-if="chainLogo(prompt.view.value.chain.id)"
           :src="chainLogo(prompt.view.value.chain.id)"
           class="size-4 rounded-full"
           alt=""
         />
-        {{ prompt.view.value.chain.name }}
+        <span class="max-w-24 truncate">{{ prompt.view.value.chain.name }}</span>
       </span>
-      <div class="flex-1" />
-      <Badge
-        v-if="prompt.view.value?.callback"
-        variant="outline"
-        class="max-w-56 truncate font-mono"
-        >{{ prompt.view.value.callback.origin }}</Badge
-      >
-      <Badge
-        v-if="prompt.view.value && prompt.view.value.kind === 'transaction'"
-        variant="secondary"
-        >{{ t('tx_actions_count', { count: prompt.view.value.actions.length }) }}</Badge
-      >
     </header>
 
-    <main class="relative flex-1 overflow-auto p-4 md:p-5">
+    <main class="relative flex-1 overflow-auto p-3">
       <div
         v-if="prompt.busy.value && prompt.view.value"
         class="bg-background/70 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm"
@@ -301,10 +296,11 @@ onMounted(async () => {
       </template>
     </main>
 
-    <footer class="bg-card flex flex-wrap items-center gap-2 border-t px-4 py-3">
+    <footer class="bg-card flex shrink-0 items-center gap-2 border-t px-3 py-2.5">
       <Button
         v-if="prompt.stage.value !== 'success' && prompt.stage.value !== 'cancelled'"
         variant="ghost"
+        size="sm"
         :disabled="prompt.busy.value"
         @click="prompt.cancel"
       >
@@ -314,15 +310,13 @@ onMounted(async () => {
       <Button
         v-if="prompt.view.value"
         variant="ghost"
-        size="sm"
+        size="icon-sm"
+        :title="t('prompt_copy_request')"
         :aria-label="t('prompt_copy_request')"
         @click="copy(prompt.view.value.uri)"
       >
         <Check v-if="copied" />
         <Copy v-else />
-        <span class="hidden sm:inline">{{
-          copied ? t('action_copied') : t('prompt_copy_request')
-        }}</span>
       </Button>
       <div class="flex-1" />
       <Button
@@ -334,13 +328,20 @@ onMounted(async () => {
           prompt.stage.value === 'error' ||
           prompt.stage.value === 'unknown_chain'
         "
+        size="sm"
         @click="close"
       >
         {{ t('action_close') }}
       </Button>
-      <Button v-if="primary" :disabled="prompt.busy.value" @click="onPrimary">
+      <Button
+        v-if="primary"
+        size="sm"
+        class="max-w-56 truncate"
+        :disabled="prompt.busy.value"
+        @click="onPrimary"
+      >
         <Lock v-if="primary.key === 'unlock'" />
-        {{ primary.label }}
+        <span class="truncate">{{ primary.label }}</span>
       </Button>
     </footer>
     <UnlockDialog v-model:open="unlockOpen" @unlocked="prompt.sign()" />

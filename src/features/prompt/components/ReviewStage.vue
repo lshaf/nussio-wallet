@@ -23,12 +23,10 @@ const summary = computed(() =>
     .filter((action) => action.account !== 'greymassnoop')
     .map((action) => ({
       key: `${action.account}::${action.name}`,
-      fields: Object.entries(action.data)
-        .slice(0, 4)
-        .map(([name, value]) => ({
-          name,
-          value: typeof value === 'string' ? value : JSON.stringify(value),
-        })),
+      fields: Object.entries(action.data).map(([name, value]) => ({
+        name,
+        value: typeof value === 'string' ? value : JSON.stringify(value),
+      })),
     })),
 );
 
@@ -38,97 +36,99 @@ function setCloseOnComplete(value: boolean | 'indeterminate'): void {
 </script>
 
 <template>
-  <div class="grid gap-4 md:grid-cols-[260px_minmax(0,1fr)]">
-    <aside class="flex flex-col gap-4">
-      <div class="bg-card flex flex-col gap-2 rounded-lg border p-3">
+  <div class="flex flex-col gap-3">
+    <div class="bg-card flex flex-col gap-2 rounded-lg border p-3">
+      <div class="flex items-center justify-between gap-2">
         <p class="eyebrow">{{ t('prompt_sign_as') }}</p>
-        <SignerSelect
-          v-if="view.chainId"
-          :wallets="view.wallets"
-          :signer="view.signer"
-          :chain-id="view.chainId"
-          :disabled="!view.placeholders && !view.signerMissing"
-          @change="(signer) => emit('signer', signer)"
+        <Countdown
+          v-if="view.expiration"
+          class="text-xs"
+          :expiration="view.expiration"
+          @expired="emit('expired')"
         />
-        <p v-if="view.signerMissing && view.requestedSigner" class="text-warning text-xs">
-          {{
-            t('prompt_signer_missing', {
-              signer: `${view.requestedSigner.actor}@${view.requestedSigner.permission}`,
-            })
-          }}
-        </p>
       </div>
-      <dl class="bg-card grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 rounded-lg border p-3 text-xs">
-        <template v-if="view.expiration">
-          <dt class="text-muted-foreground">{{ t('prompt_expires') }}</dt>
-          <dd class="text-right">
-            <Countdown :expiration="view.expiration" @expired="emit('expired')" />
-          </dd>
-        </template>
-        <dt class="text-muted-foreground">{{ t('prompt_broadcast') }}</dt>
-        <dd class="text-right">
-          {{ view.broadcast ? t('prompt_broadcast_wallet') : t('prompt_broadcast_app') }}
-        </dd>
-        <template v-if="view.callback">
-          <dt class="text-muted-foreground">{{ t('prompt_callback') }}</dt>
-          <dd class="truncate text-right font-mono" :title="view.callback.url">
-            {{ view.callback.origin }}
-          </dd>
-        </template>
-      </dl>
-      <label class="flex items-center gap-2 px-1 text-xs">
-        <Checkbox
-          :model-value="app.settings.promptCloseOnComplete"
-          @update:model-value="setCloseOnComplete"
-        />
-        <span>{{ t('settings_close_on_complete') }}</span>
-      </label>
-    </aside>
+      <SignerSelect
+        v-if="view.chainId"
+        :wallets="view.wallets"
+        :signer="view.signer"
+        :chain-id="view.chainId"
+        :disabled="!view.placeholders && !view.signerMissing"
+        @change="(signer) => emit('signer', signer)"
+      />
+      <p v-if="view.signerMissing && view.requestedSigner" class="text-warning text-xs">
+        {{
+          t('prompt_signer_missing', {
+            signer: `${view.requestedSigner.actor}@${view.requestedSigner.permission}`,
+          })
+        }}
+      </p>
+    </div>
 
-    <section class="flex min-w-0 flex-col gap-3">
-      <div
-        v-if="view.forbidden.length > 0"
-        class="border-destructive/40 bg-destructive/10 flex items-start gap-2 rounded-lg border px-3 py-2 text-sm"
-      >
-        <AlertTriangle class="text-destructive mt-0.5 size-4 shrink-0" />
-        <span>{{ t('prompt_dangerous_allowed', { actions: view.forbidden.join(', ') }) }}</span>
-      </div>
-      <Tabs v-model="tab">
-        <TabsList class="h-auto flex-wrap">
-          <TabsTrigger value="overview">{{ t('prompt_tab_overview') }}</TabsTrigger>
-          <TabsTrigger value="actions">{{ t('prompt_tab_actions') }}</TabsTrigger>
-          <TabsTrigger value="raw">{{ t('prompt_tab_raw') }}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" class="flex flex-col gap-3">
-          <FuelBanner v-if="view.fuel.provider || view.fuel.fee" :fee="view.fuel.fee" />
-          <ol class="flex flex-col gap-2">
-            <li
-              v-for="(entry, index) in summary"
-              :key="`${index}-${entry.key}`"
-              class="bg-card rounded-lg border p-3"
+    <div
+      v-if="view.forbidden.length > 0"
+      class="border-destructive/40 bg-destructive/10 flex items-start gap-2 rounded-lg border px-3 py-2 text-xs"
+    >
+      <AlertTriangle class="text-destructive mt-0.5 size-4 shrink-0" />
+      <span>{{ t('prompt_dangerous_allowed', { actions: view.forbidden.join(', ') }) }}</span>
+    </div>
+
+    <FuelBanner v-if="view.fuel.provider || view.fuel.fee" :fee="view.fuel.fee" />
+
+    <Tabs v-model="tab" class="gap-2">
+      <TabsList class="h-8 w-full">
+        <TabsTrigger value="overview" class="text-xs">{{ t('prompt_tab_overview') }}</TabsTrigger>
+        <TabsTrigger value="actions" class="text-xs">{{ t('prompt_tab_actions') }}</TabsTrigger>
+        <TabsTrigger value="raw" class="text-xs">{{ t('prompt_tab_raw') }}</TabsTrigger>
+      </TabsList>
+      <TabsContent value="overview" class="flex flex-col gap-2">
+        <ol class="flex flex-col gap-2">
+          <li
+            v-for="(entry, index) in summary"
+            :key="`${index}-${entry.key}`"
+            class="bg-card rounded-lg border p-3"
+          >
+            <p class="font-mono text-xs font-medium">{{ entry.key }}</p>
+            <dl
+              v-if="entry.fields.length > 0"
+              class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs"
             >
-              <p class="font-mono text-sm font-medium">{{ entry.key }}</p>
-              <dl
-                v-if="entry.fields.length > 0"
-                class="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-xs"
-              >
-                <template v-for="field in entry.fields" :key="field.name">
-                  <dt class="text-muted-foreground font-mono">{{ field.name }}</dt>
-                  <dd class="font-mono break-all">{{ field.value }}</dd>
-                </template>
-              </dl>
-            </li>
-          </ol>
-        </TabsContent>
-        <TabsContent value="actions">
-          <ActionList :actions="view.actions" />
-        </TabsContent>
-        <TabsContent value="raw">
-          <pre
-            class="bg-card max-h-80 overflow-auto rounded-lg border p-3 font-mono text-[11px] whitespace-pre-wrap"
-            >{{ JSON.stringify(view.transaction, null, 2) }}</pre>
-        </TabsContent>
-      </Tabs>
-    </section>
+              <template v-for="field in entry.fields" :key="field.name">
+                <dt class="text-muted-foreground font-mono">{{ field.name }}</dt>
+                <dd class="font-mono break-all">{{ field.value }}</dd>
+              </template>
+            </dl>
+          </li>
+        </ol>
+      </TabsContent>
+      <TabsContent value="actions">
+        <ActionList :actions="view.actions" />
+      </TabsContent>
+      <TabsContent value="raw">
+        <pre
+          class="bg-card overflow-auto rounded-lg border p-3 font-mono text-[11px] whitespace-pre-wrap"
+          >{{ JSON.stringify(view.transaction, null, 2) }}</pre>
+      </TabsContent>
+    </Tabs>
+
+    <dl class="text-muted-foreground grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 px-1 text-xs">
+      <dt>{{ t('prompt_broadcast') }}</dt>
+      <dd class="text-foreground text-right">
+        {{ view.broadcast ? t('prompt_broadcast_wallet') : t('prompt_broadcast_app') }}
+      </dd>
+      <template v-if="view.callback">
+        <dt>{{ t('prompt_callback') }}</dt>
+        <dd class="text-foreground truncate text-right font-mono" :title="view.callback.url">
+          {{ view.appName ?? view.callback.origin }}
+        </dd>
+      </template>
+    </dl>
+
+    <label class="flex items-center gap-2 px-1 text-xs">
+      <Checkbox
+        :model-value="app.settings.promptCloseOnComplete"
+        @update:model-value="setCloseOnComplete"
+      />
+      <span>{{ t('settings_close_on_complete') }}</span>
+    </label>
   </div>
 </template>

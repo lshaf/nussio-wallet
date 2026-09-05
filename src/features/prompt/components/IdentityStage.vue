@@ -33,20 +33,22 @@ function onChain(value: unknown): void {
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-md flex-col gap-5">
-    <div class="flex flex-col items-center gap-2 text-center">
+  <div class="flex flex-col gap-4">
+    <div class="flex items-start gap-3">
       <span
-        class="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-full"
+        class="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-full"
       >
-        <Fingerprint class="size-6" />
+        <Fingerprint class="size-5" />
       </span>
-      <h2 class="text-xl font-semibold tracking-tight">
-        {{ t('prompt_identity_title', { app: view.appName ?? view.callback?.origin ?? '' }) }}
-      </h2>
-      <p class="text-muted-foreground text-sm">{{ t('prompt_identity_description') }}</p>
+      <div class="min-w-0">
+        <h2 class="font-semibold tracking-tight">
+          {{ t('prompt_identity_title', { app: view.appName ?? view.callback?.origin ?? '' }) }}
+        </h2>
+        <p class="text-muted-foreground text-xs">{{ t('prompt_identity_description') }}</p>
+      </div>
     </div>
-    <div class="bg-card flex flex-col gap-4 rounded-xl border p-4">
-      <div v-if="chains.length > 1" class="flex flex-col gap-2">
+    <div class="bg-card flex flex-col gap-3 rounded-lg border p-3">
+      <div v-if="chains.length > 1" class="flex flex-col gap-1.5">
         <p class="eyebrow">{{ t('nav_chains') }}</p>
         <Select :model-value="view.chainId ?? undefined" @update:model-value="onChain">
           <SelectTrigger class="w-full">
@@ -75,7 +77,7 @@ function onChain(value: unknown): void {
           </SelectContent>
         </Select>
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-1.5">
         <p class="eyebrow">{{ t('prompt_sign_as') }}</p>
         <SignerSelect
           v-if="view.chainId"

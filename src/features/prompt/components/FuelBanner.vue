@@ -8,7 +8,7 @@ const { t } = useTranslation('ext');
 
 <template>
   <div
-    class="flex items-start gap-3 rounded-lg border px-3 py-2.5 text-sm"
+    class="flex items-start gap-2.5 rounded-lg border px-3 py-2 text-xs"
     :class="fee ? 'border-warning/40 bg-warning/10' : 'border-positive/40 bg-positive/10'"
   >
     <Fuel class="mt-0.5 size-4 shrink-0" :class="fee ? 'text-warning' : 'text-positive'" />
@@ -16,7 +16,7 @@ const { t } = useTranslation('ext');
       <p class="font-medium">
         {{ fee ? t('prompt_fuel_fee_title') : t('prompt_fuel_free_title') }}
       </p>
-      <p class="text-muted-foreground text-xs">
+      <p class="text-muted-foreground">
         {{ fee ? t('prompt_fuel_fee_body', { fee }) : t('prompt_fuel_free_body') }}
       </p>
       <dl

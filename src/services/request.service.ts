@@ -118,8 +118,10 @@ export interface RequestService {
 }
 
 const SERVICE_KEY = 'RequestService';
-const PROMPT_WIDTH = 940;
-const PROMPT_HEIGHT = 580;
+const PROMPT_WIDTH = 420;
+const PROMPT_HEIGHT = 620;
+const PROMPT_HEIGHT_SINGLE = 540;
+const PROMPT_HEIGHT_IDENTITY = 420;
 const FINAL_STATUSES = new Set<RequestStatus>(['done', 'error', 'cancelled']);
 const REJECTION = { rejected: 'Request cancelled from within Nussio Wallet.' };
 
@@ -139,27 +141,36 @@ interface Context {
   errorMessage?: string;
 }
 
-async function openPromptWindow(id: string): Promise<number | undefined> {
+function promptHeightFor(uri: string): number {
+  try {
+    const request = parseSigningRequest(uri);
+    if (request.isIdentity()) return PROMPT_HEIGHT_IDENTITY;
+    return request.getRawActions().length > 1 ? PROMPT_HEIGHT : PROMPT_HEIGHT_SINGLE;
+  } catch {
+    return PROMPT_HEIGHT;
+  }
+}
+
+function centered(start: number | undefined, span: number | undefined, size: number): number {
+  if (start === undefined || span === undefined) return 0;
+  return Math.max(0, Math.round(start + (span - size) / 2));
+}
+
+async function openPromptWindow(id: string, height: number): Promise<number | undefined> {
   const url = browser.runtime.getURL(`/prompt.html?id=${encodeURIComponent(id)}`);
   const current = await browser.windows.getLastFocused().catch(() => undefined);
-  const left =
-    current?.left !== undefined && current.width !== undefined
-      ? Math.round(current.left + (current.width - PROMPT_WIDTH) / 2)
-      : undefined;
-  const top =
-    current?.top !== undefined && current.height !== undefined
-      ? Math.round(current.top + (current.height - PROMPT_HEIGHT) / 2)
-      : undefined;
-  const created = await browser.windows.create({
-    url,
-    type: 'popup',
-    width: PROMPT_WIDTH,
-    height: PROMPT_HEIGHT,
-    focused: true,
-    left,
-    top,
-  });
-  return created?.id;
+  const options = { url, type: 'popup' as const, width: PROMPT_WIDTH, height, focused: true };
+  try {
+    const created = await browser.windows.create({
+      ...options,
+      left: centered(current?.left, current?.width, PROMPT_WIDTH),
+      top: centered(current?.top, current?.height, height),
+    });
+    return created?.id;
+  } catch {
+    const created = await browser.windows.create(options);
+    return created?.id;
+  }
 }
 
 async function readRecord(id: string): Promise<PendingRequest> {
@@ -384,7 +395,7 @@ export const requestService: RequestService = {
     const request: PendingRequest = { id, uri, receivedAt: Date.now(), status: 'received' };
     const requests = await pendingRequestsItem.getValue();
     await pendingRequestsItem.setValue([...requests, request]);
-    const windowId = await openPromptWindow(id);
+    const windowId = await openPromptWindow(id, promptHeightFor(uri));
     await patchRecord(id, { windowId });
     return { id };
   },
@@ -563,7 +574,7 @@ export const requestService: RequestService = {
         await patchRecord(id, { windowId: undefined });
       }
     }
-    const windowId = await openPromptWindow(id);
+    const windowId = await openPromptWindow(id, promptHeightFor(record.uri));
     await patchRecord(id, { windowId });
   },
 

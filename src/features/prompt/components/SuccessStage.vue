@@ -29,12 +29,12 @@ const pendingCallback = computed(
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-md flex-col items-center gap-4 text-center">
-    <CircleCheck class="text-positive size-12" />
-    <h2 class="text-xl font-semibold tracking-tight">
+  <div class="mx-auto flex w-full max-w-md flex-col items-center gap-3 pt-2 text-center">
+    <CircleCheck class="text-positive size-10" />
+    <h2 class="font-semibold tracking-tight">
       {{ outcome.identity ? t('prompt_success_identity') : t('prompt_success_title') }}
     </h2>
-    <p class="text-muted-foreground text-sm">
+    <p class="text-muted-foreground text-xs">
       {{
         outcome.identity
           ? t('prompt_success_identity_body', { app: view.appName ?? view.callback?.origin ?? '' })
