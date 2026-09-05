@@ -65,7 +65,9 @@ blockchain nodes and relays listed in `PRIVACY.md`, all of which the user can ch
 4. Governance producer list with votes selected.
 5. Tools index.
 
-Generate them with `E2E_SHOTS=./shots pnpm test:e2e tests/e2e/onboarding.spec.ts`, then crop.
+Generate them with `pnpm shots:store`. Output lands in `store/screenshots/` at exactly 1280x800,
+no cropping needed. The signing prompt is a 420px window, so it is composited centred on a dark
+canvas rather than stretched.
 
 ## Support
 
