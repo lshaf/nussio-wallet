@@ -8,7 +8,7 @@ withDefaults(defineProps<{ size?: 'sm' | 'md' | 'lg'; wordmark?: boolean }>(), {
 });
 
 const { t } = useTranslation('ext');
-const icon = browser.runtime.getURL('/icon/128.png');
+const icon = browser.runtime.getURL('/icon/icon.svg');
 const sizes = { sm: 'size-6', md: 'size-8', lg: 'size-12' } as const;
 const text = { sm: 'text-sm', md: 'text-base', lg: 'text-xl' } as const;
 </script>

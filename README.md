@@ -1,6 +1,6 @@
-# Waxos Wallet
+# Nussio Wallet
 
-Browser-extension wallet for Antelope chains, built on the feature set and protocols of [Anchor Wallet](https://github.com/greymass/anchor) by Greymass (MIT). Waxos Wallet is not affiliated with or endorsed by Greymass. Supports EOS, WAX, Telos, Proton, Libre, FIO and custom chains: local key custody, transaction signing, and the EOSIO Signing Request (ESR) / anchor-link session protocol, so dApps that already support Anchor work unchanged.
+Browser-extension wallet for Antelope chains, built on the feature set and protocols of [Anchor Wallet](https://github.com/greymass/anchor) by Greymass (MIT). Nussio Wallet is not affiliated with or endorsed by Greymass. Supports EOS, WAX, Telos, Proton, Libre, FIO and custom chains: local key custody, transaction signing, and the EOSIO Signing Request (ESR) / anchor-link session protocol, so dApps that already support Anchor work unchanged.
 
 Functional parity with the desktop app, redesigned for Manifest V3. Not a code port.
 
@@ -35,7 +35,7 @@ First time: `pnpm exec playwright install chromium`.
 
 1. `pnpm dev` — WXT builds to `dist/chrome-mv3` and opens a Chromium profile with the extension loaded and hot reload.
    Or build once (`pnpm build`) and load it yourself: `chrome://extensions` → Developer mode → Load unpacked → `dist/chrome-mv3`.
-2. Click the Waxos Wallet toolbar icon → **Open wallet** (or open `chrome-extension://<id>/app.html`).
+2. Click the Nussio Wallet toolbar icon → **Open wallet** (or open `chrome-extension://<id>/app.html`).
 3. Set a password → enable **Jungle 4 (EOS Testnet)** → Validate the node → Enable.
 4. Import an account:
    - **Watch**: any existing account, e.g. `eosio`.
@@ -70,4 +70,4 @@ docs/adr/        architecture decision records
 
 ## License
 
-MIT. Waxos Wallet is derived from Anchor Wallet (MIT, Greymass): locales, chain logos, protocol handling and feature design; see `THIRD_PARTY_NOTICES.md`.
+MIT. Nussio Wallet is derived from Anchor Wallet (MIT, Greymass): locales, chain logos, protocol handling and feature design; see `THIRD_PARTY_NOTICES.md`. The Nussio Wallet name and icon are its own.

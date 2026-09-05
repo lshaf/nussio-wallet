@@ -1,10 +1,10 @@
 # Third-party notices
 
-Waxos Wallet is derived from Anchor Wallet: its feature set, locale files, chain logos, ESR/anchor-link protocol handling and Greymass Fuel validation rules were studied and re-implemented for the browser. Anchor is a product of Greymass; Waxos Wallet is not affiliated with or endorsed by Greymass.
+Nussio Wallet is derived from Anchor Wallet: its feature set, locale files, chain logos, ESR/anchor-link protocol handling and Greymass Fuel validation rules were studied and re-implemented for the browser. The Nussio Wallet name, logo and icons are its own and are not from Anchor. Anchor is a product of Greymass; Nussio Wallet is not affiliated with or endorsed by Greymass.
 
 ## Anchor Wallet (Greymass) — MIT
 
-`src/locales/**` and `src/assets/chains/**` and `src/public/icon/**` are copied from
+`src/locales/**` and `src/assets/chains/**` are copied from
 [greymass/anchor](https://github.com/greymass/anchor), Copyright (c) Greymass, MIT License.
 The original license text is reproduced below.
 

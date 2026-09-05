@@ -1,8 +1,18 @@
 # Design system
 
-Waxos Wallet ships three surfaces from one component set: the toolbar popup (360 px wide),
+Nussio Wallet ships three surfaces from one component set: the toolbar popup (360 px wide),
 the side panel / narrow tab (< 768 px) and the full tab (≥ 768 px). Every screen has to work at
 360 px first; wide layouts are an enhancement.
+
+## Mark
+
+`src/public/icon/icon.svg` is the source of truth: a deep-blue rounded square (`#1c3d8f`), a bold
+white **N**, and under it a small resource meter with a teal fill (`#3fbf9a`) on a translucent
+track. The meter is the same shape as `ResourceGauge`, so the icon states what the product is for.
+The letterform's diagonal is slightly heavier than its stems, matching Archivo's N.
+
+PNG sizes for the manifest (16, 32, 48, 96, 128) are rendered from that SVG; re-render them after
+any edit instead of hand-editing the bitmaps. Nothing here is derived from Anchor artwork.
 
 ## Tokens
 

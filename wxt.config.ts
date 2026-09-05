@@ -11,7 +11,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   }),
   manifest: ({ browser }) => ({
-    name: 'Waxos Wallet',
+    name: 'Nussio Wallet',
     description: 'Antelope wallet and signing request authenticator for EOS, WAX, Telos and more',
     permissions: [
       'storage',
@@ -24,7 +24,7 @@ export default defineConfig({
     ],
     host_permissions: ['<all_urls>'],
     web_accessible_resources: [{ resources: ['inpage.js'], matches: ['<all_urls>'] }],
-    action: { default_title: 'Waxos Wallet' },
+    action: { default_title: 'Nussio Wallet' },
     ...(browser === 'firefox' ? {} : { side_panel: { default_path: 'app.html' } }),
   }),
 });
