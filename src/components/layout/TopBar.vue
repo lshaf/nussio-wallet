@@ -19,7 +19,7 @@ const unlockOpen = ref(false);
   <header
     class="bg-background/90 sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b px-4 py-2 backdrop-blur md:h-16 md:flex-nowrap md:px-6"
   >
-    <AppMark size="sm" :wordmark="false" class="md:hidden" />
+    <AppMark size="control" :wordmark="false" class="shrink-0 md:hidden" />
     <ChainSwitcher compact class="md:hidden" />
     <ChainSwitcher class="hidden md:block" />
     <AccountSwitcher
