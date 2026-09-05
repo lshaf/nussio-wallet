@@ -2,8 +2,6 @@ name: Pages
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'web-v*'
   workflow_run:
@@ -27,6 +25,7 @@ jobs:
     if: >-
       github.event_name != 'workflow_run' ||
       (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
       startsWith(github.event.workflow_run.head_branch, 'v'))
     runs-on: ubuntu-latest
     environment:
@@ -34,6 +33,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Fetch builds from the latest release
         id: release

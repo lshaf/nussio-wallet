@@ -79,6 +79,18 @@ Tools (`#/tools`) holds the wallet-maintenance screens:
 - **Pending** — signing requests waiting for you, backup reminders, and account creation requests
   (two keypairs, mandatory owner-key export, a shareable ESR link for whoever pays, then import).
 
+## Releasing
+
+```bash
+git push origin v1.2.3      # CI checks, zips both browsers, publishes the release,
+                            # then the site redeploys with those zips
+git push origin web-v1      # site only: redeploys site/ with the current release's zips
+```
+
+`v*` runs `.github/workflows/ci.yml`; the Pages workflow follows it on success. `web-v*` and the
+**Run workflow** button deploy the site alone, so copy and screenshot changes do not need a new
+extension release. Pushes to `main` never deploy.
+
 ## Docs
 
 `docs/security.md` threat model · `docs/qa.md` release checks · `docs/store-listing.md` store copy
