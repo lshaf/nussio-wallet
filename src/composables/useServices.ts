@@ -1,6 +1,14 @@
 export { useAccountService, type Delegation } from '@/services/account.service';
 export { useBackupService } from '@/services/backup.service';
 export { useChainService } from '@/services/chain.service';
+export {
+  useContractService,
+  type AbiAction,
+  type AbiCacheEntryInfo,
+  type AbiTable,
+  type ContractInfo,
+} from '@/services/contract.service';
+export { useHistoryService, type HistoryAction } from '@/services/history.service';
 export { useContactsService } from '@/services/contacts.service';
 export {
   useGovernanceService,
@@ -13,6 +21,7 @@ export {
   type PendingAccount,
   type PendingAccountStatus,
 } from '@/services/pending.service';
+export { usePingService, type ApiEndpoint, type PingResult } from '@/services/ping.service';
 export { useRequestService } from '@/services/request.service';
 export {
   useResourcesService,

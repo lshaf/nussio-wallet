@@ -7,11 +7,15 @@ import {
   Coins,
   Contact,
   DatabaseBackup,
+  Database,
+  FileCode2,
   Gavel,
+  History,
   KeyRound,
   ListChecks,
   ShieldCheck,
   UserPlus,
+  Wifi,
 } from 'lucide-vue-next';
 import PageHeader from '@/components/shared/PageHeader.vue';
 import { Badge } from '@/components/ui/badge';
@@ -56,6 +60,22 @@ const tools = computed(() => [
     hint: t('tools_contacts_hint'),
   },
   { to: '/tools/tokens', icon: Coins, title: t('tokens_title'), hint: t('tools_tokens_hint') },
+  {
+    to: '/tools/history',
+    icon: History,
+    title: t('history_title'),
+    hint: t('tools_history_hint'),
+  },
+  {
+    to: '/tools/contract',
+    icon: FileCode2,
+    title: t('contract_title'),
+    hint: t('tools_contract_hint'),
+  },
+  ...(app.currentChain?.features.includes('producerinfo')
+    ? [{ to: '/tools/ping', icon: Wifi, title: t('ping_title'), hint: t('tools_ping_hint') }]
+    : []),
+  { to: '/tools/abis', icon: Database, title: t('abis_title'), hint: t('tools_abis_hint') },
   ...(app.currentChain?.features.includes('bidname')
     ? [{ to: '/tools/bidname', icon: Gavel, title: t('bid_title'), hint: t('tools_bid_hint') }]
     : []),

@@ -86,6 +86,8 @@ export const settingsSchema = z.object({
   skipLinkModal: z.boolean().default(false),
   blockExplorers: z.record(chainIdSchema, z.string()).default({}),
   recentBids: z.record(chainIdSchema, z.array(accountNameSchema)).default({}),
+  recentContracts: z.record(chainIdSchema, z.array(accountNameSchema)).default({}),
+  historyEndpoints: z.record(chainIdSchema, z.string()).default({}),
   anchorLinkServiceUrl: z.string().default('cb.anchor.link'),
   lastBackupAt: z.number().nullable().default(null),
   filterSpamTransfersUnder: z.number().min(0).default(0),

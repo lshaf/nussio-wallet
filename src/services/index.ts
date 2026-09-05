@@ -2,8 +2,11 @@ import { registerAccountService } from './account.service';
 import { registerBackupService } from './backup.service';
 import { registerChainService } from './chain.service';
 import { registerContactsService } from './contacts.service';
+import { registerContractService } from './contract.service';
 import { registerGovernanceService } from './governance.service';
+import { registerHistoryService } from './history.service';
 import { registerPendingService } from './pending.service';
+import { registerPingService } from './ping.service';
 import { registerRequestService } from './request.service';
 import { registerResourcesService } from './resources.service';
 import { registerSessionService } from './session.service';
@@ -28,4 +31,7 @@ export function registerServices(): void {
   registerResourcesService();
   registerGovernanceService();
   registerSystemService();
+  registerContractService();
+  registerHistoryService();
+  registerPingService();
 }

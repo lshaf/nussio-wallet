@@ -106,6 +106,26 @@ export const router = createRouter({
           component: () => import('@/features/tools/views/CreateAccountView.vue'),
         },
         {
+          path: 'tools/contract',
+          name: 'tools-contract',
+          component: () => import('@/features/tools/views/ContractView.vue'),
+        },
+        {
+          path: 'tools/history',
+          name: 'tools-history',
+          component: () => import('@/features/tools/views/HistoryView.vue'),
+        },
+        {
+          path: 'tools/ping',
+          name: 'tools-ping',
+          component: () => import('@/features/tools/views/PingView.vue'),
+        },
+        {
+          path: 'tools/abis',
+          name: 'tools-abis',
+          component: () => import('@/features/tools/views/AbiCacheView.vue'),
+        },
+        {
           path: 'tools/pending',
           name: 'tools-pending',
           component: () => import('@/features/tools/views/PendingView.vue'),
