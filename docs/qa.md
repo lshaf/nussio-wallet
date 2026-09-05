@@ -51,9 +51,33 @@ The suite reads real chains, so a failure can mean a node is down rather than a 
   hidden staking on Proton.
 - Hyperion history endpoints, which are third-party and rate limited.
 
+## Live key checks
+
+Two specs need a funded WAX Testnet key and skip without one. Create an account and fund it from
+the sw/eden faucet, which returns both key pairs:
+
+```
+curl "https://faucet.waxsweden.org/create_account?<12 chars a-z1-5>"
+curl "https://faucet.waxsweden.org/get_token?<account>"
+```
+
+Then:
+
+```
+WAX_TEST_ACCOUNT=<account> WAX_TEST_KEY=<active private key> \
+  pnpm exec playwright test tests/e2e/live-signing.spec.ts tests/e2e/dapp-login.spec.ts
+```
+
+- `live-signing.spec.ts` imports the key, sends 0.00000001 WAX to `eosio` and asserts the result
+  dialog shows a transaction id. This is the only test that signs, pays for resources and
+  broadcasts for real.
+- `dapp-login.spec.ts` logs in to `wax-test.atomichub.io` with anchor-link, then checks the session
+  is listed under Settings. AtomicHub renders its wallet picker inside a closed shadow root, so the
+  two clicks that reach it are by coordinate at 1280x720 and will need updating if that modal moves.
+
+Status 2026-09-05: both pass. Transfer `65f4c16c…` and `21c09209…` are on WAX Testnet.
+
 ## Not covered by tests
 
-- Signing, Fuel and broadcast with a funded key. Every automated path uses watch wallets, which
-  stop at the unsigned export. Run a manual transfer on Jungle 4 before release.
 - A real Anchor Desktop backup file. Interop is proven against a file this repo generates.
 - Ledger, cold wallet, keycert recovery: not built (M9).
