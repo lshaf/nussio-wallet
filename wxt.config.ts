@@ -8,6 +8,7 @@ export default defineConfig({
   outDir: 'dist',
   modules: ['@wxt-dev/module-vue'],
   imports: false,
+  manifestVersion: 3,
   vite: () => ({
     plugins: [tailwindcss()],
     define: { __EXT_VERSION__: JSON.stringify(version) },
@@ -37,13 +38,12 @@ export default defineConfig({
       : {}),
     web_accessible_resources: [{ resources: ['inpage.js'], matches: ['<all_urls>'] }],
     action: { default_title: 'Nussio Wallet' },
-    ...(browser === 'firefox'
-      ? {}
-      : {
-          content_security_policy: {
-            extension_pages: "script-src 'self'; object-src 'self'; frame-ancestors 'none'",
-          },
-        }),
+    content_security_policy: {
+      extension_pages:
+        browser === 'firefox'
+          ? "script-src 'self'; object-src 'self'"
+          : "script-src 'self'; object-src 'self'; frame-ancestors 'none'",
+    },
     ...(browser === 'firefox' ? {} : { side_panel: { default_path: 'app.html' } }),
   }),
 });

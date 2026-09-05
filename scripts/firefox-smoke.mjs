@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-const TARGET = process.argv[2] === 'mv3' ? 'firefox-mv3' : 'firefox-mv2';
+const TARGET = process.argv[2] === 'mv2' ? 'firefox-mv2' : 'firefox-mv3';
 const SOURCE = path.resolve('dist', TARGET);
 const BINARY = process.env.FIREFOX_PATH ?? '/Applications/Firefox.app/Contents/MacOS/firefox';
 const UUID = '11111111-2222-3333-4444-555555555555';

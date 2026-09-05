@@ -2,6 +2,13 @@
 
 Notable changes per release. Dates are the tag date.
 
+## Unreleased
+
+### Changed
+
+- The Firefox build is now Manifest V3, matching Chrome. Both declare the same content security
+  policy for extension pages.
+
 ## 1.0.0 — 2026-09-05
 
 ### Added

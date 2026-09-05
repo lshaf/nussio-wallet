@@ -47,7 +47,7 @@ First time: `pnpm exec playwright install chromium`.
 
 ### Manual (Firefox)
 
-`pnpm dev:firefox`, or `pnpm build:firefox` then `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → `dist/firefox-mv2/manifest.json`.
+`pnpm dev:firefox`, or `pnpm build:firefox` then `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → `dist/firefox-mv3/manifest.json`.
 
 ## Layout
 

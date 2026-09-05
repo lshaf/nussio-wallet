@@ -9,9 +9,8 @@ Run before every release. `pnpm build` first; the e2e suite loads `dist/chrome-m
 | Chromium       | `pnpm test:e2e`                                                              | 19 passed, 1 skipped (`idle-session`, needs `E2E_SLOW=1`) |
 | Microsoft Edge | `pnpm test:e2e:edge`                                                         | 19 passed, 1 skipped                                      |
 | Brave          | `pnpm test:e2e:brave`                                                        | 19 passed, 1 skipped                                      |
-| Firefox MV2    | `pnpm build:firefox && pnpm exec web-ext lint --source-dir dist/firefox-mv2` | 0 errors, 3 warnings                                      |
-| Firefox MV2    | `pnpm test:firefox`                                                          | 4 checks passed on Firefox 155                            |
-| Firefox MV3    | `pnpm test:firefox:mv3`                                                      | 4 checks passed on Firefox 155                            |
+| Firefox MV3    | `pnpm build:firefox && pnpm exec web-ext lint --source-dir dist/firefox-mv3` | 0 errors, 3 warnings                                      |
+| Firefox MV3    | `pnpm test:firefox`                                                          | 4 checks passed on Firefox 155                            |
 | Bundle budgets | `pnpm check:bundle`                                                          | popup 520 KB, prompt 578 KB, app 1108 KB, 2.44 MB total   |
 | Accessibility  | part of `pnpm test:e2e` (`a11y.spec.ts`)                                     | no serious or critical findings                           |
 
@@ -43,6 +42,9 @@ extensions, so the wallet UI itself is still a hand walk with `pnpm dev:firefox`
 
 Firefox 128 and later honour `world: 'MAIN'`, and the add-on requires 142, so link capture uses the
 same path as Chrome. The injected `inpage.js` stays as a second route for the isolated world.
+
+Both builds are Manifest V3. Firefox grants `host_permissions` at install from 127 onward, and the
+smoke test proves it: a content script only injects into `http://127.0.0.1` if that grant landed.
 
 Headless Firefox ignores `--start-url` under `web-ext`, so the smoke script opens a real window.
 

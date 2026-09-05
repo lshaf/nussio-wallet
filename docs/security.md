@@ -98,8 +98,9 @@ throws malformed, truncated and bomb payloads at both. Forbidden actions (`updat
 | `sidePanel`                    | side panel mode (Chrome only)                                                                                         |
 | `host_permissions: <all_urls>` | API nodes, Hyperion history, Fuel and the buoy relay are user-configurable hosts, and `esr:` links appear on any site |
 
-`tabs` was removed: `tabs.create` does not require it. Chrome pages declare
-`script-src 'self'; object-src 'self'; frame-ancestors 'none'`.
+`tabs` was removed: `tabs.create` does not require it. Both builds are Manifest V3 and declare
+`script-src 'self'; object-src 'self'` for extension pages, with `frame-ancestors 'none'` added on
+Chrome, which Firefox does not accept there.
 
 Narrowing `<all_urls>` is open work: Firefox should move the host access to
 `optional_host_permissions`, and link capture could use `activeTab` if store review pushes back.
