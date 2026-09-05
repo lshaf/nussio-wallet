@@ -18,6 +18,7 @@ import OverviewCard from '../components/OverviewCard.vue';
 import OverviewRow from '../components/OverviewRow.vue';
 import PriceBadge from '../components/PriceBadge.vue';
 import BroadcastDialog from '@/features/transactions/components/BroadcastDialog.vue';
+import PendingRequests from '@/features/transactions/components/PendingRequests.vue';
 
 type Tab = 'systemtokens' | 'balances' | 'resources' | 'governance';
 
@@ -107,6 +108,8 @@ function refreshAll(): void {
         </Button>
       </template>
     </PageHeader>
+
+    <PendingRequests />
 
     <template v-if="chain && app.currentWallet">
       <AccountHero :chain="chain" :account="app.currentWallet.account" :usd="usd" />

@@ -10,6 +10,7 @@ import ChainSwitcher from '@/components/layout/ChainSwitcher.vue';
 import AccountSwitcher from '@/components/layout/AccountSwitcher.vue';
 import ConnectionIndicator from '@/components/layout/ConnectionIndicator.vue';
 import AccountHero from '@/features/home/components/AccountHero.vue';
+import PendingRequests from '@/features/transactions/components/PendingRequests.vue';
 import { usePriceFeed } from '@/composables/useChainData';
 import { useAppStore } from '@/stores/app.store';
 
@@ -84,6 +85,7 @@ onMounted(() => {
     </form>
 
     <template v-if="app.setupRoute === null">
+      <PendingRequests />
       <div class="flex flex-col gap-2">
         <ChainSwitcher class="w-full" />
         <AccountSwitcher />
