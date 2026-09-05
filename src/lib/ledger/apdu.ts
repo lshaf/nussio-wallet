@@ -108,5 +108,7 @@ export function signApdus(path: string, chunks: Uint8Array[]): Apdu[] {
 
 export function parseSignature(response: Uint8Array): Uint8Array {
   if (response.length < SIGNATURE_BYTES) throw new Error('short_response');
-  return response.slice(0, SIGNATURE_BYTES);
+  const signature = new Uint8Array(SIGNATURE_BYTES);
+  signature.set(response.subarray(0, SIGNATURE_BYTES));
+  return signature;
 }
