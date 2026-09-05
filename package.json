@@ -21,7 +21,8 @@
     "check": "pnpm typecheck && pnpm lint && pnpm test",
     "postinstall": "wxt prepare",
     "prepare": "husky",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "check:bundle": "node scripts/check-bundle.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",

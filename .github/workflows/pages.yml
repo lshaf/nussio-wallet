@@ -1,0 +1,113 @@
+name: Pages
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'web-v*'
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+      startsWith(github.event.workflow_run.head_branch, 'v'))
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch builds from the latest release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p site/downloads
+          tag=$(gh release list --limit 1 --exclude-drafts --exclude-pre-releases --json tagName --jq '.[0].tagName // empty')
+          if [ -n "$tag" ]; then
+            gh release download "$tag" --dir site/downloads --pattern '*.zip' --clobber
+          fi
+          if ls site/downloads/*chrome*.zip >/dev/null 2>&1; then
+            echo "source=release $tag" >> "$GITHUB_OUTPUT"
+            echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          else
+            echo "source=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: pnpm/action-setup@v4
+        if: steps.release.outputs.source == ''
+      - uses: actions/setup-node@v4
+        if: steps.release.outputs.source == ''
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Build the extension
+        if: steps.release.outputs.source == ''
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm zip
+          pnpm zip:firefox
+          cp dist/*.zip site/downloads/
+
+      - name: Name the downloads and write build.json
+        run: |
+          cd site/downloads
+          rename_zip() {
+            src=$(ls *"$1"*.zip 2>/dev/null | head -1)
+            if [ -z "$src" ]; then
+              echo "no $1 zip found" >&2
+              exit 1
+            fi
+            [ "$src" = "$2" ] || mv -f "$src" "$2"
+          }
+          rename_zip chrome nussio-wallet-chrome.zip
+          rename_zip firefox nussio-wallet-firefox.zip
+          find . -name '*.zip' ! -name 'nussio-wallet-chrome.zip' ! -name 'nussio-wallet-firefox.zip' -delete
+          node -e '
+            const fs = require("fs");
+            const pkg = require("../../package.json");
+            const size = (f) => fs.statSync(f).size;
+            fs.writeFileSync(
+              "build.json",
+              JSON.stringify(
+                {
+                  version: (process.env.RELEASE_TAG || "").replace(/^v/, "") || pkg.version,
+                  built: new Date().toISOString(),
+                  source: process.env.SOURCE || "main",
+                  chrome: { file: "nussio-wallet-chrome.zip", size: size("nussio-wallet-chrome.zip") },
+                  firefox: { file: "nussio-wallet-firefox.zip", size: size("nussio-wallet-firefox.zip") },
+                },
+                null,
+                2,
+              ),
+            );
+          '
+        env:
+          SOURCE: ${{ steps.release.outputs.source }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

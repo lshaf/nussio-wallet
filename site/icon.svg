@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Nussio Wallet">
+  <rect x="6" y="6" width="116" height="116" rx="34" fill="#1c3d8f" />
+  <path d="M36 82 L36 26 L53 26 L75 60 L75 26 L92 26 L92 82 L75 82 L53 48 L53 82 Z" fill="#ffffff" />
+  <rect x="36" y="92" width="56" height="11" rx="5.5" fill="#ffffff" opacity="0.24" />
+  <rect x="36" y="92" width="34" height="11" rx="5.5" fill="#3fbf9a" />
+</svg>

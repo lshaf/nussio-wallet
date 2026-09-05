@@ -12,7 +12,9 @@ export interface SettingsService {
 const SERVICE_KEY = 'SettingsService';
 
 export const settingsService: SettingsService = {
-  get: () => settingsItem.getValue(),
+  async get() {
+    return settingsSchema.parse(await settingsItem.getValue());
+  },
 
   async update(patch) {
     const current = await settingsItem.getValue();

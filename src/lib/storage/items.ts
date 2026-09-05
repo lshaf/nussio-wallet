@@ -19,7 +19,10 @@ import {
 
 export const settingsItem = storage.defineItem<Settings>('local:settings', {
   fallback: settingsSchema.parse({}),
-  version: 1,
+  version: 2,
+  migrations: {
+    2: (stored: unknown) => settingsSchema.parse(stored ?? {}),
+  },
 });
 
 export const blockchainsItem = storage.defineItem<Blockchain[]>('local:blockchains', {
