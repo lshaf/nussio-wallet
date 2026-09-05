@@ -1,5 +1,5 @@
 {
-  "name": "anchor-extension",
+  "name": "nussio-wallet",
   "description": "Antelope wallet and signing request authenticator as a browser extension",
   "private": true,
   "version": "0.1.0",
