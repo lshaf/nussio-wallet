@@ -143,12 +143,12 @@ async function reset(): Promise<void> {
           v-if="group.section === 'settings_wallet'"
           class="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
         >
-          <Label>{{ t('settings_idle') }}</Label>
+          <Label for="setting-idle">{{ t('settings_idle') }}</Label>
           <Select
             :model-value="String(app.settings.idleTimeoutMinutes)"
             @update:model-value="(value) => setNumber('idleTimeoutMinutes', value)"
           >
-            <SelectTrigger class="w-44" size="sm"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="setting-idle" class="w-44" size="sm"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem v-for="minutes in idleOptions" :key="minutes" :value="String(minutes)">
                 {{
@@ -167,12 +167,14 @@ async function reset(): Promise<void> {
       <h2 class="eyebrow">{{ t('settings_connection') }}</h2>
       <div class="bg-card divide-y rounded-lg border">
         <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <Label>{{ t('settings_refresh') }}</Label>
+          <Label for="setting-refresh">{{ t('settings_refresh') }}</Label>
           <Select
             :model-value="String(app.settings.refreshRateSeconds)"
             @update:model-value="(value) => setNumber('refreshRateSeconds', value)"
           >
-            <SelectTrigger class="w-44" size="sm"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="setting-refresh" class="w-44" size="sm"
+              ><SelectValue
+            /></SelectTrigger>
             <SelectContent>
               <SelectItem v-for="seconds in refreshOptions" :key="seconds" :value="String(seconds)">
                 {{

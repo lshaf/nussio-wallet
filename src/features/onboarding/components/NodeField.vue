@@ -45,6 +45,7 @@ async function validate(): Promise<void> {
         v-model="value"
         type="url"
         class="flex-1 font-mono text-xs"
+        :aria-label="t('node_url_label')"
         @change="result = undefined"
       />
       <Button type="button" variant="outline" size="sm" :disabled="busy" @click="validate">

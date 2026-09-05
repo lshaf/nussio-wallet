@@ -693,5 +693,6 @@
   "abis_count": "{{count}} cached",
   "abis_clear": "Clear cache",
   "abis_empty": "Nothing cached yet",
-  "settings_language_label": "Interface language"
+  "settings_language_label": "Interface language",
+  "node_url_label": "API node URL"
 }
