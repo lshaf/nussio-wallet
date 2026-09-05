@@ -14,7 +14,11 @@ import { deflateRaw, inflateRaw } from 'pako';
 
 export const zlib: ZlibProvider = {
   deflateRaw: (data) => deflateRaw(data),
-  inflateRaw: (data) => inflateRaw(data),
+  inflateRaw: (data) => {
+    const result = inflateRaw(data);
+    if (result.length > MAX_INFLATED_BYTES) throw new Error('request_too_large');
+    return result;
+  },
 };
 
 const SCHEMES = ['esr:', 'esr-anchor:', 'anchor:', 'eosio:'];
@@ -52,6 +56,9 @@ export async function encodeTransactionRequest(
 
 const REQUEST_SCHEMES = ['esr-anchor:', 'anchor:', 'eosio:'];
 
+export const MAX_REQUEST_LENGTH = 16_384;
+export const MAX_INFLATED_BYTES = 512_000;
+
 export function normalizeRequestUri(value: string): string {
   let text = value.trim();
   const lower = text.toLowerCase();
@@ -62,6 +69,7 @@ export function normalizeRequestUri(value: string): string {
 }
 
 export function parseSigningRequest(uri: string): SigningRequest {
+  if (uri.length > MAX_REQUEST_LENGTH) throw new Error('request_too_large');
   return SigningRequest.from(normalizeRequestUri(uri), { zlib });
 }
 

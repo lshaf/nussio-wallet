@@ -18,13 +18,19 @@ export default defineConfig({
       'alarms',
       'idle',
       'contextMenus',
-      'tabs',
       'clipboardWrite',
       ...(browser === 'firefox' ? [] : ['sidePanel']),
     ],
     host_permissions: ['<all_urls>'],
     web_accessible_resources: [{ resources: ['inpage.js'], matches: ['<all_urls>'] }],
     action: { default_title: 'Nussio Wallet' },
+    ...(browser === 'firefox'
+      ? {}
+      : {
+          content_security_policy: {
+            extension_pages: "script-src 'self'; object-src 'self'; frame-ancestors 'none'",
+          },
+        }),
     ...(browser === 'firefox' ? {} : { side_panel: { default_path: 'app.html' } }),
   }),
 });

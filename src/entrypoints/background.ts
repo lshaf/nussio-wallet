@@ -2,6 +2,7 @@ import { defineBackground } from 'wxt/utils/define-background';
 import { browser } from 'wxt/browser';
 import { isSigningRequestUri } from '@/lib/antelope/esr';
 import { onMessage } from '@/lib/messaging/protocol';
+import { createRateLimiter, originOf } from '@/lib/messaging/rate-limit';
 import { settingsItem } from '@/lib/storage/items';
 import { registerServices } from '@/services';
 import { ensureSeededChains } from '@/services/chain.service';
@@ -10,6 +11,10 @@ import { ensureConnected, sessionService } from '@/services/session.service';
 import { walletService } from '@/services/wallet.service';
 
 const HEARTBEAT_ALARM = 'heartbeat';
+const OPEN_LIMIT = 5;
+const OPEN_WINDOW_MS = 10_000;
+
+const openLimiter = createRateLimiter({ limit: OPEN_LIMIT, windowMs: OPEN_WINDOW_MS });
 const MIN_IDLE_SECONDS = 15;
 const CONTEXT_MENU_ID = 'anchor-open-request';
 
@@ -38,7 +43,10 @@ function installContextMenu(): void {
 export default defineBackground(() => {
   registerServices();
 
-  onMessage('request:open', ({ data }) => openIfAllowed(data));
+  onMessage('request:open', ({ data, sender }) => {
+    if (!openLimiter.allow(originOf(sender?.url))) return { id: '' };
+    return openIfAllowed(data);
+  });
 
   browser.runtime.onInstalled.addListener(() => {
     void ensureSeededChains();
