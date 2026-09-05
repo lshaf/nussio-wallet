@@ -5,6 +5,7 @@ import { useTranslation } from 'i18next-vue';
 import { RouterLink } from 'vue-router';
 import ChangePasswordDialog from '@/components/dialogs/ChangePasswordDialog.vue';
 import { ChevronRight, Network } from 'lucide-vue-next';
+import DangerLink from '@/components/shared/DangerLink.vue';
 import PageHeader from '@/components/shared/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,6 +22,7 @@ import { browser } from 'wxt/browser';
 import { useSettingsService } from '@/composables/useServices';
 import type { Settings } from '@/lib/storage/schemas';
 import { useAppStore } from '@/stores/app.store';
+import ExplorerPanel from '../components/ExplorerPanel.vue';
 import LinkServicePanel from '../components/LinkServicePanel.vue';
 import SessionsPanel from '../components/SessionsPanel.vue';
 
@@ -189,6 +191,8 @@ async function reset(): Promise<void> {
       <p v-if="passwordChanged" class="text-positive text-sm">{{ t('password_change_done') }}</p>
     </section>
 
+    <ExplorerPanel />
+
     <SessionsPanel />
     <LinkServicePanel />
 
@@ -199,13 +203,9 @@ async function reset(): Promise<void> {
         <p class="text-muted-foreground num">{{ t('about_version', { version }) }}</p>
         <p class="text-muted-foreground">{{ t('about_license') }}</p>
         <p class="text-muted-foreground">{{ t('about_credit') }}</p>
-        <a
-          href="https://github.com/greymass/anchor"
-          target="_blank"
-          rel="noopener"
-          class="text-primary self-start hover:underline"
-          >{{ t('about_credit_link') }}</a
-        >
+        <DangerLink href="https://github.com/greymass/anchor" class="self-start text-sm">{{
+          t('about_credit_link')
+        }}</DangerLink>
       </div>
     </section>
 

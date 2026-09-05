@@ -6,9 +6,13 @@ import { useNavLinks } from './useNavLinks';
 
 const { t } = useTranslation('ext');
 const all = useNavLinks();
-const links = computed(() =>
-  all.value.length > 5 ? all.value.filter((link) => link.to !== '/chains') : all.value,
-);
+const links = computed(() => {
+  const list = [...all.value];
+  for (let index = list.length - 1; index >= 0 && list.length > 5; index -= 1) {
+    if (list[index]?.optional) list.splice(index, 1);
+  }
+  return list.slice(0, 5);
+});
 </script>
 
 <template>

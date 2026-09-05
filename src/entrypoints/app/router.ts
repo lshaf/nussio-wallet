@@ -28,6 +28,11 @@ export const router = createRouter({
           name: 'setup-import',
           component: () => import('@/features/onboarding/views/SetupImportView.vue'),
         },
+        {
+          path: 'restore',
+          name: 'setup-restore',
+          component: () => import('@/features/onboarding/views/SetupRestoreView.vue'),
+        },
       ],
     },
     {
@@ -54,6 +59,36 @@ export const router = createRouter({
           path: 'chains',
           name: 'chains',
           component: () => import('@/features/chains/views/ChainsView.vue'),
+        },
+        {
+          path: 'tools',
+          name: 'tools',
+          component: () => import('@/features/tools/views/ToolsView.vue'),
+        },
+        {
+          path: 'tools/backup',
+          name: 'tools-backup',
+          component: () => import('@/features/tools/views/BackupView.vue'),
+        },
+        {
+          path: 'tools/keys',
+          name: 'tools-keys',
+          component: () => import('@/features/tools/views/KeysView.vue'),
+        },
+        {
+          path: 'tools/contacts',
+          name: 'tools-contacts',
+          component: () => import('@/features/tools/views/ContactsView.vue'),
+        },
+        {
+          path: 'tools/tokens',
+          name: 'tools-tokens',
+          component: () => import('@/features/tools/views/TokensView.vue'),
+        },
+        {
+          path: 'tools/pending',
+          name: 'tools-pending',
+          component: () => import('@/features/tools/views/PendingView.vue'),
         },
         {
           path: 'settings',

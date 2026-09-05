@@ -4,6 +4,7 @@ import { useTranslation } from 'i18next-vue';
 import { useClipboard } from '@vueuse/core';
 import { Check, CircleCheck, Copy, ExternalLink } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
+import DangerLink from '@/components/shared/DangerLink.vue';
 import { transactionUrl } from '@/lib/antelope/explorers';
 import type { RequestOutcome, RequestView } from '@/services/request.service';
 import { useAppStore } from '@/stores/app.store';
@@ -77,15 +78,8 @@ const pendingCallback = computed(
         {{ t('prompt_callback_open', { origin: view.callback?.origin ?? '' }) }}
       </Button>
     </template>
-    <a
-      v-if="explorer"
-      :href="explorer"
-      target="_blank"
-      rel="noopener"
-      class="text-primary inline-flex items-center gap-1 text-sm hover:underline"
-    >
-      <ExternalLink class="size-4" />
-      {{ t('tx_view_explorer') }}
-    </a>
+    <DangerLink v-if="explorer" :href="explorer" class="text-sm">{{
+      t('tx_view_explorer')
+    }}</DangerLink>
   </div>
 </template>

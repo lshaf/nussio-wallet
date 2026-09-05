@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useTranslation } from 'i18next-vue';
 import { useDebounceFn } from '@vueuse/core';
 import { ArrowRight, Lock, SendHorizontal } from 'lucide-vue-next';
@@ -12,10 +12,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import UnlockDialog from '@/components/dialogs/UnlockDialog.vue';
 import { useAccountData, useBalances } from '@/composables/useAccountData';
-import { useTransactionService } from '@/composables/useServices';
+import { useContactsService, useTransactionService } from '@/composables/useServices';
 import { exchangeAccountsFor } from '@/lib/antelope/exchanges';
 import { parseAsset } from '@/lib/antelope/format';
-import { accountNameSchema } from '@/lib/storage/schemas';
+import { accountNameSchema, type Contact } from '@/lib/storage/schemas';
 import { useAppStore } from '@/stores/app.store';
 import TransactionResultDialog from '@/features/transactions/components/TransactionResultDialog.vue';
 import { useTransact } from '@/features/transactions/composables/useTransact';
@@ -30,6 +30,7 @@ interface TokenOption {
 const { t } = useTranslation('ext');
 const app = useAppStore();
 const transactionService = useTransactionService();
+const contactsService = useContactsService();
 const transact = useTransact();
 
 const account = computed(() => app.currentWallet?.account);
@@ -45,6 +46,7 @@ const confirming = ref(false);
 const countdown = ref(0);
 const destinationHasContract = ref(false);
 const unlockOpen = ref(false);
+const contacts = ref<Contact[]>([]);
 let timer: ReturnType<typeof setInterval> | undefined;
 
 const tokens = computed<TokenOption[]>(() => {
@@ -75,6 +77,9 @@ const selected = computed(
 const available = computed(() => (selected.value ? parseAsset(selected.value.amount) : undefined));
 const amount = computed(() => Number(quantity.value.replace(/,/g, '')));
 const exchanges = computed(() => exchangeAccountsFor(app.settings.chainId ?? ''));
+const contact = computed(() =>
+  contacts.value.find((entry) => entry.accountName === to.value.trim()),
+);
 
 const errors = computed(() => {
   const list: string[] = [];
@@ -123,6 +128,9 @@ const checkContract = useDebounceFn(async (name: string) => {
 watch(to, (value) => {
   destinationHasContract.value = false;
   void checkContract(value.trim());
+  const match = contacts.value.find((entry) => entry.accountName === value.trim());
+  if (match && match.defaultMemo.length > 0 && memo.value.trim().length === 0)
+    memo.value = match.defaultMemo;
 });
 
 watch(tokens, (list) => {
@@ -191,6 +199,10 @@ watch(
   },
 );
 
+onMounted(async () => {
+  contacts.value = await contactsService.list();
+});
+
 onBeforeUnmount(stopTimer);
 </script>
 
@@ -236,7 +248,16 @@ onBeforeUnmount(stopTimer);
           maxlength="12"
           autocomplete="off"
           spellcheck="false"
+          list="send-contacts"
         />
+        <datalist id="send-contacts">
+          <option v-for="entry in contacts" :key="entry.accountName" :value="entry.accountName">
+            {{ entry.label || entry.accountName }}
+          </option>
+        </datalist>
+        <p v-if="contact" class="text-muted-foreground text-xs">
+          {{ contact.label || t('send_contact_known') }}
+        </p>
       </div>
       <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div class="flex flex-col gap-2">

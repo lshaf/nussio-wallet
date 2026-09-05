@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { isValidPrivateKey, legacyPublicKey, parsePrivateKey, samePublicKey } from './keys';
+import {
+  inspectKey,
+  isValidPrivateKey,
+  legacyPublicKey,
+  parsePrivateKey,
+  samePublicKey,
+} from './keys';
 
 const wif = '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3';
 const legacy = 'EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV';
@@ -24,5 +30,24 @@ describe('keys', () => {
   it('validates private keys', () => {
     expect(isValidPrivateKey(wif)).toBe(true);
     expect(isValidPrivateKey('not a key')).toBe(false);
+  });
+
+  it('inspects private, public and invalid keys', () => {
+    const parsed = parsePrivateKey(wif);
+    const priv = inspectKey(` ${wif} `);
+    expect(priv).toMatchObject({
+      kind: 'private',
+      type: 'K1',
+      wif,
+      publicKey: parsed.publicKey,
+      legacy,
+    });
+    if (priv.kind === 'private') expect(priv.pvt.startsWith('PVT_K1_')).toBe(true);
+
+    const pub = inspectKey(legacy, 'FIO');
+    expect(pub).toMatchObject({ kind: 'public', publicKey: parsed.publicKey });
+    if (pub.kind === 'public') expect(pub.legacy).toMatch(/^FIO/);
+    expect(inspectKey('nonsense')).toEqual({ kind: 'invalid' });
+    expect(inspectKey('')).toEqual({ kind: 'invalid' });
   });
 });

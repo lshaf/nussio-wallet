@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 import { useTranslation } from 'i18next-vue';
 import { useClipboard } from '@vueuse/core';
-import { AlertTriangle, Check, CircleCheck, Copy, ExternalLink, Loader2 } from 'lucide-vue-next';
+import { AlertTriangle, Check, CircleCheck, Copy, Loader2 } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import UnlockDialog from '@/components/dialogs/UnlockDialog.vue';
+import DangerLink from '@/components/shared/DangerLink.vue';
 import { transactionUrl } from '@/lib/antelope/explorers';
 import type { TransactResult } from '@/services/transaction.service';
 import { useAppStore } from '@/stores/app.store';
@@ -165,16 +166,9 @@ function onUnlocked(): void {
       </template>
 
       <DialogFooter v-if="!busy" class="gap-2">
-        <a
-          v-if="explorer"
-          :href="explorer"
-          target="_blank"
-          rel="noopener"
-          class="text-primary inline-flex items-center gap-1 self-center text-sm hover:underline"
-        >
-          <ExternalLink class="size-4" />
-          {{ t('tx_view_explorer') }}
-        </a>
+        <DangerLink v-if="explorer" :href="explorer" class="self-center text-sm">{{
+          t('tx_view_explorer')
+        }}</DangerLink>
         <div class="flex-1" />
         <template v-if="result?.status === 'fee_required'">
           <Button variant="ghost" @click="open = false">{{ t('action_cancel') }}</Button>

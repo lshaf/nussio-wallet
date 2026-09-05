@@ -61,6 +61,21 @@ src/
 docs/adr/        architecture decision records
 ```
 
+## Tools
+
+Tools (`#/tools`) holds the wallet-maintenance screens:
+
+- **Backup and restore** — encrypted export in the Nussio format or an Anchor Desktop compatible
+  one, and restore of either (including Anchor's v1 per-wallet keyring). See `docs/adr/0004`.
+- **Manage keys** — stored keys with the wallets that use them, reveal (password + QR), remove when
+  unused, a K1 generator, and an inspector that converts between WIF/PVT and legacy/modern public
+  key formats.
+- **Contacts** — saved accounts with a default memo that fills in on the send form.
+- **Custom tokens** — track a token by contract and symbol, or scan the account when the node
+  exposes a Hyperion token index.
+- **Pending** — signing requests waiting for you, backup reminders, and account creation requests
+  (two keypairs, mandatory owner-key export, a shareable ESR link for whoever pays, then import).
+
 ## Rules
 
 - Services own all key and chain logic. Components never touch private keys.

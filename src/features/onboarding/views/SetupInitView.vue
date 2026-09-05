@@ -31,9 +31,9 @@ function start(): void {
       <div class="bg-card flex flex-wrap items-center justify-between gap-3 rounded-lg border p-4">
         <div class="flex flex-col">
           <span class="text-sm font-medium">{{ t('setup_welcome_backup_title') }}</span>
-          <span class="text-muted-foreground text-xs">{{ t('setup_welcome_backup_soon') }}</span>
+          <span class="text-muted-foreground text-xs">{{ t('setup_welcome_backup_hint') }}</span>
         </div>
-        <Button variant="outline" size="sm" disabled>
+        <Button variant="outline" size="sm" @click="router.push('/setup/restore')">
           <Upload />
           {{ t('action_import') }}
         </Button>

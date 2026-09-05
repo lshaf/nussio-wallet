@@ -32,6 +32,7 @@ export interface WalletService {
   listPublicKeys(): Promise<string[]>;
   unlockedPublicKeys(): Promise<string[]>;
   importKey(wif: string, password: string): Promise<{ publicKey: string }>;
+  exportKey(publicKey: string, password: string): Promise<string>;
   removeKey(publicKey: string, password: string): Promise<void>;
   listWallets(): Promise<Wallet[]>;
   addWallets(wallets: Wallet[]): Promise<Wallet[]>;
@@ -127,8 +128,18 @@ export const walletService: WalletService = {
     return { publicKey: parsed.publicKey };
   },
 
+  async exportKey(publicKey, password) {
+    const entries = await readEntries(password);
+    const entry = entries.find((candidate) => samePublicKey(candidate.pubkey, publicKey));
+    if (!entry) throw new Error('unknown_key');
+    return entry.key;
+  },
+
   async removeKey(publicKey, password) {
     const entries = await readEntries(password);
+    const wallets = await walletsItem.getValue();
+    if (wallets.some((wallet) => samePublicKey(wallet.pubkey, publicKey)))
+      throw new Error('key_in_use');
     await writeEntries(
       entries.filter((entry) => !samePublicKey(entry.pubkey, publicKey)),
       password,
@@ -138,7 +149,7 @@ export const walletService: WalletService = {
   listWallets: () => walletsItem.getValue(),
 
   async addWallets(input) {
-    const wallets = await walletsItem.getValue();
+    const wallets = [...(await walletsItem.getValue())];
     for (const candidate of input) {
       const wallet = walletSchema.parse(candidate);
       const index = wallets.findIndex((entry) => sameWallet(entry, wallet));
