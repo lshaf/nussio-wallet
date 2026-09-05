@@ -16,12 +16,12 @@ test('narrow window reaches governance and name bidding', async ({ appPage: page
   await page.getByRole('button', { name: 'Import', exact: true }).click();
   await expect(page).toHaveURL(/#\/$/);
 
-  await page.getByRole('button', { name: 'More' }).click();
+  await page.getByRole('button', { name: 'More', exact: true }).click();
   await page.getByRole('menuitem', { name: 'Governance' }).click();
   await expect(page).toHaveURL(/#\/governance$/);
   await expect(page.getByRole('heading', { name: 'Governance' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'More' }).click();
+  await page.getByRole('button', { name: 'More', exact: true }).click();
   await page.getByRole('menuitem', { name: 'Tools' }).click();
   await expect(page.getByRole('link', { name: /^Name bidding/ })).toBeVisible();
   await page.getByRole('link', { name: /^Name bidding/ }).click();

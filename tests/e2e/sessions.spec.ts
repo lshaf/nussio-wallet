@@ -59,6 +59,7 @@ test('identity login returns link fields and records a session', async ({
   await page.getByRole('button', { name: 'Enable 1 blockchain' }).click();
   await expect(page).toHaveURL(/#\/setup\/import$/);
 
+  await expect(page).toHaveURL(/#\/setup\/import$/);
   await page.evaluate(async () => {
     const stored = (await chrome.storage.local.get('settings')) as {
       settings?: Record<string, unknown>;

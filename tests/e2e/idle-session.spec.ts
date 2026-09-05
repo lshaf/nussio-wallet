@@ -77,6 +77,7 @@ test('idle worker still receives sealed transactions', async ({ context, appPage
   await page.getByRole('button', { name: 'Set password' }).click();
   await page.locator('#chain-jungle4').click();
   await page.getByRole('button', { name: 'Enable 1 blockchain' }).click();
+  await expect(page).toHaveURL(/#\/setup\/import$/);
   await page.evaluate(async () => {
     const stored = (await chrome.storage.local.get('settings')) as {
       settings?: Record<string, unknown>;

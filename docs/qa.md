@@ -18,6 +18,10 @@ Run before every release. `pnpm build` first; the e2e suite loads `dist/chrome-m
 `session-transact` and the other relay tests talk to the live buoy service, so they can time out
 when the whole suite runs in parallel; Playwright retries once locally and twice in CI.
 
+Specs that flip `advancedOptions` write straight into `chrome.storage.local`, so they must wait for
+`#/setup/import` first. Without that barrier the read-modify-write races the app's own settings
+write from the chain step and drops the enabled chain, which strands onboarding.
+
 `E2E_CHANNEL` picks a Playwright channel (`chromium`, `chrome`, `msedge`); `E2E_BROWSER_PATH`
 points at any other Chromium build, which is how Brave runs.
 
