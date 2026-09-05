@@ -71,13 +71,22 @@ test('fresh install walks password → chains → import → home', async ({ app
   await dialog.getByRole('button', { name: 'Close', exact: true }).first().click();
   await page.getByRole('link', { name: 'Home' }).click();
 
+  await page.getByRole('link', { name: 'Settings' }).click();
+  await page.getByRole('button', { name: 'Change password' }).first().click();
+  await page.locator('#password-current').fill('correct horse battery');
+  await page.locator('#password-new').fill('staple battery horse');
+  await page.locator('#password-new-confirm').fill('staple battery horse');
+  await page.getByRole('button', { name: 'Change password' }).last().click();
+  await expect(page.getByText('Password changed.')).toBeVisible();
+  await page.getByRole('link', { name: 'Home' }).click();
+
   await page.getByRole('button', { name: 'Lock' }).click();
   await expect(page.getByRole('button', { name: 'Unlock' })).toBeVisible();
   await page.getByRole('button', { name: 'Unlock' }).click();
   await page.locator('#unlock-password').fill('wrong');
   await page.getByRole('button', { name: 'Unlock' }).last().click();
   await expect(page.getByText('The password does not match.')).toBeVisible();
-  await page.locator('#unlock-password').fill('correct horse battery');
+  await page.locator('#unlock-password').fill('staple battery horse');
   await page.getByRole('button', { name: 'Unlock' }).last().click();
   await expect(page.getByRole('button', { name: 'Lock' })).toBeVisible();
   await shot(page, '06-unlocked');

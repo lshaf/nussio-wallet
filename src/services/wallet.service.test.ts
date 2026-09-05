@@ -35,6 +35,24 @@ describe('wallet service', () => {
     expect(await walletService.listPublicKeys()).toEqual([]);
   });
 
+  it('changes the password and keeps keys usable', async () => {
+    await walletService.initialize('old password');
+    const { publicKey } = await walletService.importKey(wif, 'old password');
+
+    await expect(walletService.changePassword('wrong', 'new password')).rejects.toThrow();
+    await walletService.changePassword('old password', 'new password');
+
+    expect(await walletService.confirmPassword('new password')).toBe(true);
+    expect(await walletService.confirmPassword('old password')).toBe(false);
+    expect(await walletService.listPublicKeys()).toEqual([publicKey]);
+    expect(await signingKeyFor(publicKey)).toBe(wif);
+
+    await walletService.lock();
+    await expect(walletService.unlock('old password')).rejects.toThrow();
+    await walletService.unlock('new password');
+    expect(await walletService.unlockedPublicKeys()).toEqual([publicKey]);
+  });
+
   it('manages wallets and the selected wallet', async () => {
     await walletService.initialize('pw');
     const wallet = {

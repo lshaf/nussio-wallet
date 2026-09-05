@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTranslation } from 'i18next-vue';
 import { RouterLink } from 'vue-router';
+import ChangePasswordDialog from '@/components/dialogs/ChangePasswordDialog.vue';
 import { ChevronRight, Network } from 'lucide-vue-next';
 import PageHeader from '@/components/shared/PageHeader.vue';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,8 @@ const settingsService = useSettingsService();
 const idleOptions = [0, 5, 15, 30, 60];
 const refreshOptions = [0, 10, 30, 60, 120, 300];
 const resetText = ref('');
+const passwordOpen = ref(false);
+const passwordChanged = ref(false);
 const version = browser.runtime.getManifest().version;
 
 type BooleanSetting = {
@@ -168,6 +171,24 @@ async function reset(): Promise<void> {
       </div>
     </section>
 
+    <section class="flex flex-col gap-3">
+      <h2 class="eyebrow">{{ t('settings_security') }}</h2>
+      <div class="bg-card flex flex-wrap items-center gap-3 rounded-lg border px-4 py-3">
+        <div class="flex min-w-0 flex-1 flex-col">
+          <span class="text-sm font-medium">{{ t('password_change_title') }}</span>
+          <span class="text-muted-foreground text-xs">{{ t('password_change_hint') }}</span>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          :disabled="!app.status.initialized"
+          @click="passwordOpen = true"
+          >{{ t('password_change_action') }}</Button
+        >
+      </div>
+      <p v-if="passwordChanged" class="text-positive text-sm">{{ t('password_change_done') }}</p>
+    </section>
+
     <SessionsPanel />
     <LinkServicePanel />
 
@@ -204,5 +225,6 @@ async function reset(): Promise<void> {
         </div>
       </div>
     </section>
+    <ChangePasswordDialog v-model:open="passwordOpen" @changed="passwordChanged = true" />
   </div>
 </template>

@@ -380,5 +380,16 @@
   "link_disconnect": "Disconnect",
   "link_restart": "Restart",
   "link_reset_key": "Reset key",
-  "link_reset_key_description": "Generates a new request key and removes every connected app. Apps must log in again."
+  "link_reset_key_description": "Generates a new request key and removes every connected app. Apps must log in again.",
+  "settings_security": "Security",
+  "password_change_title": "Wallet password",
+  "password_change_hint": "Encrypts your private keys on this device.",
+  "password_change_action": "Change password",
+  "password_change_description": "Enter your current password, then choose a new one.",
+  "password_current_label": "Current password",
+  "password_new_label": "New password",
+  "password_change_submit": "Change password",
+  "password_change_warning": "The new password cannot be recovered. Keys are re-encrypted immediately and old backups still need the old password.",
+  "password_change_done": "Password changed.",
+  "password_same": "The new password matches the current one."
 }

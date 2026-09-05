@@ -28,6 +28,7 @@ export interface WalletService {
   unlock(password: string): Promise<void>;
   lock(): Promise<void>;
   confirmPassword(password: string): Promise<boolean>;
+  changePassword(current: string, next: string): Promise<void>;
   listPublicKeys(): Promise<string[]>;
   unlockedPublicKeys(): Promise<string[]>;
   importKey(wif: string, password: string): Promise<{ publicKey: string }>;
@@ -98,6 +99,16 @@ export const walletService: WalletService = {
     } catch {
       return false;
     }
+  },
+
+  async changePassword(current, next) {
+    const entries = await readEntries(current);
+    const envelope = await encryptKeyring(entries, next);
+    const verified = await decryptKeyring(envelope, next);
+    if (verified.length !== entries.length) throw new Error('rekey_failed');
+    await keyringItem.setValue(envelope);
+    await publicKeysItem.setValue(entries.map((entry) => entry.pubkey));
+    if (await unlockedItem.getValue()) await unlockedKeysItem.setValue(entries);
   },
 
   listPublicKeys: () => publicKeysItem.getValue(),
