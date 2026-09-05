@@ -1,8 +1,9 @@
 import { defineUnlistedScript } from 'wxt/utils/define-unlisted-script';
+import { installLinkCapture } from '@/lib/page/link-capture';
 
-export interface WaxosProvider {
+export interface NussioProvider {
   readonly version: string;
-  readonly isWaxosWallet: true;
+  readonly isNussioWallet: true;
   login(chainId?: string): Promise<unknown>;
   transact(request: unknown): Promise<unknown>;
   sign(request: string): Promise<unknown>;
@@ -10,7 +11,7 @@ export interface WaxosProvider {
 
 declare global {
   interface Window {
-    waxos?: WaxosProvider;
+    nussio?: NussioProvider;
   }
 }
 
@@ -19,18 +20,19 @@ function notImplemented(): Promise<never> {
 }
 
 export default defineUnlistedScript(() => {
-  if (window.waxos) return;
-  const provider: WaxosProvider = Object.freeze({
+  installLinkCapture();
+
+  if (window.nussio) return;
+  const provider: NussioProvider = Object.freeze({
     version: '0.1.0',
-    isWaxosWallet: true,
+    isNussioWallet: true,
     login: notImplemented,
     transact: notImplemented,
     sign: notImplemented,
   });
-  Object.defineProperty(window, 'waxos', {
+  Object.defineProperty(window, 'nussio', {
     value: provider,
     writable: false,
     configurable: false,
   });
-  window.dispatchEvent(new Event('anchor#initialized'));
 });
