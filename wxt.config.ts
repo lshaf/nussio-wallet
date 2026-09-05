@@ -22,6 +22,17 @@ export default defineConfig({
       ...(browser === 'firefox' ? [] : ['sidePanel']),
     ],
     host_permissions: ['<all_urls>'],
+    ...(browser === 'firefox'
+      ? {
+          browser_specific_settings: {
+            gecko: {
+              id: 'nussio-wallet@nussio.app',
+              strict_min_version: '142.0',
+              data_collection_permissions: { required: ['none'] },
+            },
+          },
+        }
+      : {}),
     web_accessible_resources: [{ resources: ['inpage.js'], matches: ['<all_urls>'] }],
     action: { default_title: 'Nussio Wallet' },
     ...(browser === 'firefox'

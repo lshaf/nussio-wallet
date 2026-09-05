@@ -2,11 +2,13 @@ import path from 'node:path';
 import { chromium, test as base, type BrowserContext, type Page } from '@playwright/test';
 
 const EXTENSION_PATH = path.resolve('dist/chrome-mv3');
+const CHANNEL = process.env.E2E_CHANNEL ?? 'chromium';
+const EXECUTABLE = process.env.E2E_BROWSER_PATH;
 
 export const test = base.extend<{ context: BrowserContext; extensionId: string; appPage: Page }>({
   context: async ({}, use) => {
     const context = await chromium.launchPersistentContext('', {
-      channel: 'chromium',
+      ...(EXECUTABLE ? { executablePath: EXECUTABLE } : { channel: CHANNEL }),
       args: [`--disable-extensions-except=${EXTENSION_PATH}`, `--load-extension=${EXTENSION_PATH}`],
     });
     await use(context);

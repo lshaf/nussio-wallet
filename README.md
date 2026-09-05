@@ -16,6 +16,8 @@ pnpm dev            # Chrome with HMR
 pnpm dev:firefox
 pnpm check          # typecheck + lint + unit tests
 pnpm build && pnpm test:e2e   # Playwright against dist/chrome-mv3 (needs `pnpm exec playwright install chromium`)
+pnpm test:e2e:edge            # same suite in Microsoft Edge; test:e2e:brave for Brave
+pnpm check:bundle             # entry-point size budgets
 pnpm zip            # dist/*.zip
 ```
 
@@ -75,6 +77,12 @@ Tools (`#/tools`) holds the wallet-maintenance screens:
   exposes a Hyperion token index.
 - **Pending** — signing requests waiting for you, backup reminders, and account creation requests
   (two keypairs, mandatory owner-key export, a shareable ESR link for whoever pays, then import).
+
+## Docs
+
+`docs/security.md` threat model · `docs/qa.md` release checks · `docs/store-listing.md` store copy
+and permission justifications · `docs/dapp-integration.md` for app developers · `docs/design.md`
+design system · `docs/adr/` decisions · `PRIVACY.md` · `CHANGELOG.md`
 
 ## Rules
 

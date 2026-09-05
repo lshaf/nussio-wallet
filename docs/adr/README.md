@@ -8,4 +8,4 @@ One file per decision, numbered. Status: proposed | accepted | superseded.
 | 0003 | Transaction pipeline and Fuel     | accepted |
 | 0004 | Backup format and desktop interop | accepted |
 
-Threat model and security review: [`../security.md`](../security.md).
+Other documents: [`../security.md`](../security.md) (threat model), [`../qa.md`](../qa.md) (release checks), [`../store-listing.md`](../store-listing.md), [`../dapp-integration.md`](../dapp-integration.md), [`../design.md`](../design.md).
