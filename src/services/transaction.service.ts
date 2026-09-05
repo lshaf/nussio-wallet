@@ -95,7 +95,7 @@ async function chainFor(chainId: string): Promise<Blockchain> {
   return chain;
 }
 
-function readerFor(chain: Blockchain): ChainReader {
+export function readerFor(chain: Blockchain): ChainReader {
   const client = clientFor(chain.node);
   return {
     getInfo: () => client.v1.chain.get_info(),

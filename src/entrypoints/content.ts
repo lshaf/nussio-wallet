@@ -5,11 +5,16 @@ import { sendMessage } from '@/lib/messaging/protocol';
 const REQUEST_SCHEMES = ['esr:', 'esr-anchor:', 'anchor:'];
 
 function requestUriFromEvent(event: MouseEvent): string | undefined {
-  const target = event.target as Element | null;
-  const anchor = target?.closest?.('a[href]');
-  if (!anchor) return undefined;
-  const href = anchor.getAttribute('href') ?? '';
-  return REQUEST_SCHEMES.some((scheme) => href.startsWith(scheme)) ? href : undefined;
+  for (const node of event.composedPath()) {
+    if (!(node instanceof Element)) continue;
+    const anchor = node.closest('a[href]');
+    if (!anchor) continue;
+    const href = anchor.getAttribute('href') ?? '';
+    return REQUEST_SCHEMES.some((scheme) => href.toLowerCase().startsWith(scheme))
+      ? href
+      : undefined;
+  }
+  return undefined;
 }
 
 export default defineContentScript({

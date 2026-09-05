@@ -39,6 +39,7 @@ export type TxErrorKind =
   | 'duplicate'
   | 'assert'
   | 'locked'
+  | 'forbidden'
   | 'fee_required'
   | 'fuel_invalid'
   | 'network'
@@ -208,7 +209,15 @@ export function normalizeChainError(error: unknown): TxError {
     };
   }
   if (error instanceof Error) {
-    const known: TxErrorKind[] = ['locked', 'fee_required', 'fuel_invalid', 'network', 'invalid'];
+    const known: TxErrorKind[] = [
+      'locked',
+      'forbidden',
+      'fee_required',
+      'fuel_invalid',
+      'network',
+      'invalid',
+      'expired',
+    ];
     const kind = known.find((entry) => entry === error.message);
     if (kind) return { kind, name: error.message, message: error.message, details: [] };
     if (error.name === 'FuelValidationError') {

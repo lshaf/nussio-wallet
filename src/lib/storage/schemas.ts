@@ -157,6 +157,14 @@ export const requestStatusSchema = z.enum([
   'error',
   'cancelled',
 ]);
+export type RequestStatus = z.infer<typeof requestStatusSchema>;
+
+export const requestSignerSchema = z.object({
+  chainId: chainIdSchema,
+  account: accountNameSchema,
+  authorization: permissionNameSchema,
+});
+export type RequestSigner = z.infer<typeof requestSignerSchema>;
 
 export const pendingRequestSchema = z.object({
   id: z.string().min(1),
@@ -164,6 +172,10 @@ export const pendingRequestSchema = z.object({
   receivedAt: z.number(),
   status: requestStatusSchema,
   error: z.string().optional(),
+  chainId: chainIdSchema.optional(),
+  signer: requestSignerSchema.optional(),
+  windowId: z.number().optional(),
+  outcome: z.unknown().optional(),
 });
 export type PendingRequest = z.infer<typeof pendingRequestSchema>;
 
