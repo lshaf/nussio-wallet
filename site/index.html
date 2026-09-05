@@ -3,18 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Nussio Wallet — Antelope wallet and signing authenticator for your browser</title>
+    <title>Nussio Wallet — sign for Antelope accounts without handing over your keys</title>
     <meta
       name="description"
-      content="Nussio Wallet is a browser-extension wallet and EOSIO Signing Request authenticator for Antelope chains — EOS, WAX, Telos, Proton, Libre, FIO, UX Network and custom chains. Local key custody, Manifest V3, MIT licensed."
+      content="A browser-extension wallet for Antelope chains. Keys are encrypted on your machine and never cross the bridge to a page. Works with EOS, WAX, Telos, Proton, Libre, FIO, UX Network and any chain you add."
     />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <meta property="og:title" content="Nussio Wallet" />
     <meta
       property="og:description"
-      content="Antelope wallet and signing request authenticator as a browser extension. Keys stay on your machine."
+      content="The key stays. The signature goes. A browser-extension wallet for Antelope chains."
     />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content="screenshots/home.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -23,17 +24,29 @@
     />
     <style>
       :root {
-        --background: #0a1220;
-        --card: #111b2e;
-        --foreground: #e6ecf5;
-        --muted-foreground: #8c9ab2;
-        --primary: #6e96ff;
-        --positive: #3fbf9a;
-        --warning: #f5a04a;
-        --border: rgba(255, 255, 255, 0.09);
-        --track: rgba(255, 255, 255, 0.08);
-        --radius: 0.75rem;
-        --shell: 68rem;
+        --paper: #e9edf3;
+        --paper-raised: #f7f9fc;
+        --ink: #0b1426;
+        --ink-soft: #4a5a73;
+        --rule: #c3cddc;
+        --blue: #22459b;
+        --teal: #127a5f;
+        --amber: #b5610a;
+        --rail: 4.5rem;
+        --measure: 34rem;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #0b1426;
+          --paper-raised: #101c33;
+          --ink: #e7edf6;
+          --ink-soft: #93a3bd;
+          --rule: #26344d;
+          --blue: #82a4ff;
+          --teal: #4cc9a2;
+          --amber: #f0a250;
+        }
       }
 
       * {
@@ -44,542 +57,681 @@
         scroll-behavior: smooth;
       }
 
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
       body {
         margin: 0;
-        background: var(--background);
-        color: var(--foreground);
-        font-family:
-          'Archivo',
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          'Segoe UI',
-          sans-serif;
-        font-size: 16px;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Archivo, ui-sans-serif, system-ui, sans-serif;
+        font-variation-settings: 'wdth' 100;
+        font-size: 1rem;
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
       }
 
-      body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        background:
-          radial-gradient(60rem 40rem at 15% -10%, rgba(110, 150, 255, 0.16), transparent 60%),
-          radial-gradient(45rem 32rem at 95% 0%, rgba(63, 191, 154, 0.1), transparent 60%);
-        z-index: 0;
+      .wrap {
+        max-width: 78rem;
+        margin: 0 auto;
+        padding: 0 1.5rem 0 1.25rem;
       }
 
-      .shell {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-        max-width: var(--shell);
-        margin: 0 auto;
-        padding: 0 1.25rem;
+      @media (min-width: 60rem) {
+        .wrap {
+          padding-left: var(--rail);
+          padding-right: 2.5rem;
+        }
       }
 
       a {
-        color: var(--primary);
+        color: inherit;
       }
 
-      code,
-      .mono {
-        font-family: 'Red Hat Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-        font-size: 0.875em;
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--blue);
+        outline-offset: 3px;
+        border-radius: 2px;
       }
 
+      .mono,
       code {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid var(--border);
-        border-radius: 0.375rem;
-        padding: 0.1em 0.4em;
-      }
-
-      .eyebrow {
-        font-stretch: 88%;
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: var(--muted-foreground);
-        margin: 0 0 0.75rem;
-      }
-
-      header.site {
-        position: relative;
-        z-index: 2;
-        border-bottom: 1px solid var(--border);
-        backdrop-filter: blur(8px);
-      }
-
-      header.site .shell {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        min-height: 4rem;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 0.625rem;
-        font-weight: 700;
-        font-stretch: 112%;
+        font-family: 'Red Hat Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.9em;
         letter-spacing: -0.01em;
-        color: var(--foreground);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      }
+
+      h1 {
+        font-variation-settings: 'wdth' 118;
+        font-size: clamp(2.5rem, 5.6vw, 4.25rem);
+        line-height: 0.98;
+        max-width: 16ch;
+      }
+
+      h2 {
+        font-variation-settings: 'wdth' 112;
+        font-size: clamp(1.65rem, 3.4vw, 2.4rem);
+        line-height: 1.08;
+        max-width: 22ch;
+      }
+
+      h3 {
+        font-size: 1.0625rem;
+        font-weight: 650;
+        letter-spacing: -0.015em;
+      }
+
+      p {
+        margin: 0;
+        max-width: 62ch;
+      }
+
+      .lead {
+        font-size: 1.1875rem;
+        line-height: 1.5;
+        color: var(--ink-soft);
+        max-width: var(--measure);
+      }
+
+      .rail {
+        display: none;
+      }
+
+      @media (min-width: 60rem) {
+        .rail {
+          display: block;
+          position: fixed;
+          top: 5.5rem;
+          bottom: 3rem;
+          left: max(1.5rem, calc(50vw - 39rem + 1.5rem));
+          width: 1px;
+          background: var(--rule);
+          z-index: 3;
+        }
+
+        .rail ol {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          display: grid;
+          gap: 1.125rem;
+        }
+
+        .rail a {
+          display: block;
+          width: 1.25rem;
+          margin-left: -0.5rem;
+          padding: 0.25rem 0;
+          text-decoration: none;
+        }
+
+        .rail i {
+          display: block;
+          height: 1px;
+          width: 0.625rem;
+          background: var(--rule);
+          transition:
+            width 0.2s ease,
+            background-color 0.2s ease;
+        }
+
+        .rail a[aria-current='true'] i,
+        .rail a:hover i {
+          width: 1.25rem;
+          background: var(--blue);
+        }
+      }
+
+      header.top {
+        position: sticky;
+        top: 0;
+        z-index: 4;
+        background: color-mix(in srgb, var(--paper) 88%, transparent);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--rule);
+      }
+
+      header.top .wrap {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        min-height: 3.75rem;
+      }
+
+      .wordmark {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         text-decoration: none;
+        font-weight: 700;
+        font-variation-settings: 'wdth' 112;
+        letter-spacing: -0.02em;
       }
 
-      .brand svg {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 0.55rem;
+      .wordmark svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 0.375rem;
       }
 
-      nav.site {
+      header.top nav {
         margin-left: auto;
         display: flex;
-        align-items: center;
-        gap: 1.25rem;
-        font-size: 0.9rem;
+        gap: 1.5rem;
+        font-size: 0.9375rem;
+        color: var(--ink-soft);
       }
 
-      nav.site a {
-        color: var(--muted-foreground);
+      header.top nav a {
         text-decoration: none;
       }
 
-      nav.site a:hover {
-        color: var(--foreground);
+      header.top nav a:hover {
+        color: var(--ink);
       }
 
-      nav.site a.cta {
-        color: var(--foreground);
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        padding: 0.35rem 0.9rem;
-      }
-
-      @media (max-width: 640px) {
-        nav.site a.hide-sm {
+      @media (max-width: 40rem) {
+        header.top nav a:not(.keep) {
           display: none;
         }
       }
 
       section {
-        padding: 4.5rem 0;
+        padding: 5rem 0;
+        border-top: 1px solid var(--rule);
       }
 
-      section + section {
-        border-top: 1px solid var(--border);
-      }
-
-      h1 {
-        font-size: clamp(2.25rem, 6vw, 3.75rem);
-        font-stretch: 118%;
-        line-height: 1.04;
-        letter-spacing: -0.025em;
-        margin: 0 0 1rem;
-        max-width: 20ch;
-      }
-
-      h2 {
-        font-size: clamp(1.5rem, 3vw, 2rem);
-        font-stretch: 112%;
-        letter-spacing: -0.02em;
-        line-height: 1.15;
-        margin: 0 0 0.75rem;
-      }
-
-      h3 {
-        font-size: 1.0625rem;
-        margin: 0 0 0.375rem;
-        letter-spacing: -0.01em;
-      }
-
-      .lede {
-        font-size: 1.15rem;
-        color: var(--muted-foreground);
-        max-width: 60ch;
-        margin: 0 0 2rem;
-      }
-
-      .section-lede {
-        color: var(--muted-foreground);
-        max-width: 62ch;
-        margin: 0 0 2.5rem;
+      section:first-of-type {
+        border-top: 0;
       }
 
       .hero {
         padding-top: 5.5rem;
+        padding-bottom: 4rem;
       }
 
-      .buttons {
+      .hero-grid {
+        display: grid;
+        gap: 3rem;
+        align-items: end;
+      }
+
+      @media (min-width: 60rem) {
+        .hero-grid {
+          grid-template-columns: minmax(0, 1fr) 21rem;
+          gap: 4rem;
+        }
+      }
+
+      h1 .go {
+        color: var(--ink-soft);
+      }
+
+      .hero p {
+        margin-top: 1.75rem;
+      }
+
+      .actions {
+        margin-top: 2.25rem;
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem;
-        margin-bottom: 2.5rem;
+        align-items: center;
+        gap: 0.875rem 1.25rem;
       }
 
       .btn {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        border-radius: 999px;
-        padding: 0.7rem 1.4rem;
-        font-weight: 600;
-        font-size: 0.95rem;
-        text-decoration: none;
-        border: 1px solid transparent;
-      }
-
-      .btn-primary {
-        background: var(--primary);
-        color: #0a1220;
-      }
-
-      .btn-primary:hover {
-        background: #8dabff;
-      }
-
-      .btn-ghost {
-        border-color: var(--border);
-        color: var(--foreground);
-      }
-
-      .btn-ghost:hover {
-        border-color: var(--primary);
-      }
-
-      .pills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-
-      .pills li {
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        padding: 0.3rem 0.8rem;
-        font-size: 0.8125rem;
-        color: var(--muted-foreground);
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .grid {
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-      }
-
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 1.25rem;
-      }
-
-      .card p {
-        margin: 0;
-        color: var(--muted-foreground);
-        font-size: 0.9375rem;
-      }
-
-      .card .icon {
-        width: 2rem;
-        height: 2rem;
-        display: grid;
-        place-items: center;
-        border-radius: 0.5rem;
-        background: rgba(110, 150, 255, 0.14);
-        color: var(--primary);
-        margin-bottom: 0.875rem;
-      }
-
-      .card .icon svg {
-        width: 1.125rem;
-        height: 1.125rem;
-        stroke: currentColor;
-        fill: none;
-        stroke-width: 1.75;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-
-      .surfaces {
-        display: grid;
-        gap: 1.5rem;
-        grid-template-columns: 1fr;
-        align-items: center;
-      }
-
-      @media (min-width: 900px) {
-        .surfaces {
-          grid-template-columns: 1fr 1fr;
-          gap: 3rem;
-        }
-      }
-
-      ul.checks {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 0.875rem;
-      }
-
-      ul.checks li {
-        display: grid;
-        grid-template-columns: 1.25rem 1fr;
-        gap: 0.75rem;
-        color: var(--muted-foreground);
-        font-size: 0.9375rem;
-      }
-
-      ul.checks strong {
-        color: var(--foreground);
-        font-weight: 600;
-      }
-
-      ul.checks svg {
-        width: 1.125rem;
-        height: 1.125rem;
-        margin-top: 0.25rem;
-        stroke: var(--positive);
-        fill: none;
-        stroke-width: 2.25;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-
-      .steps {
-        counter-reset: step;
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-        margin-bottom: 1.5rem;
-      }
-
-      .steps li {
-        counter-increment: step;
-        list-style: none;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 1.25rem;
-        font-size: 0.9375rem;
-        color: var(--muted-foreground);
-      }
-
-      .steps li::before {
-        content: counter(step);
-        display: grid;
-        place-items: center;
-        width: 1.75rem;
-        height: 1.75rem;
-        border-radius: 999px;
-        background: rgba(110, 150, 255, 0.14);
-        color: var(--primary);
-        font-weight: 700;
-        font-size: 0.875rem;
-        margin-bottom: 0.75rem;
-      }
-
-      pre {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 1.25rem;
-        overflow-x: auto;
-        margin: 0;
-      }
-
-      pre code {
-        background: none;
-        border: 0;
-        padding: 0;
-        font-size: 0.875rem;
-        line-height: 1.75;
-        color: var(--foreground);
-      }
-
-      pre code .c {
-        color: var(--muted-foreground);
-      }
-
-      .picker {
-        display: inline-flex;
-        gap: 0.25rem;
-        padding: 0.25rem;
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.03);
-        margin-bottom: 1.25rem;
-      }
-
-      .picker button {
-        appearance: none;
-        border: 0;
-        background: none;
-        color: var(--muted-foreground);
+        padding: 0.8rem 1.35rem;
         font: inherit;
-        font-size: 0.875rem;
-        font-weight: 600;
-        padding: 0.45rem 1rem;
-        border-radius: 999px;
-        cursor: pointer;
+        font-weight: 650;
+        font-size: 0.9375rem;
+        text-decoration: none;
+        border: 1px solid var(--ink);
+        border-radius: 0.25rem;
+        background: var(--ink);
+        color: var(--paper);
       }
 
-      .picker button:hover {
-        color: var(--foreground);
+      .btn:hover {
+        background: var(--blue);
+        border-color: var(--blue);
       }
 
-      .picker button[aria-selected='true'] {
-        background: rgba(110, 150, 255, 0.16);
-        color: var(--foreground);
-      }
-
-      .detected {
-        margin: 0 0 1.5rem;
-        font-size: 0.875rem;
-        color: var(--muted-foreground);
-      }
-
-      .detected strong {
-        color: var(--foreground);
-        font-weight: 600;
-      }
-
-      .download {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.75rem 1.25rem;
-        margin-bottom: 2rem;
-      }
-
-      .download .btn svg {
-        width: 1.05rem;
-        height: 1.05rem;
-        stroke: currentColor;
+      .btn svg {
+        width: 1rem;
+        height: 1rem;
         fill: none;
+        stroke: currentColor;
         stroke-width: 2;
         stroke-linecap: round;
         stroke-linejoin: round;
       }
 
-      .download-meta {
+      .btn-quiet {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--rule);
+      }
+
+      .btn-quiet:hover {
+        background: transparent;
+        border-color: var(--ink);
+        color: var(--ink);
+      }
+
+      .hero figure {
         margin: 0;
+      }
+
+      .hero figure img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--rule);
+        border-radius: 0.5rem;
+        background: var(--paper-raised);
+      }
+
+      .hero figcaption {
+        margin-top: 0.75rem;
         font-size: 0.8125rem;
-        color: var(--muted-foreground);
-        font-variant-numeric: tabular-nums;
+        color: var(--ink-soft);
+        max-width: 30ch;
       }
 
-      .alt-link {
-        margin: 1.5rem 0 0;
-        font-size: 0.9375rem;
-        color: var(--muted-foreground);
+      .scale {
+        margin-top: 3.5rem;
+        border-top: 1px solid var(--rule);
+        padding-top: 0.75rem;
       }
 
-      .section-note {
-        margin: 1.5rem 0 0;
+      .scale ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem 1.5rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
         font-size: 0.9375rem;
-        color: var(--muted-foreground);
+      }
+
+      .scale li.testnets {
+        color: var(--ink-soft);
+      }
+
+      .section-head {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+
+      @media (min-width: 60rem) {
+        .section-head {
+          grid-template-columns: minmax(0, 26rem) minmax(0, 1fr);
+          gap: 3rem;
+          align-items: baseline;
+        }
+      }
+
+      .section-head p {
+        color: var(--ink-soft);
+      }
+
+      .ledger {
+        border-top: 1px solid var(--rule);
+      }
+
+      .ledger div {
+        display: grid;
+        gap: 0.25rem 3rem;
+        padding: 1.125rem 0;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      @media (min-width: 48rem) {
+        .ledger div {
+          grid-template-columns: 14rem minmax(0, 1fr);
+          align-items: baseline;
+        }
+      }
+
+      .ledger p {
+        color: var(--ink-soft);
+        max-width: 58ch;
+      }
+
+      .shots {
+        display: grid;
+        gap: 3.5rem;
+      }
+
+      .shots figure {
+        margin: 0;
+        display: grid;
+        gap: 1rem;
+      }
+
+      @media (min-width: 60rem) {
+        .shots figure {
+          grid-template-columns: minmax(0, 1fr) 13rem;
+          gap: 2rem;
+          align-items: start;
+        }
+
+        .shots figcaption {
+          padding-top: 0.5rem;
+          border-top: 1px solid var(--rule);
+        }
+      }
+
+      .shots .frame {
+        position: relative;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
+        border: 1px solid var(--rule);
+        border-radius: 0.5rem;
+        background: var(--paper-raised);
+      }
+
+      .shots img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .shots .frame.narrow {
+        max-width: 22rem;
+      }
+
+      @media (max-width: 48rem) {
+        .shots .frame.wide img {
+          width: 44rem;
+          max-width: none;
+        }
+      }
+
+      .shots figcaption {
+        font-size: 0.9375rem;
+        color: var(--ink-soft);
+      }
+
+      .shots figcaption b {
+        display: block;
+        color: var(--ink);
+        font-weight: 650;
+      }
+
+      .boundary {
+        display: grid;
+        gap: 0;
+        border: 1px solid var(--rule);
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: var(--paper-raised);
+      }
+
+      @media (min-width: 48rem) {
+        .boundary {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .boundary > div {
+        padding: 1.75rem;
+      }
+
+      .boundary > div + div {
+        border-top: 1px solid var(--rule);
+      }
+
+      @media (min-width: 48rem) {
+        .boundary > div + div {
+          border-top: 0;
+          border-left: 1px solid var(--rule);
+        }
+      }
+
+      .boundary h3 {
+        margin-bottom: 1rem;
+      }
+
+      .boundary ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.875rem;
+        font-size: 0.9375rem;
+        color: var(--ink-soft);
+      }
+
+      .boundary li {
+        padding-left: 1.25rem;
+        position: relative;
+        max-width: 40ch;
+      }
+
+      .boundary li::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.6em;
+        width: 0.5rem;
+        height: 1px;
+        background: var(--teal);
+      }
+
+      .boundary .out li::before {
+        background: var(--blue);
+      }
+
+      .boundary b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      .caveat {
+        margin-top: 2rem;
+        padding-left: 1.25rem;
+        border-left: 2px solid var(--amber);
+        color: var(--ink-soft);
+        font-size: 0.9375rem;
+      }
+
+      .picker {
+        display: inline-flex;
+        border: 1px solid var(--rule);
+        border-radius: 0.25rem;
+        overflow: hidden;
+      }
+
+      .picker button {
+        font: inherit;
+        font-size: 0.875rem;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border: 0;
+        background: transparent;
+        color: var(--ink-soft);
+        cursor: pointer;
+      }
+
+      .picker button + button {
+        border-left: 1px solid var(--rule);
+      }
+
+      .picker button[aria-pressed='true'] {
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      .detected {
+        margin-top: 1rem;
+        font-size: 0.9375rem;
+        color: var(--ink-soft);
+      }
+
+      .download {
+        margin: 1.75rem 0 2.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem 1.25rem;
+      }
+
+      .download-meta {
+        font-size: 0.875rem;
+        color: var(--ink-soft);
+      }
+
+      .steps {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: step;
+        border-top: 1px solid var(--rule);
+        max-width: 46rem;
+      }
+
+      .steps li {
+        counter-increment: step;
+        display: grid;
+        grid-template-columns: 1.75rem minmax(0, 1fr);
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--rule);
+        color: var(--ink-soft);
+        font-size: 0.9375rem;
+      }
+
+      .steps li::before {
+        content: counter(step);
+        font-family: 'Red Hat Mono', ui-monospace, monospace;
+        font-size: 0.8125rem;
+        color: var(--ink);
+        padding-top: 0.15rem;
+      }
+
+      .steps b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      pre {
+        margin: 2rem 0 0;
+        padding: 1.25rem 1.5rem;
+        background: var(--paper-raised);
+        border: 1px solid var(--rule);
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        max-width: 46rem;
+      }
+
+      pre code {
+        font-size: 0.875rem;
+        line-height: 1.8;
+      }
+
+      pre .c {
+        color: var(--ink-soft);
+      }
+
+      .after-code {
+        margin-top: 1.5rem;
+        font-size: 0.9375rem;
+        color: var(--ink-soft);
+      }
+
+      .after-code a,
+      .caveat a,
+      .ledger a,
+      .boundary a {
+        color: var(--blue);
+      }
+
+      footer {
+        border-top: 1px solid var(--rule);
+        padding: 3rem 0 4rem;
+        font-size: 0.875rem;
+        color: var(--ink-soft);
+      }
+
+      footer .wrap {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      @media (min-width: 48rem) {
+        footer .wrap {
+          grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+          gap: 3rem;
+        }
+      }
+
+      footer nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.5rem;
+        align-content: start;
+      }
+
+      footer a {
+        color: var(--blue);
       }
 
       [hidden] {
         display: none !important;
       }
-
-      .narrow-shots {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-        gap: 1rem;
-      }
-
-      .narrow-shots img,
-      .shots img,
-      .setup-shot img {
-        display: block;
-        width: 100%;
-        height: auto;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        background: var(--card);
-        box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.95);
-      }
-
-      figure {
-        margin: 0;
-      }
-
-      figcaption {
-        margin-top: 0.625rem;
-        font-size: 0.8125rem;
-        color: var(--muted-foreground);
-      }
-
-      .shots {
-        display: grid;
-        gap: 1.75rem 1.25rem;
-        grid-template-columns: repeat(auto-fit, minmax(min(26rem, 100%), 1fr));
-      }
-
-      .setup-shot {
-        margin: 2rem 0;
-      }
-
-      .setup-shot img {
-        max-width: 46rem;
-      }
-
-      .notice {
-        border: 1px solid var(--border);
-        border-left: 3px solid var(--warning);
-        border-radius: var(--radius);
-        background: rgba(245, 160, 74, 0.06);
-        padding: 1rem 1.25rem;
-        color: var(--muted-foreground);
-        font-size: 0.9375rem;
-        margin-top: 1.5rem;
-      }
-
-      footer.site {
-        border-top: 1px solid var(--border);
-        padding: 2.5rem 0 3.5rem;
-        color: var(--muted-foreground);
-        font-size: 0.875rem;
-      }
-
-      footer.site .shell {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem 2rem;
-        align-items: baseline;
-      }
-
-      footer.site nav {
-        margin-left: auto;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.25rem;
-      }
-
-      footer.site p {
-        margin: 0;
-        max-width: 46ch;
-      }
     </style>
   </head>
   <body>
-    <header class="site">
-      <div class="shell">
-        <a class="brand" href="#top">
+    <div class="rail" aria-hidden="true">
+      <ol>
+        <li>
+          <a href="#top"><i></i></a>
+        </li>
+        <li>
+          <a href="#does"><i></i></a>
+        </li>
+        <li>
+          <a href="#screens"><i></i></a>
+        </li>
+        <li>
+          <a href="#trust"><i></i></a>
+        </li>
+        <li>
+          <a href="#install"><i></i></a>
+        </li>
+      </ol>
+    </div>
+
+    <header class="top">
+      <div class="wrap">
+        <a class="wordmark" href="#top">
           <svg viewBox="0 0 128 128" role="img" aria-label="Nussio Wallet">
             <rect x="6" y="6" width="116" height="116" rx="34" fill="#1c3d8f" />
             <path
@@ -591,399 +743,345 @@
           </svg>
           Nussio Wallet
         </a>
-        <nav class="site">
-          <a class="hide-sm" href="#features">Features</a>
-          <a class="hide-sm" href="#screens">Screens</a>
-          <a class="hide-sm" href="#security">Security</a>
-          <a class="hide-sm" href="#install">Install</a>
-          <a class="cta" href="https://github.com/lshaf/nussio-wallet">GitHub</a>
+        <nav>
+          <a href="#does">What it does</a>
+          <a href="#screens">Screens</a>
+          <a href="#trust">Where keys live</a>
+          <a class="keep" href="#install">Install</a>
         </nav>
       </div>
     </header>
 
     <main id="top">
       <section class="hero">
-        <div class="shell">
-          <p class="eyebrow">Browser extension · Antelope · MIT</p>
-          <h1>An Antelope wallet that keeps your keys in your browser.</h1>
-          <p class="lede">
-            Nussio Wallet signs transactions and answers EOSIO Signing Requests for EOS, WAX, Telos,
-            Proton, Libre, FIO, UX Network and any custom chain you add. It speaks the same ESR and
-            anchor-link session protocol as Anchor, so dApps that already support Anchor work
-            unchanged.
-          </p>
-          <div class="buttons">
-            <a class="btn btn-primary" href="#install">Install the extension</a>
-            <a class="btn btn-ghost" href="https://github.com/lshaf/nussio-wallet"
-              >Read the source</a
-            >
-          </div>
-          <ul class="pills">
-            <li>EOS</li>
-            <li>WAX</li>
-            <li>Telos</li>
-            <li>Proton (XPR Network)</li>
-            <li>Libre</li>
-            <li>FIO</li>
-            <li>UX Network</li>
-            <li>Jungle 4 and testnets</li>
-            <li>Custom chains</li>
-          </ul>
-        </div>
-      </section>
-
-      <section id="features">
-        <div class="shell">
-          <p class="eyebrow">What it does</p>
-          <h2>A full wallet, not a signing popup</h2>
-          <p class="section-lede">
-            Everything the desktop Anchor workflow covers, rebuilt for Manifest V3 and a 360 px
-            popup: balances, resources, voting, history and the maintenance tools you only miss when
-            they are gone.
-          </p>
-          <div class="grid">
-            <article class="card">
-              <div class="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 7h18v12H3z" />
-                  <path d="M3 7l3-3h12l3 3" />
-                  <path d="M16 13h2" />
-                </svg>
-              </div>
-              <h3>Local key custody</h3>
-              <p>
-                Keys are generated or imported into an encrypted keyring that never leaves your
-                machine. Watch-only accounts need no key at all.
+        <div class="wrap">
+          <div class="hero-grid">
+            <div>
+              <h1>The key stays.<br /><span class="go">The signature goes.</span></h1>
+              <p class="lead">
+                Nussio Wallet holds your Antelope accounts in the browser and signs for them without
+                letting a private key reach the page asking. It speaks the same signing request and
+                session protocol as Anchor, so apps built for Anchor connect unchanged.
               </p>
-            </article>
-            <article class="card">
-              <div class="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M4 12h10" />
-                  <path d="M10 7l5 5-5 5" />
-                  <path d="M18 5v14" />
-                </svg>
+              <div class="actions">
+                <a class="btn" href="#install">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 4v11" />
+                    <path d="M7 12l5 5 5-5" />
+                    <path d="M4 20h16" />
+                  </svg>
+                  Get the extension
+                </a>
+                <a class="btn btn-quiet" href="https://github.com/lshaf/nussio-wallet">
+                  Read the source
+                </a>
               </div>
-              <h3>ESR and anchor-link sessions</h3>
-              <p>
-                <code>esr:</code> links, in-page requests and sealed buoy messages all land in the
-                same approval queue. dApps built for Anchor connect without changes.
-              </p>
-            </article>
-            <article class="card">
-              <div class="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 17l5-5 4 3 6-7" />
-                  <path d="M3 21h18" />
-                </svg>
-              </div>
-              <h3>Resources at a glance</h3>
-              <p>
-                CPU, NET and RAM on the same draft-mark gauge everywhere, with staking, renting and
-                low-resource warnings before a transaction fails.
-              </p>
-            </article>
-            <article class="card">
-              <div class="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 3l7 4v5c0 5-3 8-7 9-4-1-7-4-7-9V7z" />
-                  <path d="M9 12l2 2 4-4" />
-                </svg>
-              </div>
-              <h3>Governance and history</h3>
-              <p>
-                Vote for block producers or a proxy, and read your account history from the chain's
-                Hyperion index without leaving the wallet.
-              </p>
-            </article>
-            <article class="card">
-              <div class="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M21 8v11a1 1 0 01-1 1H4a1 1 0 01-1-1V8" />
-                  <path d="M2 4h20v4H2z" />
-                  <path d="M10 12h4" />
-                </svg>
-              </div>
-              <h3>Backup and restore</h3>
-              <p>
-                Encrypted export in the Nussio format or an Anchor Desktop compatible one, and
-                restore of either — including Anchor's v1 per-wallet keyring.
-              </p>
-            </article>
-            <article class="card">
-              <div class="icon">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="8" cy="8" r="4" />
-                  <path d="M11 11l9 9" />
-                  <path d="M17 17l-2 2" />
-                  <path d="M20 14l-2 2" />
-                </svg>
-              </div>
-              <h3>Key tools</h3>
-              <p>
-                Stored keys with the wallets that use them, password-gated reveal with QR, a K1
-                generator, and a WIF / PVT and legacy / modern public key inspector.
-              </p>
-            </article>
-            <article class="card">
-              <div class="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M4 6h16" />
-                  <path d="M4 12h16" />
-                  <path d="M4 18h10" />
-                </svg>
-              </div>
-              <h3>Contacts and custom tokens</h3>
-              <p>
-                Saved accounts with a default memo that fills the send form, plus tokens tracked by
-                contract and symbol or scanned from a Hyperion token index.
-              </p>
-            </article>
-            <article class="card">
-              <div class="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 5v14" />
-                  <path d="M5 12h14" />
-                  <circle cx="12" cy="12" r="9" />
-                </svg>
-              </div>
-              <h3>Account creation and name bids</h3>
-              <p>
-                Two keypairs, a mandatory owner-key export, and a shareable ESR link for whoever
-                pays — plus premium name bidding and permission management.
-              </p>
-            </article>
-            <article class="card">
-              <div class="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 5h18v14H3z" />
-                  <path d="M7 9h4" />
-                  <path d="M7 13h8" />
-                </svg>
-              </div>
-              <h3>Contract and node tools</h3>
-              <p>
-                Call any smart contract action, ping API endpoints for latency and head block, and
-                inspect or clear the ABI cache.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section id="surfaces">
-        <div class="shell surfaces">
-          <div>
-            <p class="eyebrow">Three surfaces, one wallet</p>
-            <h2>Popup, side panel, full tab</h2>
-            <p class="section-lede">
-              Every screen is built at 360 px first, so the toolbar popup is the whole wallet, not a
-              cut-down version of it. The side panel keeps it open next to a dApp; the full tab adds
-              tables and wider layouts. Dark mode follows your system.
-            </p>
-            <ul class="checks">
-              <li>
-                <svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6" /></svg>
-                <span
-                  ><strong>Chrome, Edge and Brave</strong> on Manifest V3, plus Firefox on
-                  MV2.</span
-                >
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6" /></svg>
-                <span
-                  ><strong>No runtime fetches</strong> for fonts or assets — everything ships in the
-                  bundle.</span
-                >
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6" /></svg>
-                <span
-                  ><strong>Localised</strong> through i18next, with the Anchor locale set as the
-                  base.</span
-                >
-              </li>
-            </ul>
-          </div>
-          <div class="narrow-shots">
-            <figure>
-              <img
-                src="screenshots/home-narrow.png"
-                width="760"
-                height="1240"
-                loading="lazy"
-                alt="The wallet at popup width: chain and account switchers, balance, CPU, NET and RAM gauges, bottom tab bar."
-              />
-              <figcaption>Popup width, 380 px</figcaption>
-            </figure>
+            </div>
             <figure>
               <img
                 src="screenshots/prompt.png"
                 width="760"
                 height="1040"
-                loading="lazy"
-                alt="A signing prompt showing an eosio.token::transfer action with from, to, quantity and memo, the account to sign as, and a countdown."
+                alt="A signing prompt: sign as greymassfuel@active, an eosio.token transfer of 1.0000 EOS to teamgreymass with the memo coffee, and a two-minute countdown."
               />
-              <figcaption>Signing prompt</figcaption>
+              <figcaption>
+                Every request stops here first, action by action, before anything is signed.
+              </figcaption>
             </figure>
+          </div>
+
+          <div class="scale">
+            <ul>
+              <li>EOS</li>
+              <li>WAX</li>
+              <li>Telos</li>
+              <li>Proton</li>
+              <li>Libre</li>
+              <li>FIO</li>
+              <li>UX Network</li>
+              <li class="testnets">Jungle 4 and every testnet</li>
+              <li class="testnets">Any chain you add by hand</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="does">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>A whole wallet, not a signing popup</h2>
+            <p>
+              Everything the Anchor desktop workflow covers, rebuilt for Manifest V3 and a 360 px
+              popup. The screens you only miss once they are gone are here too.
+            </p>
+          </div>
+          <div class="ledger">
+            <div>
+              <h3>Keys you hold</h3>
+              <p>
+                Generate or import into an encrypted keyring on this machine, or watch any account
+                read-only with no key at all.
+              </p>
+            </div>
+            <div>
+              <h3>Signing requests</h3>
+              <p>
+                <code>esr:</code> links, in-page requests and sealed session messages queue up in
+                one place. Apps written for Anchor need no changes.
+              </p>
+            </div>
+            <div>
+              <h3>Resources</h3>
+              <p>
+                CPU, NET and RAM on one meter everywhere, with staking, renting and a warning before
+                a transaction runs out of room.
+              </p>
+            </div>
+            <div>
+              <h3>Governance</h3>
+              <p>Vote for block producers directly, or hand your vote to a proxy.</p>
+            </div>
+            <div>
+              <h3>History</h3>
+              <p>Read recent actions for the selected account from the chain's Hyperion index.</p>
+            </div>
+            <div>
+              <h3>Backup and restore</h3>
+              <p>
+                Encrypted export in the Nussio format or one Anchor Desktop can read, and restore of
+                either, including Anchor's older per-wallet keyring.
+              </p>
+            </div>
+            <div>
+              <h3>Key tools</h3>
+              <p>
+                Every stored key with the wallets using it, a password-gated reveal with QR, a K1
+                generator, and a converter between WIF, PVT and both public key formats.
+              </p>
+            </div>
+            <div>
+              <h3>Contacts and tokens</h3>
+              <p>
+                Saved accounts that fill the send form with a default memo, and tokens tracked by
+                contract or scanned from a Hyperion token index.
+              </p>
+            </div>
+            <div>
+              <h3>New accounts</h3>
+              <p>
+                Two keypairs, a mandatory owner-key export, and a shareable request for whoever pays
+                for the account. Premium names can be bid on from the same screen.
+              </p>
+            </div>
+            <div>
+              <h3>Contract and node tools</h3>
+              <p>
+                Push any contract action, read its tables, ping endpoints for latency and head
+                block, and clear the ABI cache when a contract changes.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       <section id="screens">
-        <div class="shell">
-          <p class="eyebrow">Screens</p>
-          <h2>What it looks like</h2>
-          <p class="section-lede">
-            Captured from the built extension running against Jungle 4, the EOS testnet — no
-            renders, no mockups.
-          </p>
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Captured from the running extension</h2>
+            <p>
+              Live against Jungle 4, the EOS testnet, watching a real account. No renders, no
+              mockups.
+            </p>
+          </div>
           <div class="shots">
             <figure>
-              <img
-                src="screenshots/home.png"
-                width="2320"
-                height="1520"
-                loading="lazy"
-                alt="Overview screen: available balance, total and staked, CPU, NET and RAM gauges, a warning that owner and active share a key, and the accounts table."
-              />
+              <div class="frame wide">
+                <img
+                  src="screenshots/home.png"
+                  width="2320"
+                  height="1520"
+                  loading="lazy"
+                  alt="Overview screen: available balance of 9,046.7391 EOS, total and staked, CPU, NET and RAM meters, a warning that owner and active share a key, and the account table."
+                />
+              </div>
               <figcaption>
-                Overview — balances, resources and every account on the chain.
+                <b>Overview</b>
+                Balance, resources and every account on the selected chain. The wallet flags an
+                account whose owner and active permissions share one key.
               </figcaption>
             </figure>
             <figure>
-              <img
-                src="screenshots/resources.png"
-                width="2320"
-                height="1400"
-                loading="lazy"
-                alt="Resources screen with CPU, NET and RAM cards, each showing available, used, allowed, stake split and stake, unstake, buy and sell actions."
-              />
+              <div class="frame wide">
+                <img
+                  src="screenshots/resources.png"
+                  width="2320"
+                  height="1400"
+                  loading="lazy"
+                  alt="Resources screen with CPU, NET and RAM cards showing available, used and allowed amounts, stake split between you and others, and stake, unstake, buy and sell actions."
+                />
+              </div>
               <figcaption>
-                Resources — stake, unstake, buy and sell RAM at the live price.
+                <b>Resources</b>
+                Stake and unstake CPU and NET, buy and sell RAM at the current price, and see what
+                others staked to you.
               </figcaption>
             </figure>
             <figure>
-              <img
-                src="screenshots/send-review.png"
-                width="2320"
-                height="1120"
-                loading="lazy"
-                alt="Send screen reviewing a transfer, with recipient, amount, memo and the actions about to be signed."
-              />
-              <figcaption>Send — review every action before it is signed.</figcaption>
+              <div class="frame wide">
+                <img
+                  src="screenshots/tools.png"
+                  width="2320"
+                  height="1400"
+                  loading="lazy"
+                  alt="Tools screen listing backup and restore, manage keys, permissions, create account, contacts, custom tokens, history, smart contracts and the ABI cache."
+                />
+              </div>
+              <figcaption>
+                <b>Tools</b>
+                Backups, keys, permissions, contacts, tokens and contract calls, gathered on one
+                screen instead of buried in settings.
+              </figcaption>
             </figure>
             <figure>
-              <img
-                src="screenshots/tools.png"
-                width="2320"
-                height="1400"
-                loading="lazy"
-                alt="Tools screen listing backup and restore, manage keys, contacts, custom tokens, permissions, history, contract, ping and pending requests."
-              />
-              <figcaption>Tools — the wallet maintenance screens in one place.</figcaption>
+              <div class="frame narrow">
+                <img
+                  src="screenshots/home-narrow.png"
+                  width="760"
+                  height="1240"
+                  loading="lazy"
+                  alt="The same overview at 380 pixels wide, with the chain and account switchers stacked and a bottom tab bar."
+                />
+              </div>
+              <figcaption>
+                <b>Popup width</b>
+                Every screen is built at 360 px first, so the toolbar popup is the whole wallet. The
+                side panel keeps it open beside an app; a full tab adds tables.
+              </figcaption>
             </figure>
           </div>
         </div>
       </section>
 
-      <section id="security">
-        <div class="shell">
-          <p class="eyebrow">Security</p>
-          <h2>The key never crosses the bridge</h2>
-          <p class="section-lede">
-            Signing happens inside the service worker. Pages ask for a signature and get one back;
-            the private key stays where it was decrypted.
-          </p>
-          <div class="grid">
-            <article class="card">
-              <h3>AES-256-GCM keyring</h3>
-              <p>
-                Keys are sealed under a password-derived key — PBKDF2-SHA256, 600,000 rounds — and
-                only the wallet service in the service worker can read them.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Session-scoped unlock</h3>
-              <p>
-                Unlocked keys live in <code>storage.session</code> and are cleared on lock, on the
-                idle timeout and on every browser restart.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Hardened message channel</h3>
-              <p>
-                A guard validates sender id, origin, service key and call path before any proxied
-                service call runs, closing the CVE-2023-40580 class of extension RPC bug.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Request parsing limits</h3>
-              <p>
-                Signing requests over 16 KB are refused and compressed payloads that inflate past
-                500 KB are dropped, so a zip bomb cannot wedge the worker.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Dangerous actions blocked</h3>
-              <p>
-                <code>updateauth</code>, <code>linkauth</code> and <code>deleteauth</code> on owner
-                or active permissions are rejected unless you explicitly opt in.
-              </p>
-            </article>
-            <article class="card">
-              <h3>Auditable by design</h3>
-              <p>
-                Every message and stored item has a zod schema, the threat model lives in
-                <code>docs/security.md</code>, and CI runs typecheck, lint, unit and end-to-end
-                tests on every pull request.
-              </p>
-            </article>
+      <section id="trust">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Two sides of one boundary</h2>
+            <p>
+              Signing happens inside the service worker. A page asks for a signature and receives
+              one. The key it was made with never makes the trip.
+            </p>
           </div>
-          <p class="notice">
-            Nussio Wallet is pre-1.0 software. You are responsible for your own keys: export a
-            backup before you rely on it, and keep your owner key offline.
+
+          <div class="boundary">
+            <div>
+              <h3>Never leaves this machine</h3>
+              <ul>
+                <li>
+                  <b>Private keys</b>, sealed with AES-256-GCM under a key derived from your
+                  password by PBKDF2-SHA256 over 600,000 rounds.
+                </li>
+                <li>
+                  <b>Unlocked keys</b>, held in session storage and dropped on lock, on the idle
+                  timeout and every time the browser closes.
+                </li>
+                <li>
+                  <b>Wallets, contacts, tracked tokens and settings</b>, in extension storage.
+                </li>
+              </ul>
+            </div>
+            <div class="out">
+              <h3>Leaves only when you approve</h3>
+              <ul>
+                <li>
+                  <b>A signed transaction</b>, once you have read the actions and accepted them.
+                </li>
+                <li><b>Chain reads</b>, sent to the API nodes you configured and can change.</li>
+                <li>
+                  <b>Sealed session replies</b>, for apps you have logged into with a signing
+                  request.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ledger" style="margin-top: 3rem">
+            <div>
+              <h3>Guarded message channel</h3>
+              <p>
+                Every proxied service call is checked for sender id, extension origin, service key
+                and call path before it runs, which closes the extension RPC hole behind
+                CVE-2023-40580.
+              </p>
+            </div>
+            <div>
+              <h3>Bounded request parsing</h3>
+              <p>
+                Signing requests above 16 KB are refused, and a compressed payload that inflates
+                past 500 KB is dropped, so no zip bomb reaches the worker.
+              </p>
+            </div>
+            <div>
+              <h3>Permission changes blocked</h3>
+              <p>
+                <code>updateauth</code>, <code>linkauth</code> and <code>deleteauth</code> against
+                owner or active are rejected unless you turn them on yourself.
+              </p>
+            </div>
+            <div>
+              <h3>Checked on every change</h3>
+              <p>
+                Each message and stored item carries a zod schema, CI runs typecheck, lint, unit and
+                end-to-end tests on every pull request, and the
+                <a href="https://github.com/lshaf/nussio-wallet/blob/main/docs/security.md"
+                  >threat model</a
+                >
+                is written down rather than implied.
+              </p>
+            </div>
+          </div>
+
+          <p class="caveat">
+            Nussio Wallet is pre-1.0 and you are the only custodian. Export a backup before you rely
+            on it, and keep the owner key somewhere offline.
           </p>
         </div>
       </section>
 
       <section id="install">
-        <div class="shell">
-          <p class="eyebrow">Install</p>
-          <h2>Download and load it in about two minutes</h2>
-          <p class="section-lede">
-            No store listing yet. These builds are packaged by GitHub Actions from the latest
-            release, after the same typecheck, lint, unit and end-to-end run the repository uses.
-          </p>
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Two minutes, loaded by hand</h2>
+            <p>
+              There is no store listing yet. GitHub Actions packages each release after the same
+              typecheck, lint, unit and end-to-end run the repository uses.
+            </p>
+          </div>
 
-          <div class="picker" role="tablist" aria-label="Choose your browser">
+          <div class="picker" role="group" aria-label="Choose your browser">
             <button
               type="button"
-              role="tab"
               id="tab-chrome"
               data-browser="chrome"
               aria-controls="panel-chrome"
-              aria-selected="true"
+              aria-pressed="true"
             >
-              Chrome · Edge · Brave
+              Chrome, Edge, Brave
             </button>
             <button
               type="button"
-              role="tab"
               id="tab-firefox"
               data-browser="firefox"
               aria-controls="panel-firefox"
-              aria-selected="false"
+              aria-pressed="false"
             >
               Firefox
             </button>
           </div>
-
           <p class="detected" data-detected hidden></p>
 
-          <div class="panel" id="panel-chrome" role="tabpanel" aria-labelledby="tab-chrome">
+          <div id="panel-chrome" role="region" aria-label="Chrome, Edge and Brave install">
             <div class="download">
-              <a class="btn btn-primary" href="downloads/nussio-wallet-chrome.zip" download>
+              <a class="btn" href="downloads/nussio-wallet-chrome.zip" download>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 4v11" />
                   <path d="M7 12l5 5 5-5" />
@@ -991,26 +1089,33 @@
                 </svg>
                 Download for Chrome
               </a>
-              <p class="download-meta" data-meta="chrome">
-                Manifest V3 · Chrome, Edge, Brave, Opera
-              </p>
+              <span class="download-meta" data-meta="chrome">Manifest V3 build</span>
             </div>
             <ol class="steps">
-              <li>Unzip the download somewhere you can keep it — the folder has to stay put.</li>
               <li>
-                Open <span class="mono">chrome://extensions</span>, turn on Developer mode, choose
-                Load unpacked and pick the unpacked folder.
+                <span
+                  >Unzip it somewhere you can keep. Chrome loads it from that folder every
+                  time.</span
+                >
               </li>
               <li>
-                Click the toolbar icon, open the wallet, set a password, enable a chain and import
-                or watch an account.
+                <span>
+                  Open <span class="mono">chrome://extensions</span>, turn on <b>Developer mode</b>,
+                  then <b>Load unpacked</b> and pick the folder.
+                </span>
+              </li>
+              <li>
+                <span>
+                  Open the wallet from the toolbar icon, set a password, enable a chain, then import
+                  or watch an account.
+                </span>
               </li>
             </ol>
           </div>
 
-          <div class="panel" id="panel-firefox" role="tabpanel" aria-labelledby="tab-firefox">
+          <div id="panel-firefox" role="region" aria-label="Firefox install">
             <div class="download">
-              <a class="btn btn-primary" href="downloads/nussio-wallet-firefox.zip" download>
+              <a class="btn" href="downloads/nussio-wallet-firefox.zip" download>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 4v11" />
                   <path d="M7 12l5 5 5-5" />
@@ -1018,65 +1123,56 @@
                 </svg>
                 Download for Firefox
               </a>
-              <p class="download-meta" data-meta="firefox">Manifest V2 · unsigned build</p>
+              <span class="download-meta" data-meta="firefox">Manifest V2 build, unsigned</span>
             </div>
             <ol class="steps">
-              <li>Unzip the download.</li>
+              <li><span>Unzip it.</span></li>
               <li>
-                Open <span class="mono">about:debugging#/runtime/this-firefox</span>, choose Load
-                Temporary Add-on and pick <span class="mono">manifest.json</span> inside the folder.
+                <span>
+                  Open <span class="mono">about:debugging#/runtime/this-firefox</span>, choose
+                  <b>Load Temporary Add-on</b> and pick <span class="mono">manifest.json</span> in
+                  the folder.
+                </span>
               </li>
               <li>
-                Click the toolbar icon, open the wallet, set a password, enable a chain and import
-                or watch an account.
+                <span>
+                  Open the wallet from the toolbar icon, set a password, enable a chain, then import
+                  or watch an account.
+                </span>
               </li>
             </ol>
-            <p class="notice">
-              The build is not signed by Mozilla, so Firefox loads it as a temporary add-on and
-              drops it on restart. For a permanent install use Firefox Developer Edition or Nightly
-              with
-              <span class="mono">xpinstall.signatures.required</span> set to false, or build and
-              sign it yourself.
+            <p class="caveat">
+              Mozilla has not signed this build, so Firefox treats it as temporary and forgets it on
+              restart. To keep it, use Developer Edition or Nightly with
+              <span class="mono">xpinstall.signatures.required</span> set to false, or sign a build
+              yourself.
             </p>
           </div>
 
-          <p class="alt-link" data-alt hidden></p>
+          <p class="after-code" data-alt hidden></p>
 
-          <figure class="setup-shot">
-            <img
-              src="screenshots/setup-chains.png"
-              width="2320"
-              height="1520"
-              loading="lazy"
-              alt="Setup screen listing blockchains with Jungle 4 selected and its node validated, showing Connected, chain id matches."
-            />
-            <figcaption>
-              First run: pick your chains and validate the node before anything else.
-            </figcaption>
-          </figure>
-
-          <pre><code><span class="c"># or build from source</span>
+          <pre><code><span class="c"># or build it yourself</span>
 git clone https://github.com/lshaf/nussio-wallet.git
 cd nussio-wallet
 pnpm install
 pnpm build          <span class="c"># dist/chrome-mv3</span>
 pnpm build:firefox  <span class="c"># dist/firefox-mv2</span></code></pre>
 
-          <p class="section-note">
-            Older tagged builds live on the
+          <p class="after-code">
+            Older tagged builds stay on the
             <a href="https://github.com/lshaf/nussio-wallet/releases">releases page</a>.
           </p>
         </div>
       </section>
     </main>
 
-    <footer class="site">
-      <div class="shell">
+    <footer>
+      <div class="wrap">
         <p>
-          MIT licensed. Nussio Wallet is built on the feature set and protocols of
-          <a href="https://github.com/greymass/anchor">Anchor Wallet</a> by Greymass (MIT) and
-          reuses its locales, chain logos and protocol handling. It is not affiliated with or
-          endorsed by Greymass. The Nussio Wallet name and icon are its own.
+          MIT licensed. Built on the feature set and protocols of
+          <a href="https://github.com/greymass/anchor">Anchor Wallet</a> by Greymass, also MIT, and
+          reusing its locales, chain logos and protocol handling. Not affiliated with or endorsed by
+          Greymass. The Nussio Wallet name and icon are its own.
         </p>
         <nav>
           <a href="https://github.com/lshaf/nussio-wallet">Source</a>
@@ -1087,7 +1183,7 @@ pnpm build:firefox  <span class="c"># dist/firefox-mv2</span></code></pre>
           <a href="https://github.com/lshaf/nussio-wallet/blob/main/PRIVACY.md">Privacy</a>
           <a href="https://github.com/lshaf/nussio-wallet/blob/main/CHANGELOG.md">Changelog</a>
           <a href="https://github.com/lshaf/nussio-wallet/blob/main/docs/dapp-integration.md"
-            >For dApps</a
+            >For apps</a
           >
           <a href="https://github.com/lshaf/nussio-wallet/blob/main/CONTRIBUTING.md"
             >Contributing</a
@@ -1095,6 +1191,7 @@ pnpm build:firefox  <span class="c"># dist/firefox-mv2</span></code></pre>
         </nav>
       </div>
     </footer>
+
     <script>
       (function () {
         var panels = {
@@ -1104,32 +1201,34 @@ pnpm build:firefox  <span class="c"># dist/firefox-mv2</span></code></pre>
         var tabs = Array.prototype.slice.call(document.querySelectorAll('.picker button'));
         var detected = document.querySelector('[data-detected]');
         var alt = document.querySelector('[data-alt]');
-        var labels = { chrome: 'Chrome, Edge or Brave', firefox: 'Firefox' };
+        var names = { chrome: 'Chrome, Edge or Brave', firefox: 'Firefox' };
+        var short = { chrome: 'Chrome', firefox: 'Firefox' };
         var ua = navigator.userAgent;
         var guess = /Firefox\/|FxiOS/.test(ua) ? 'firefox' : 'chrome';
-        var supported = !(/Safari/.test(ua) && !/Chrome|Chromium|Edg|OPR/.test(ua));
+        var chromium = /Chrome|Chromium|Edg|OPR/.test(ua);
 
         function select(name, announce) {
           Object.keys(panels).forEach(function (key) {
             panels[key].hidden = key !== name;
           });
           tabs.forEach(function (tab) {
-            tab.setAttribute('aria-selected', String(tab.dataset.browser === name));
+            tab.setAttribute('aria-pressed', String(tab.dataset.browser === name));
           });
           var other = name === 'chrome' ? 'firefox' : 'chrome';
           alt.innerHTML =
-            'Using ' +
-            labels[other] +
+            'On ' +
+            names[other] +
             ' instead? <a href="#install" data-switch="' +
             other +
-            '">Get the ' +
-            labels[other].split(',')[0] +
+            '">Take the ' +
+            short[other] +
             ' build</a>.';
           alt.hidden = false;
           if (announce) {
-            detected.innerHTML = supported
-              ? 'Detected <strong>' + labels[name] + '</strong>.'
-              : 'Your browser is not supported — Nussio Wallet needs a Chromium browser or Firefox.';
+            detected.textContent =
+              guess === 'firefox' || chromium
+                ? 'This browser looks like ' + names[name] + '.'
+                : 'Nussio Wallet needs a Chromium browser or Firefox. Pick a build to read the steps.';
             detected.hidden = false;
           }
         }
@@ -1159,14 +1258,34 @@ pnpm build:firefox  <span class="c"># dist/firefox-mv2</span></code></pre>
             document.querySelectorAll('[data-meta]').forEach(function (node) {
               var build = info[node.dataset.meta];
               if (!build) return;
-              var parts = ['v' + info.version];
-              if (build.size) parts.push((build.size / 1048576).toFixed(1) + ' MB');
-              if (info.built) parts.push('built ' + info.built.slice(0, 10));
               var base = node.textContent.replace(/\s+/g, ' ').trim();
-              node.textContent = base + ' · ' + parts.join(' · ');
+              var size = build.size ? ', ' + (build.size / 1048576).toFixed(1) + ' MB' : '';
+              node.textContent = base + ', version ' + info.version + size;
             });
           })
           .catch(function () {});
+
+        var marks = Array.prototype.slice.call(document.querySelectorAll('.rail a'));
+        if (marks.length && 'IntersectionObserver' in window) {
+          var observer = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                marks.forEach(function (mark) {
+                  mark.setAttribute(
+                    'aria-current',
+                    String(mark.getAttribute('href') === '#' + entry.target.id),
+                  );
+                });
+              });
+            },
+            { rootMargin: '-45% 0px -45% 0px' },
+          );
+          ['top', 'does', 'screens', 'trust', 'install'].forEach(function (id) {
+            var node = document.getElementById(id);
+            if (node) observer.observe(node);
+          });
+        }
       })();
     </script>
   </body>
