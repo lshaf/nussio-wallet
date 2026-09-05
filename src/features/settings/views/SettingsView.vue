@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select';
 import { browser } from 'wxt/browser';
 import { useSettingsService } from '@/composables/useServices';
+import { availableLocales } from '@/lib/i18n';
 import type { Settings } from '@/lib/storage/schemas';
 import { useAppStore } from '@/stores/app.store';
 import ExplorerPanel from '../components/ExplorerPanel.vue';
@@ -31,6 +32,7 @@ const router = useRouter();
 const app = useAppStore();
 const settingsService = useSettingsService();
 
+const locales = availableLocales();
 const idleOptions = [0, 5, 15, 30, 60];
 const refreshOptions = [0, 10, 30, 60, 120, 300];
 const resetText = ref('');
@@ -70,6 +72,10 @@ function setToggle(key: BooleanSetting, value: boolean | 'indeterminate'): void 
   void app.updateSettings({ [key]: value === true });
 }
 
+function setLanguageSetting(value: unknown): void {
+  if (typeof value === 'string') void app.updateSettings({ lang: value, langChosen: true });
+}
+
 function setNumber(key: 'idleTimeoutMinutes' | 'refreshRateSeconds', value: unknown): void {
   if (typeof value === 'string') void app.updateSettings({ [key]: Number(value) });
 }
@@ -94,6 +100,28 @@ async function reset(): Promise<void> {
       <span class="flex-1 font-medium">{{ t('nav_chains') }}</span>
       <ChevronRight class="text-muted-foreground size-4" />
     </RouterLink>
+
+    <section class="flex flex-col gap-3">
+      <h2 class="eyebrow">{{ t('settings_language') }}</h2>
+      <div
+        class="bg-card flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3"
+      >
+        <Label for="setting-language">{{ t('settings_language_label') }}</Label>
+        <Select :model-value="app.settings.lang" @update:model-value="setLanguageSetting">
+          <SelectTrigger id="setting-language" class="w-44" size="sm">
+            <span class="truncate text-sm">{{
+              locales.find((locale) => locale.code === app.settings.lang)?.label ??
+              app.settings.lang
+            }}</span>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="locale in locales" :key="locale.code" :value="locale.code">{{
+              locale.label
+            }}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </section>
 
     <section v-for="group in toggles" :key="group.section" class="flex flex-col gap-3">
       <h2 class="eyebrow">{{ t(group.section) }}</h2>

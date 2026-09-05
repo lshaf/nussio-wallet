@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useChainService, useSettingsService, useWalletService } from '@/composables/useServices';
+import { setLanguage } from '@/lib/i18n';
 import { blockchainsItem, settingsItem, unlockedItem, walletsItem } from '@/lib/storage/items';
 import { settingsSchema, type Blockchain, type Settings, type Wallet } from '@/lib/storage/schemas';
 import type { WalletRef, WalletStatus } from '@/services/wallet.service';
@@ -64,6 +65,7 @@ export const useAppStore = defineStore('app', () => {
       watching = true;
       settingsItem.watch((value) => {
         settings.value = value;
+        void setLanguage(value.lang);
       });
       blockchainsItem.watch((value) => {
         chains.value = value;
@@ -116,6 +118,7 @@ export const useAppStore = defineStore('app', () => {
 
   async function updateSettings(patch: Partial<Settings>): Promise<void> {
     settings.value = await settingsService.update(patch);
+    if (patch.lang) await setLanguage(settings.value.lang);
   }
 
   return {

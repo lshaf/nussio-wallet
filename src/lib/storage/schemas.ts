@@ -61,6 +61,7 @@ export type Wallet = z.infer<typeof walletSchema>;
 
 export const settingsSchema = z.object({
   lang: z.string().default('en-US'),
+  langChosen: z.boolean().default(false),
   walletInitialized: z.boolean().default(false),
   chainId: chainIdSchema.nullable().default(null),
   account: accountNameSchema.nullable().default(null),

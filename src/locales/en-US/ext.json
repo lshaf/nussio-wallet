@@ -692,5 +692,6 @@
   "abis_description": "Contract interfaces are cached for 15 minutes so signing requests resolve quickly.",
   "abis_count": "{{count}} cached",
   "abis_clear": "Clear cache",
-  "abis_empty": "Nothing cached yet"
+  "abis_empty": "Nothing cached yet",
+  "settings_language_label": "Interface language"
 }
