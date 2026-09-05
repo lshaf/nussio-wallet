@@ -4,10 +4,12 @@ import { useTranslation } from 'i18next-vue';
 import DataList, { type DataListItem } from '@/components/shared/DataList.vue';
 import ResourceGauge from '@/components/shared/ResourceGauge.vue';
 import { Button } from '@/components/ui/button';
+import { useResourceState } from '@/composables/useChainData';
 import {
   formatAsset,
   formatBytes,
   formatMicroseconds,
+  formatNumber,
   parseAsset,
   percentage,
 } from '@/lib/antelope/format';
@@ -21,6 +23,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   stake: [kind: 'cpu' | 'net'];
   unstake: [kind: 'cpu' | 'net'];
+  rent: [mode: 'powerup' | 'rex', kind: 'cpu' | 'net'];
   claim: [];
 }>();
 const { t } = useTranslation('ext');
@@ -54,6 +57,26 @@ const refundReadyAt = computed(() => {
   return new Date(Date.parse(`${props.data.refund.requestTime}Z`) + 72 * 3600 * 1000);
 });
 
+const state = useResourceState(() => app.settings.chainId);
+const powerupPrice = computed(() => {
+  const info = state.data.value?.powerup;
+  if (!info) return undefined;
+  return props.kind === 'cpu' ? info.cpuPricePerMs : info.netPricePerKb;
+});
+const rexPrice = computed(() => {
+  const info = state.data.value?.rex;
+  if (!info) return undefined;
+  return props.kind === 'cpu' ? info.cpuPricePerMs : info.netPricePerKb;
+});
+const priceUnit = computed(() => (props.kind === 'cpu' ? t('rent_unit_ms') : t('rent_unit_kb')));
+
+function priceLabel(price: number | undefined): string | null {
+  if (price === undefined) return null;
+  const chain = app.currentChain;
+  if (!chain) return null;
+  return `${formatNumber(price, Math.max(chain.tokenPrecision, 4))} ${chain.symbol}`;
+}
+
 const stakeItems = computed<DataListItem[]>(() => {
   const list: DataListItem[] = [
     { label: t('resources_self_staked'), value: pretty(selfStaked.value) },
@@ -61,6 +84,16 @@ const stakeItems = computed<DataListItem[]>(() => {
   ];
   if (refunding.value)
     list.push({ label: t('resources_refunding'), value: pretty(refunding.value), tone: 'warning' });
+  if (powerupPrice.value !== undefined)
+    list.push({
+      label: t('resources_powerup_price', { unit: priceUnit.value }),
+      value: priceLabel(powerupPrice.value),
+    });
+  if (rexPrice.value !== undefined)
+    list.push({
+      label: t('resources_rex_price', { unit: priceUnit.value }),
+      value: priceLabel(rexPrice.value),
+    });
   return list;
 });
 </script>
@@ -96,12 +129,21 @@ const stakeItems = computed<DataListItem[]>(() => {
     </div>
     <DataList :items="stakeItems" />
     <div class="flex flex-wrap gap-2">
-      <Button v-if="features.includes('powerup')" size="sm" disabled>{{
-        t('resources_action_powerup')
-      }}</Button>
-      <Button v-if="features.includes('rex')" size="sm" variant="secondary" disabled>{{
-        t('resources_action_rent')
-      }}</Button>
+      <Button
+        v-if="features.includes('powerup') && powerupPrice !== undefined"
+        size="sm"
+        :disabled="!canSign"
+        @click="emit('rent', 'powerup', kind)"
+        >{{ t('resources_action_powerup') }}</Button
+      >
+      <Button
+        v-if="features.includes('rex') && rexPrice !== undefined"
+        size="sm"
+        variant="secondary"
+        :disabled="!canSign"
+        @click="emit('rent', 'rex', kind)"
+        >{{ t('resources_action_rent') }}</Button
+      >
       <Button size="sm" variant="outline" :disabled="!canSign" @click="emit('stake', kind)">{{
         t('resources_action_stake')
       }}</Button>

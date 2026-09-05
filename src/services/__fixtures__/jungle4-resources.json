@@ -1,0 +1,201 @@
+{
+  "rammarket": {
+    "rows": [
+      "00407a10f35a00000452414d434f524508c07f860d0000000052414d00000000000000000000e03fdd97ff8a1b00000004454f5300000000000000000000e03f"
+    ],
+    "more": false,
+    "next_key": ""
+  },
+  "powup": {
+    "rows": [
+      "00000030d53b0a5a000000a0724e180900000010a5d4e800000000a0724e1809000000a0724e18090000dd751562dd751562000000000000004080510100809698000000000004454f5300000000002f68590000000004454f5300000000385381c4080000007951f0320900000032979b6a000030d53b0a5a000000a0724e180900000010a5d4e800000000a0724e1809000000a0724e18090000dd751562dd75156200000000000000408051010040787d010000000004454f53000000008017b42c0000000004454f5300000000172daff07100000075084a877400000032979b6a01000000e80300000000000004454f5300000000"
+    ],
+    "more": false,
+    "next_key": ""
+  },
+  "rexpool": {
+    "rows": [
+      "00023b00000000000004454f53000000004a03ffe4af00000004454f53000000004901ec0b0000000004454f53000000004c3effe4af00000004454f53000000003ae0c6c53ba81a000452455800000000809698000000000004454f5300000000ca00000000000000"
+    ],
+    "more": false,
+    "next_key": ""
+  },
+  "account": {
+    "account_name": "greymassfuel",
+    "head_block_num": 285222623,
+    "head_block_time": "2026-09-05T04:31:21.000",
+    "privileged": false,
+    "last_code_update": "1970-01-01T00:00:00.000",
+    "created": "2022-12-01T22:12:29.000",
+    "core_liquid_balance": "9046.7391 EOS",
+    "ram_quota": 9377,
+    "net_weight": 100150000,
+    "cpu_weight": 2500510000,
+    "net_limit": {
+      "used": 544,
+      "available": 154385509,
+      "max": 154386053,
+      "last_usage_update_time": "2026-09-04T12:14:55.000",
+      "current_used": 176
+    },
+    "cpu_limit": {
+      "used": 3543,
+      "available": 785259,
+      "max": 788802,
+      "last_usage_update_time": "2026-09-04T12:14:55.000",
+      "current_used": 1141
+    },
+    "ram_usage": 5543,
+    "permissions": [
+      {
+        "perm_name": "active",
+        "parent": "owner",
+        "required_auth": {
+          "threshold": 1,
+          "keys": [
+            {
+              "key": "EOS8dKFh1NaLF3mwRVbV69ViYvza2hxiHZrWRuMiSZJT1cRgeaVpc",
+              "weight": 1
+            }
+          ],
+          "accounts": [],
+          "waits": []
+        },
+        "linked_actions": []
+      },
+      {
+        "perm_name": "buyram",
+        "parent": "active",
+        "required_auth": {
+          "threshold": 1,
+          "keys": [
+            {
+              "key": "EOS82EHUh2YMR51Hu6JRJWpQUhWQA3KarnePHuyi29AF9iJmoe6nK",
+              "weight": 1
+            }
+          ],
+          "accounts": [],
+          "waits": []
+        },
+        "linked_actions": [
+          {
+            "account": "eosio",
+            "action": "buyrambytes"
+          },
+          {
+            "account": "eosio",
+            "action": "buyram"
+          }
+        ]
+      },
+      {
+        "perm_name": "cosign",
+        "parent": "active",
+        "required_auth": {
+          "threshold": 1,
+          "keys": [
+            {
+              "key": "EOS5oJPYiicjeGktsfhyiRZmgRGRC5MDKBV7ZpBXpny4JM1fLx8PZ",
+              "weight": 1
+            },
+            {
+              "key": "EOS66gpM645JBYGFj8JzvUMtYXhMPq9UuujGNWCEZ1BTc39doEsXn",
+              "weight": 1
+            },
+            {
+              "key": "EOS8B7BimwuEqut87ojgyDP2yepND3tbjKaQAH2UgdDyND1BrcmCp",
+              "weight": 1
+            },
+            {
+              "key": "EOS8Ym3MwFnAgPgDZUB9J9FwW3SrMNhr3JDv9qZA3R7nUC7DnBvm4",
+              "weight": 1
+            }
+          ],
+          "accounts": [],
+          "waits": []
+        },
+        "linked_actions": [
+          {
+            "account": "greymassnoop",
+            "action": "noop"
+          },
+          {
+            "account": "lightacct.gm",
+            "action": "authkey"
+          }
+        ]
+      },
+      {
+        "perm_name": "manager",
+        "parent": "active",
+        "required_auth": {
+          "threshold": 1,
+          "keys": [
+            {
+              "key": "EOS4uMiF5namrkke5EgGsewC6JALDAUa7G7Y2oGGx9oMiKePpBUcx",
+              "weight": 1
+            },
+            {
+              "key": "EOS54ReGBWttvnXw7Biu5BmARMRbeqcvkD9JnWQb7rgRBrhkSj9xq",
+              "weight": 1
+            },
+            {
+              "key": "EOS5ZJoZco9STULr5A8B41a5XAdxAyXGWpUrDchZvBaxiNVDpXXtc",
+              "weight": 1
+            },
+            {
+              "key": "EOS6XxtW5F3zk7wRMrQs7wEPmd6dDkh6eLYDN1k3mKorm7uewAvLo",
+              "weight": 1
+            }
+          ],
+          "accounts": [],
+          "waits": []
+        },
+        "linked_actions": [
+          {
+            "account": "core.vaulta",
+            "action": "powerup"
+          },
+          {
+            "account": "core.vaulta",
+            "action": "buyrambytes"
+          }
+        ]
+      },
+      {
+        "perm_name": "owner",
+        "parent": "",
+        "required_auth": {
+          "threshold": 1,
+          "keys": [
+            {
+              "key": "EOS8dKFh1NaLF3mwRVbV69ViYvza2hxiHZrWRuMiSZJT1cRgeaVpc",
+              "weight": 1
+            }
+          ],
+          "accounts": [],
+          "waits": []
+        },
+        "linked_actions": []
+      }
+    ],
+    "total_resources": {
+      "owner": "greymassfuel",
+      "net_weight": "10015.0000 EOS",
+      "cpu_weight": "250051.0000 EOS",
+      "ram_bytes": 7977
+    },
+    "self_delegated_bandwidth": null,
+    "refund_request": null,
+    "voter_info": null,
+    "rex_info": null,
+    "subjective_cpu_bill_limit": {
+      "used": 0,
+      "available": 0,
+      "max": 0,
+      "last_usage_update_time": "2000-01-01T00:00:00.000",
+      "current_used": 0
+    },
+    "eosio_any_linked_actions": []
+  }
+}

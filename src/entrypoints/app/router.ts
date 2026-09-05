@@ -61,6 +61,11 @@ export const router = createRouter({
           component: () => import('@/features/chains/views/ChainsView.vue'),
         },
         {
+          path: 'governance',
+          name: 'governance',
+          component: () => import('@/features/governance/views/GovernanceView.vue'),
+        },
+        {
           path: 'tools',
           name: 'tools',
           component: () => import('@/features/tools/views/ToolsView.vue'),

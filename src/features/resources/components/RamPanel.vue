@@ -9,7 +9,8 @@ import { formatBytes, formatNumber, percentage } from '@/lib/antelope/format';
 import type { AccountData } from '@/services/account.service';
 import { useAppStore } from '@/stores/app.store';
 
-const props = defineProps<{ data: AccountData }>();
+const props = defineProps<{ data: AccountData; canSign?: boolean }>();
+const emit = defineEmits<{ trade: [mode: 'buy' | 'sell'] }>();
 const { t } = useTranslation('ext');
 const app = useAppStore();
 const price = useRamPrice(() => app.settings.chainId);
@@ -69,8 +70,12 @@ const perKb = computed(() => {
           ]"
         />
         <div class="flex gap-2">
-          <Button size="sm" variant="outline" disabled>{{ t('resources_action_buy') }}</Button>
-          <Button size="sm" variant="outline" disabled>{{ t('resources_action_sell') }}</Button>
+          <Button size="sm" variant="outline" :disabled="!canSign" @click="emit('trade', 'buy')">{{
+            t('resources_action_buy')
+          }}</Button>
+          <Button size="sm" variant="outline" :disabled="!canSign" @click="emit('trade', 'sell')">{{
+            t('resources_action_sell')
+          }}</Button>
         </div>
       </div>
     </div>

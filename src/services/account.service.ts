@@ -68,6 +68,13 @@ export interface AccountService {
   getAccountData(chainId: string, account: string): Promise<AccountData | undefined>;
   getBalances(chainId: string, account: string): Promise<TokenBalance[]>;
   findAccountsByKey(chainId: string, publicKey: string): Promise<AccountMatch[]>;
+  getDelegations(chainId: string, account: string): Promise<Delegation[]>;
+}
+
+export interface Delegation {
+  to: string;
+  cpu: string;
+  net: string;
 }
 
 const SERVICE_KEY = 'AccountService';
@@ -316,6 +323,22 @@ export const accountService: AccountService = {
       symbol: balance.symbol,
       amount: balance.amount ?? `0 ${balance.symbol}`,
     }));
+  },
+
+  async getDelegations(chainId, account) {
+    const chain = await chainFor(chainId);
+    const result = await clientFor(chain.node).v1.chain.get_table_rows({
+      code: chain.systemContract,
+      scope: account,
+      table: 'delband',
+      json: true,
+      limit: 500,
+    });
+    return z
+      .array(delbandRowSchema)
+      .parse(result.rows)
+      .filter((row) => row.to !== account)
+      .map((row) => ({ to: row.to, cpu: row.cpu_weight, net: row.net_weight }));
   },
 
   async findAccountsByKey(chainId, publicKey) {

@@ -1,6 +1,6 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
-import { useChainService } from '@/composables/useServices';
+import { useChainService, useResourcesService } from '@/composables/useServices';
 
 type Maybe = MaybeRefOrGetter<string | null | undefined>;
 
@@ -30,6 +30,22 @@ export function useRamPrice(chainId: Maybe) {
         queryFn: () => chainService.getRamPrice(chain!),
         enabled: Boolean(chain),
         refetchInterval: 60_000,
+      };
+    }),
+  );
+}
+
+export function useResourceState(chainId: Maybe) {
+  const resourcesService = useResourcesService();
+  return useQuery(
+    computed(() => {
+      const chain = toValue(chainId);
+      return {
+        queryKey: ['resource-state', chain],
+        queryFn: () => resourcesService.getState(chain!),
+        enabled: Boolean(chain),
+        refetchInterval: 60_000,
+        retry: 1,
       };
     }),
   );

@@ -81,3 +81,39 @@ test('key tools, contacts and a backup round trip', async ({ appPage: page }) =>
   await page.getByRole('link', { name: 'Tools' }).click();
   await expect(page.getByText('Never')).toHaveCount(0);
 });
+
+test('resource rental and RAM dialogs price live on jungle4', async ({ appPage: page }) => {
+  await page.getByRole('button', { name: 'Set up a wallet' }).click();
+  await page.locator('#password').fill('correct horse battery');
+  await page.locator('#password-confirm').fill('correct horse battery');
+  await page.getByRole('button', { name: 'Set password' }).click();
+
+  await page.locator('#chain-jungle4').click();
+  await page.getByRole('button', { name: 'Enable 1 blockchain' }).click();
+  await page.getByRole('tab', { name: 'Watch' }).click();
+  await page.locator('#watch-account').fill('eosio');
+  await page.getByRole('button', { name: 'Find' }).click();
+  await expect(page.getByText('eosio@active')).toBeVisible({ timeout: 30_000 });
+  await page.getByRole('button', { name: 'Import', exact: true }).click();
+
+  await page.getByRole('link', { name: 'Resources' }).click();
+  await expect(page.getByText('RAM quota')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText('PowerUp per ms').first()).toBeVisible({ timeout: 30_000 });
+
+  await page.getByRole('button', { name: 'PowerUp' }).first().click();
+  const powerup = page.getByRole('dialog');
+  await expect(powerup.getByText('PowerUp CPU')).toBeVisible();
+  await powerup.locator('#rent-amount').fill('50');
+  await expect(powerup.getByText(/costs about .* EOS/)).toBeVisible({ timeout: 30_000 });
+  await powerup.getByRole('button', { name: 'Cancel' }).click();
+
+  await page.getByRole('button', { name: 'Buy', exact: true }).click();
+  const ram = page.getByRole('dialog');
+  await expect(ram.getByText('Buy RAM')).toBeVisible();
+  await ram.locator('#ram-amount').fill('4096');
+  await expect(ram.getByText(/costs about .* EOS/)).toBeVisible({ timeout: 30_000 });
+  await ram.getByRole('tab', { name: 'By EOS' }).click();
+  await ram.locator('#ram-amount').fill('1');
+  await expect(ram.getByText(/costs about 1\.0000 EOS/)).toBeVisible({ timeout: 30_000 });
+  await ram.getByRole('button', { name: 'Cancel' }).click();
+});

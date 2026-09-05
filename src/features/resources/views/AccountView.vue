@@ -14,7 +14,10 @@ import type { ActionInput } from '@/lib/antelope/transaction';
 import { useAppStore } from '@/stores/app.store';
 import TransactionResultDialog from '@/features/transactions/components/TransactionResultDialog.vue';
 import { useTransact } from '@/features/transactions/composables/useTransact';
+import DelegationsPanel from '../components/DelegationsPanel.vue';
+import RamDialog from '../components/RamDialog.vue';
 import RamPanel from '../components/RamPanel.vue';
+import RentDialog from '../components/RentDialog.vue';
 import ResourcePanel from '../components/ResourcePanel.vue';
 import StakeDialog from '../components/StakeDialog.vue';
 
@@ -32,6 +35,11 @@ const canSign = computed(() => isCurrent.value && transact.canSign.value);
 const stakeOpen = ref(false);
 const stakeKind = ref<'cpu' | 'net'>('cpu');
 const stakeMode = ref<'stake' | 'unstake'>('stake');
+const rentOpen = ref(false);
+const rentKind = ref<'cpu' | 'net'>('cpu');
+const rentMode = ref<'powerup' | 'rex'>('powerup');
+const ramOpen = ref(false);
+const ramMode = ref<'buy' | 'sell'>('buy');
 const unlockOpen = ref(false);
 let lastActions: ActionInput[] = [];
 
@@ -52,6 +60,17 @@ function openStake(mode: 'stake' | 'unstake', kind: 'cpu' | 'net'): void {
   stakeMode.value = mode;
   stakeKind.value = kind;
   stakeOpen.value = true;
+}
+
+function openRent(mode: 'powerup' | 'rex', kind: 'cpu' | 'net'): void {
+  rentMode.value = mode;
+  rentKind.value = kind;
+  rentOpen.value = true;
+}
+
+function openRam(mode: 'buy' | 'sell'): void {
+  ramMode.value = mode;
+  ramOpen.value = true;
 }
 
 async function run(actions: ActionInput[]): Promise<void> {
@@ -126,6 +145,7 @@ function claim(): void {
           :can-sign="canSign"
           @stake="(kind) => openStake('stake', kind)"
           @unstake="(kind) => openStake('unstake', kind)"
+          @rent="openRent"
           @claim="claim"
         />
         <ResourcePanel
@@ -134,21 +154,65 @@ function claim(): void {
           :can-sign="canSign"
           @stake="(kind) => openStake('stake', kind)"
           @unstake="(kind) => openStake('unstake', kind)"
+          @rent="openRent"
           @claim="claim"
         />
-        <RamPanel :data="data" class="md:col-span-2" />
+        <RamPanel :data="data" :can-sign="canSign" class="md:col-span-2" @trade="openRam" />
+        <DelegationsPanel
+          v-if="app.currentChain"
+          class="md:col-span-2"
+          :chain="app.currentChain"
+          :account="account"
+          :can-sign="canSign"
+          :signer="
+            app.currentWallet
+              ? {
+                  actor: app.currentWallet.account,
+                  permission: app.currentWallet.authorization,
+                }
+              : undefined
+          "
+          @confirm="run"
+        />
       </div>
 
-      <StakeDialog
-        v-if="app.currentChain && app.currentWallet"
-        v-model:open="stakeOpen"
-        :chain="app.currentChain"
-        :data="data"
-        :kind="stakeKind"
-        :mode="stakeMode"
-        :signer="{ actor: app.currentWallet.account, permission: app.currentWallet.authorization }"
-        @confirm="run"
-      />
+      <template v-if="app.currentChain && app.currentWallet">
+        <StakeDialog
+          v-model:open="stakeOpen"
+          :chain="app.currentChain"
+          :data="data"
+          :kind="stakeKind"
+          :mode="stakeMode"
+          :signer="{
+            actor: app.currentWallet.account,
+            permission: app.currentWallet.authorization,
+          }"
+          @confirm="run"
+        />
+        <RentDialog
+          v-model:open="rentOpen"
+          :chain="app.currentChain"
+          :data="data"
+          :kind="rentKind"
+          :mode="rentMode"
+          :signer="{
+            actor: app.currentWallet.account,
+            permission: app.currentWallet.authorization,
+          }"
+          @confirm="run"
+        />
+        <RamDialog
+          v-model:open="ramOpen"
+          :chain="app.currentChain"
+          :data="data"
+          :mode="ramMode"
+          :signer="{
+            actor: app.currentWallet.account,
+            permission: app.currentWallet.authorization,
+          }"
+          @confirm="run"
+        />
+      </template>
     </template>
 
     <UnlockDialog v-model:open="unlockOpen" />

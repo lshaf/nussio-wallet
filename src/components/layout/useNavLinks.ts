@@ -1,5 +1,14 @@
 import { computed, type Component } from 'vue';
-import { Gauge, Home, Network, SendHorizontal, Settings, Wallet, Wrench } from 'lucide-vue-next';
+import {
+  Gauge,
+  Home,
+  Landmark,
+  Network,
+  SendHorizontal,
+  Settings,
+  Wallet,
+  Wrench,
+} from 'lucide-vue-next';
 import { useAppStore } from '@/stores/app.store';
 
 export interface NavLink {
@@ -21,6 +30,14 @@ export function useNavLinks() {
         to: `/account/${app.currentWallet.account}`,
         icon: Gauge,
         label: 'nav_resources',
+        optional: true,
+      });
+    }
+    if (app.currentChain?.stakedResources && app.currentWallet) {
+      items.push({
+        to: '/governance',
+        icon: Landmark,
+        label: 'nav_governance',
         optional: true,
       });
     }
