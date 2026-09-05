@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTranslation } from 'i18next-vue';
+import { ArrowLeft } from 'lucide-vue-next';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ChainSwitcher from '@/components/layout/ChainSwitcher.vue';
 import type { Wallet } from '@/lib/storage/schemas';
@@ -15,6 +17,7 @@ const { t } = useTranslation('ext');
 const router = useRouter();
 const app = useAppStore();
 const tab = ref('key');
+const canCancel = computed(() => app.setupRoute === null);
 
 async function onImported(wallets: Wallet[]): Promise<void> {
   const first = wallets[0];
@@ -49,5 +52,9 @@ async function onImported(wallets: Wallet[]): Promise<void> {
         <TabsContent value="manual"><ImportManual @imported="onImported" /></TabsContent>
       </Tabs>
     </div>
+    <Button v-if="canCancel" variant="ghost" class="self-start" @click="router.push('/')">
+      <ArrowLeft />
+      {{ t('action_cancel') }}
+    </Button>
   </div>
 </template>

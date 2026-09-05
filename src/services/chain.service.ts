@@ -65,7 +65,9 @@ export async function ensureSeededChains(): Promise<Blockchain[]> {
   const known = new Set(existing.map((chain) => chain.chainId));
   const repaired = existing.flatMap((stored) => {
     const builtin = builtinChains.find((chain) => chain.chainId === stored.chainId);
-    const parsed = blockchainSchema.safeParse(builtin ? { ...builtin, ...stored } : stored);
+    const parsed = blockchainSchema.safeParse(
+      builtin ? { ...builtin, ...stored, features: builtin.features } : stored,
+    );
     return parsed.success ? [parsed.data] : [];
   });
   const missing = builtinChains.filter((chain) => !known.has(chain.chainId));
