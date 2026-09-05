@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { browser } from 'wxt/browser';
 import { useSettingsService } from '@/composables/useServices';
 import type { Settings } from '@/lib/storage/schemas';
 import { useAppStore } from '@/stores/app.store';
@@ -28,6 +29,7 @@ const settingsService = useSettingsService();
 const idleOptions = [0, 5, 15, 30, 60];
 const refreshOptions = [0, 10, 30, 60, 120, 300];
 const resetText = ref('');
+const version = browser.runtime.getManifest().version;
 
 type BooleanSetting = {
   [K in keyof Settings]: Settings[K] extends boolean ? K : never;
@@ -161,6 +163,23 @@ async function reset(): Promise<void> {
             "
           />
         </div>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <h2 class="eyebrow">{{ t('settings_about') }}</h2>
+      <div class="bg-card flex flex-col gap-2 rounded-lg border p-4 text-sm">
+        <p class="font-medium">{{ t('app_title') }}</p>
+        <p class="text-muted-foreground num">{{ t('about_version', { version }) }}</p>
+        <p class="text-muted-foreground">{{ t('about_license') }}</p>
+        <p class="text-muted-foreground">{{ t('about_credit') }}</p>
+        <a
+          href="https://github.com/greymass/anchor"
+          target="_blank"
+          rel="noopener"
+          class="text-primary self-start hover:underline"
+          >{{ t('about_credit_link') }}</a
+        >
       </div>
     </section>
 

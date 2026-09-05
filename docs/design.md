@@ -1,6 +1,6 @@
 # Design system
 
-Anchor Extension ships three surfaces from one component set: the toolbar popup (360 px wide),
+Waxos Wallet ships three surfaces from one component set: the toolbar popup (360 px wide),
 the side panel / narrow tab (< 768 px) and the full tab (≥ 768 px). Every screen has to work at
 360 px first; wide layouts are an enhancement.
 
@@ -9,15 +9,15 @@ the side panel / narrow tab (< 768 px) and the full tab (≥ 768 px). Every scre
 All colours live in `src/assets/styles.css` as CSS variables and are exposed to Tailwind through
 `@theme inline`. Never hard-code a colour in a component; use the token class.
 
-| Token         | Light     | Dark      | Use                                             |
-| ------------- | --------- | --------- | ----------------------------------------------- |
-| `background`  | `#f2f5f9` | `#0a1220` | page ground                                     |
-| `card`        | `#ffffff` | `#111b2e` | panels, lists, hero                             |
-| `foreground`  | `#0c1830` | `#e6ecf5` | text                                            |
-| `primary`     | `#2b4fa8` | `#6e96ff` | brand blue (from the Anchor icon), gauges, CTAs |
-| `positive`    | `#1b8a6b` | `#3fbf9a` | connected, unlocked, success                    |
-| `warning`     | `#d9720f` | `#f5a04a` | low resources, insecure node, hints             |
-| `destructive` | `#c8323f` | `#f0596a` | errors, reset                                   |
+| Token         | Light     | Dark      | Use                                              |
+| ------------- | --------- | --------- | ------------------------------------------------ |
+| `background`  | `#f2f5f9` | `#0a1220` | page ground                                      |
+| `card`        | `#ffffff` | `#111b2e` | panels, lists, hero                              |
+| `foreground`  | `#0c1830` | `#e6ecf5` | text                                             |
+| `primary`     | `#2b4fa8` | `#6e96ff` | brand blue (from the current icon), gauges, CTAs |
+| `positive`    | `#1b8a6b` | `#3fbf9a` | connected, unlocked, success                     |
+| `warning`     | `#d9720f` | `#f5a04a` | low resources, insecure node, hints              |
+| `destructive` | `#c8323f` | `#f0596a` | errors, reset                                    |
 
 Dark mode follows the system preference (`followSystemTheme()` in `src/lib/theme.ts` toggles the
 `.dark` class on `<html>`).

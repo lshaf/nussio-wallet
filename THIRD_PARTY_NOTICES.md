@@ -1,5 +1,7 @@
 # Third-party notices
 
+Waxos Wallet is derived from Anchor Wallet: its feature set, locale files, chain logos, ESR/anchor-link protocol handling and Greymass Fuel validation rules were studied and re-implemented for the browser. Anchor is a product of Greymass; Waxos Wallet is not affiliated with or endorsed by Greymass.
+
 ## Anchor Wallet (Greymass) — MIT
 
 `src/locales/**` and `src/assets/chains/**` and `src/public/icon/**` are copied from

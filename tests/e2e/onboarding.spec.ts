@@ -9,7 +9,7 @@ async function shot(page: Page, name: string): Promise<void> {
 
 test('fresh install walks password → chains → import → home', async ({ appPage: page }) => {
   await expect(page).toHaveURL(/#\/setup$/);
-  await expect(page.getByRole('heading', { name: 'Anchor Wallet' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Waxos Wallet' })).toBeVisible();
   await shot(page, '01-setup');
 
   await page.getByRole('button', { name: 'Set up a wallet' }).click();

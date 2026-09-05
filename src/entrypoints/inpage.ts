@@ -1,8 +1,8 @@
 import { defineUnlistedScript } from 'wxt/utils/define-unlisted-script';
 
-export interface AnchorProvider {
+export interface WaxosProvider {
   readonly version: string;
-  readonly isAnchorExtension: true;
+  readonly isWaxosWallet: true;
   login(chainId?: string): Promise<unknown>;
   transact(request: unknown): Promise<unknown>;
   sign(request: string): Promise<unknown>;
@@ -10,7 +10,7 @@ export interface AnchorProvider {
 
 declare global {
   interface Window {
-    anchor?: AnchorProvider;
+    waxos?: WaxosProvider;
   }
 }
 
@@ -19,15 +19,15 @@ function notImplemented(): Promise<never> {
 }
 
 export default defineUnlistedScript(() => {
-  if (window.anchor) return;
-  const provider: AnchorProvider = Object.freeze({
+  if (window.waxos) return;
+  const provider: WaxosProvider = Object.freeze({
     version: '0.1.0',
-    isAnchorExtension: true,
+    isWaxosWallet: true,
     login: notImplemented,
     transact: notImplemented,
     sign: notImplemented,
   });
-  Object.defineProperty(window, 'anchor', {
+  Object.defineProperty(window, 'waxos', {
     value: provider,
     writable: false,
     configurable: false,

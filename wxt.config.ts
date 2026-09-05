@@ -11,8 +11,8 @@ export default defineConfig({
     plugins: [tailwindcss()],
   }),
   manifest: ({ browser }) => ({
-    name: 'Anchor Extension',
-    description: 'Antelope wallet and signing request authenticator',
+    name: 'Waxos Wallet',
+    description: 'Antelope wallet and signing request authenticator for EOS, WAX, Telos and more',
     permissions: [
       'storage',
       'alarms',
@@ -24,7 +24,7 @@ export default defineConfig({
     ],
     host_permissions: ['<all_urls>'],
     web_accessible_resources: [{ resources: ['inpage.js'], matches: ['<all_urls>'] }],
-    action: { default_title: 'Anchor' },
+    action: { default_title: 'Waxos Wallet' },
     ...(browser === 'firefox' ? {} : { side_panel: { default_path: 'app.html' } }),
   }),
 });
