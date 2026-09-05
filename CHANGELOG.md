@@ -2,7 +2,7 @@
 
 Notable changes per release. Dates are the tag date.
 
-## Unreleased
+## 1.0.0 — 2026-09-05
 
 ### Added
 

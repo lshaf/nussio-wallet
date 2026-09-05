@@ -38,6 +38,8 @@ export interface NussioProvider {
   isConnected(): Promise<boolean>;
 }
 
+declare const __EXT_VERSION__: string;
+
 declare global {
   interface Window {
     nussio?: NussioProvider;
@@ -74,7 +76,7 @@ export default defineUnlistedScript(() => {
   window.addEventListener('message', onResult);
 
   const provider: NussioProvider = Object.freeze({
-    version: '0.1.0',
+    version: __EXT_VERSION__,
     isNussioWallet: true,
     login: (chainId?: string) => call<LoginResult>('login', chainId === undefined ? [] : [chainId]),
     transact: (args: TransactArgs | string) => call<TransactResult>('transact', [args]),

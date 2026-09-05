@@ -42,6 +42,10 @@ same path as Chrome. The injected `inpage.js` stays as a second route for the is
 
 Headless Firefox ignores `--start-url` under `web-ext`, so the smoke script opens a real window.
 
+The MAIN-world check races the page's first inline script and fails about one run in five. Click
+capture does not depend on winning that race — the isolated content script listens for the same
+clicks — so re-run before treating a single failure as a regression.
+
 ## Live-chain checks
 
 The suite reads real chains, so a failure can mean a node is down rather than a regression:

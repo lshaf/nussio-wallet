@@ -1,5 +1,6 @@
 import { defineConfig } from 'wxt';
 import tailwindcss from '@tailwindcss/vite';
+import { version } from './package.json';
 
 export default defineConfig({
   srcDir: 'src',
@@ -9,6 +10,7 @@ export default defineConfig({
   imports: false,
   vite: () => ({
     plugins: [tailwindcss()],
+    define: { __EXT_VERSION__: JSON.stringify(version) },
   }),
   manifest: ({ browser }) => ({
     name: 'Nussio Wallet',
