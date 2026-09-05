@@ -14,6 +14,7 @@ import {
   encodeTransactionRequest,
   forbiddenActions,
   fuelPresentation,
+  linkAppName,
   parseSigningRequest,
   requestUsesPlaceholders,
   requestedSigner,
@@ -47,6 +48,7 @@ import type {
   RequestStatus,
   Wallet,
 } from '@/lib/storage/schemas';
+import { addSessionFromIdentity, linkCallbackFields } from './session.service';
 import { readerFor, type FuelState } from './transaction.service';
 import { signingKeyFor } from './wallet.service';
 
@@ -68,6 +70,7 @@ export interface RequestView {
   transaction: Record<string, unknown> | null;
   expiration: string | null;
   broadcast: boolean;
+  appName: string | null;
   callback: { url: string; background: boolean; origin: string } | null;
   forbidden: string[];
   dangerousAllowed: boolean;
@@ -118,7 +121,7 @@ const SERVICE_KEY = 'RequestService';
 const PROMPT_WIDTH = 940;
 const PROMPT_HEIGHT = 580;
 const FINAL_STATUSES = new Set<RequestStatus>(['done', 'error', 'cancelled']);
-const REJECTION = { rejected: 'Request cancelled from within Waxos Wallet.' };
+const REJECTION = { rejected: 'Request cancelled from within Nussio Wallet.' };
 
 interface Context {
   record: PendingRequest;
@@ -357,6 +360,7 @@ async function viewFrom(context: Context): Promise<RequestView> {
     transaction: resolved ? transactionToJson(resolved.transaction) : null,
     expiration: resolved && !identity ? String(resolved.transaction.expiration) : null,
     broadcast: request ? request.shouldBroadcast() && !identity : false,
+    appName: request ? linkAppName(request) : null,
     callback: request ? callbackOf(request) : null,
     forbidden: chain ? forbiddenActions(context.actions, chain.systemContract) : [],
     dangerousAllowed: settings.allowDangerousTransactions,
@@ -501,10 +505,12 @@ export const requestService: RequestService = {
 
       let callback: Extract<RequestOutcome, { status: 'done' }>['callback'] = null;
       const resolvedCallback = resolved.getCallback(signatures, blockNum);
+      const wantsLink = identity && request.getRawInfoKey('link') !== undefined;
       if (resolvedCallback) {
-        const payload = { ...resolvedCallback.payload };
+        const payload: Record<string, string | undefined> = { ...resolvedCallback.payload };
         if (transactionId) payload.tx = transactionId;
         if (blockNum) payload.bn = String(blockNum);
+        if (wantsLink) Object.assign(payload, await linkCallbackFields());
         callback = {
           url: resolvedCallback.url,
           background: resolvedCallback.background,
@@ -519,6 +525,14 @@ export const requestService: RequestService = {
             callback.error = error instanceof Error ? error.message : 'callback_failed';
           }
         }
+      }
+      if (wantsLink && (!callback || callback.background)) {
+        await addSessionFromIdentity(
+          context.record.uri,
+          chain.chainId,
+          wallet.account,
+          wallet.authorization,
+        );
       }
 
       return store(

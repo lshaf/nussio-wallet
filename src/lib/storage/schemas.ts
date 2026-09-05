@@ -110,6 +110,16 @@ export const sessionsStateSchema = z.object({
 });
 export type SessionsState = z.infer<typeof sessionsStateSchema>;
 
+export const linkStatusSchema = z.object({
+  connected: z.boolean().default(false),
+  lastOpen: z.number().nullable().default(null),
+  lastClose: z.number().nullable().default(null),
+  lastMessage: z.number().nullable().default(null),
+  lastError: z.string().nullable().default(null),
+  lastErrorAt: z.number().nullable().default(null),
+});
+export type LinkStatus = z.infer<typeof linkStatusSchema>;
+
 export const abiCacheEntrySchema = z.object({
   abi: z.unknown(),
   fetchedAt: z.number(),

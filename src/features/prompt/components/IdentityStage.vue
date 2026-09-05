@@ -41,7 +41,7 @@ function onChain(value: unknown): void {
         <Fingerprint class="size-6" />
       </span>
       <h2 class="text-xl font-semibold tracking-tight">
-        {{ t('prompt_identity_title', { origin: view.callback?.origin ?? '' }) }}
+        {{ t('prompt_identity_title', { app: view.appName ?? view.callback?.origin ?? '' }) }}
       </h2>
       <p class="text-muted-foreground text-sm">{{ t('prompt_identity_description') }}</p>
     </div>

@@ -3,7 +3,9 @@ import type { KeyEntry, KeyringEnvelope } from '@/lib/crypto/keyring';
 import {
   settingsSchema,
   sessionsStateSchema,
+  linkStatusSchema,
   pendingStateSchema,
+  type LinkStatus,
   type AbiCacheEntry,
   type Blockchain,
   type Contact,
@@ -75,4 +77,8 @@ export const unlockedKeysItem = storage.defineItem<KeyEntry[]>('session:unlocked
 
 export const pendingRequestsItem = storage.defineItem<PendingRequest[]>('session:requests', {
   fallback: [],
+});
+
+export const linkStatusItem = storage.defineItem<LinkStatus>('session:linkStatus', {
+  fallback: linkStatusSchema.parse({}),
 });

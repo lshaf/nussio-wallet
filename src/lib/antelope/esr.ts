@@ -7,6 +7,7 @@ import {
   type ZlibProvider,
 } from '@wharfkit/signing-request';
 import { ABI, Serializer, type Transaction } from '@wharfkit/antelope';
+import { LinkCreate } from '@greymass/anchor-link-session-manager';
 import { FUEL_FEE_RECEIVER, FUEL_NOOP_CONTRACT } from './fuel';
 import type { ChainReader, DecodedAction } from './transaction';
 import { deflateRaw, inflateRaw } from 'pako';
@@ -105,6 +106,17 @@ export function forbiddenActions(actions: DecodedAction[], systemContract: strin
   return actions
     .filter((action) => action.account === systemContract && FORBIDDEN_ACTIONS.has(action.name))
     .map((action) => `${action.account}::${action.name}`);
+}
+
+export function linkAppName(request: SigningRequest): string | null {
+  if (request.getRawInfoKey('link') === undefined) return null;
+  try {
+    const info = request.getInfoKey('link', LinkCreate);
+    const name = String(info.session_name);
+    return name.length > 0 ? name : null;
+  } catch {
+    return null;
+  }
 }
 
 export interface FuelPresentation {

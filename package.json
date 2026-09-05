@@ -63,6 +63,7 @@
     "@vue/test-utils": "^2.5.0",
     "@webext-core/fake-browser": "^2.0.1",
     "@wxt-dev/module-vue": "^1.0.3",
+    "asmcrypto.js": "^2.3.2",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.10.0",

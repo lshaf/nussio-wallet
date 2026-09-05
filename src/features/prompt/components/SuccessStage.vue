@@ -37,7 +37,7 @@ const pendingCallback = computed(
     <p class="text-muted-foreground text-sm">
       {{
         outcome.identity
-          ? t('prompt_success_identity_body')
+          ? t('prompt_success_identity_body', { app: view.appName ?? view.callback?.origin ?? '' })
           : view.broadcast
             ? t('prompt_success_broadcast_body')
             : t('prompt_success_signed_body')

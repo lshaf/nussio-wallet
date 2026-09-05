@@ -20,6 +20,8 @@ import { browser } from 'wxt/browser';
 import { useSettingsService } from '@/composables/useServices';
 import type { Settings } from '@/lib/storage/schemas';
 import { useAppStore } from '@/stores/app.store';
+import LinkServicePanel from '../components/LinkServicePanel.vue';
+import SessionsPanel from '../components/SessionsPanel.vue';
 
 const { t } = useTranslation('ext');
 const router = useRouter();
@@ -165,6 +167,9 @@ async function reset(): Promise<void> {
         </div>
       </div>
     </section>
+
+    <SessionsPanel />
+    <LinkServicePanel />
 
     <section class="flex flex-col gap-3">
       <h2 class="eyebrow">{{ t('settings_about') }}</h2>

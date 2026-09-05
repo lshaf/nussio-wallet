@@ -6,6 +6,7 @@ import { settingsItem } from '@/lib/storage/items';
 import { registerServices } from '@/services';
 import { ensureSeededChains } from '@/services/chain.service';
 import { requestService } from '@/services/request.service';
+import { ensureConnected, sessionService } from '@/services/session.service';
 import { walletService } from '@/services/wallet.service';
 
 const HEARTBEAT_ALARM = 'heartbeat';
@@ -28,7 +29,7 @@ function installContextMenu(): void {
   browser.contextMenus.removeAll(() => {
     browser.contextMenus.create({
       id: CONTEXT_MENU_ID,
-      title: 'Open with Waxos Wallet',
+      title: 'Open with Nussio Wallet',
       contexts: ['link', 'selection'],
     });
   });
@@ -47,6 +48,16 @@ export default defineBackground(() => {
   browser.runtime.onStartup.addListener(() => {
     void ensureSeededChains();
     void requestService.updateBadge();
+  });
+
+  void ensureConnected();
+  let linkUrl: string | undefined;
+  settingsItem.watch((settings, previous) => {
+    linkUrl ??= previous?.anchorLinkServiceUrl;
+    if (settings.anchorLinkServiceUrl !== linkUrl) {
+      linkUrl = settings.anchorLinkServiceUrl;
+      void sessionService.restart();
+    }
   });
 
   browser.contextMenus.onClicked.addListener((info) => {
@@ -75,5 +86,6 @@ export default defineBackground(() => {
   void browser.alarms.create(HEARTBEAT_ALARM, { periodInMinutes: 0.5 });
   browser.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name !== HEARTBEAT_ALARM) return;
+    void ensureConnected();
   });
 });
