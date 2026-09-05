@@ -56,6 +56,24 @@ same reason.
 At most five non-final requests can be queued at once, so a page cannot bury the user in prompt
 windows even within the rate limit.
 
+## Provider surface
+
+`window.nussio` lives in the page world and exposes exactly `login`, `transact`, `sign`,
+`isConnected` and `disconnect`. Calls travel page → content script → worker:
+
+- The content script rejects any method name outside `PROVIDER_METHODS` and any argument list whose
+  JSON exceeds 32 KB, so a page cannot reach an arbitrary property through the bridge.
+- The background derives the origin from `sender.url` and rate limits it to 5 calls per 10 seconds.
+- Only `login` works without an approved connection. `transact` and `sign` reject with
+  `not_connected` until that exact origin appears in `local:connectedSites`, which is written only
+  after the user approves an identity prompt.
+- Every method that signs goes through `request.service.open`, so it lands in the same prompt queue,
+  with the same forbidden-action, expiry and Fuel checks, and the same "Sent by" line.
+- `handleProviderCall` is deliberately not part of the registered `ProviderService`. An extension
+  page can list and revoke connections; it cannot invoke a provider call with an origin it chose.
+- `allowSiteConnections` in Settings turns the whole surface off, and Connected websites revokes a
+  single origin.
+
 ## Session storage
 
 The background worker calls `storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' })`
@@ -112,7 +130,5 @@ Narrowing `<all_urls>` is open work: Firefox should move the host access to
 
 ## Open items before release
 
-- `window.nussio` provider is still a stub; it needs per-origin permission prompts and a method
-  allowlist before it is wired to `provider:call`.
 - Dependency audit and a review of storage migrations from every shipped version.
 - Firefox host permissions should become optional.

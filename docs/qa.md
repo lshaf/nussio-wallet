@@ -6,13 +6,13 @@ Run before every release. `pnpm build` first; the e2e suite loads `dist/chrome-m
 
 | target         | command                                                                      | status 2026-09-05                                         |
 | -------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Chromium       | `pnpm test:e2e`                                                              | 18 passed, 1 skipped (`idle-session`, needs `E2E_SLOW=1`) |
-| Microsoft Edge | `pnpm test:e2e:edge`                                                         | 18 passed, 1 skipped                                      |
-| Brave          | `pnpm test:e2e:brave`                                                        | 18 passed, 1 skipped                                      |
+| Chromium       | `pnpm test:e2e`                                                              | 19 passed, 1 skipped (`idle-session`, needs `E2E_SLOW=1`) |
+| Microsoft Edge | `pnpm test:e2e:edge`                                                         | 19 passed, 1 skipped                                      |
+| Brave          | `pnpm test:e2e:brave`                                                        | 19 passed, 1 skipped                                      |
 | Firefox MV2    | `pnpm build:firefox && pnpm exec web-ext lint --source-dir dist/firefox-mv2` | 0 errors, 3 warnings                                      |
 | Firefox MV2    | `pnpm test:firefox`                                                          | 4 checks passed on Firefox 155                            |
 | Firefox MV3    | `pnpm test:firefox:mv3`                                                      | 4 checks passed on Firefox 155                            |
-| Bundle budgets | `pnpm check:bundle`                                                          | popup 519 KB, prompt 577 KB, app 1106 KB, 2.43 MB total   |
+| Bundle budgets | `pnpm check:bundle`                                                          | popup 520 KB, prompt 578 KB, app 1108 KB, 2.44 MB total   |
 | Accessibility  | part of `pnpm test:e2e` (`a11y.spec.ts`)                                     | no serious or critical findings                           |
 
 `session-transact` and the other relay tests talk to the live buoy service, so they can time out

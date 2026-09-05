@@ -48,7 +48,43 @@ callback URL, so an app should treat that as a user decline rather than a timeou
    request.
 4. Call `transact()`; the request arrives through the session channel.
 
-## Not implemented
+## The `window.nussio` provider
 
-`window.nussio` is present but every method rejects with `not_implemented`. A provider API with
-per-origin permission prompts is planned; until then use the ESR and anchor-link paths above.
+Every page gets a frozen `window.nussio` in the page world. It is a thin alternative to the ESR and
+anchor-link paths for apps that would rather call the wallet directly. Five methods, nothing else:
+
+| method            | argument                                                                                        | resolves with                                      |
+| ----------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `login(chainId?)` | optional chain id, defaults to the wallet's current chain                                       | `{ chainId, actor, permission }`                   |
+| `transact(args)`  | `{ action }`, `{ actions }`, `{ transaction }` or a request URI; `broadcast` defaults to `true` | `{ chainId, transactionId, blockNum, signatures }` |
+| `sign(uri)`       | an `esr:` request URI                                                                           | same as `transact`                                 |
+| `isConnected()`   | —                                                                                               | `true` when this origin has an approved login      |
+| `disconnect()`    | —                                                                                               | `true`, after the connection is dropped            |
+
+```js
+if (window.nussio?.isNussioWallet) {
+  const { actor, permission } = await window.nussio.login();
+  await window.nussio.transact({
+    action: {
+      account: 'eosio.token',
+      name: 'transfer',
+      data: { from: actor, to: 'teamgreymass', quantity: '1.0000 EOS', memo: '' },
+    },
+  });
+}
+```
+
+Rules the provider enforces:
+
+- `login` is the only method that works without an approved connection. `transact` and `sign` reject
+  with `not_connected` until the user approves a login for that exact origin.
+- The origin comes from the sender of the message, never from anything the page passes.
+- An action with no `authorization` is signed by the connected account; an action that names its own
+  authorization is left alone and the prompt shows what it asked for.
+- Every call still opens the prompt. There is no silent signing, and no method that reads keys.
+- Rejections are strings: `not_connected`, `rejected`, `connections_disabled`, `invalid_params`,
+  `unknown_method`, `unknown_chain`, `rate_limited`, `params_too_large`.
+- The user can drop a connection any time under Settings → Connected websites, and turn the whole
+  provider off with "Allow websites to connect to this wallet".
+
+A cancelled prompt rejects with `rejected`. A prompt left open for five minutes rejects the same way.

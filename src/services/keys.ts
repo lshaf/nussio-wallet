@@ -8,6 +8,7 @@ export const SERVICE_KEYS = [
   'HistoryService',
   'PendingService',
   'PingService',
+  'ProviderService',
   'RequestService',
   'ResourcesService',
   'SessionService',

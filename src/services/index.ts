@@ -9,6 +9,7 @@ import { registerGovernanceService } from './governance.service';
 import { registerHistoryService } from './history.service';
 import { registerPendingService } from './pending.service';
 import { registerPingService } from './ping.service';
+import { registerProviderService } from './provider.service';
 import { registerRequestService } from './request.service';
 import { registerResourcesService } from './resources.service';
 import { registerSessionService } from './session.service';
@@ -39,4 +40,5 @@ export function registerServices(): void {
   registerContractService();
   registerHistoryService();
   registerPingService();
+  registerProviderService();
 }

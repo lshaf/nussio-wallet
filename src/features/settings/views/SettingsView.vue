@@ -26,6 +26,7 @@ import { useAppStore } from '@/stores/app.store';
 import ExplorerPanel from '../components/ExplorerPanel.vue';
 import LinkServicePanel from '../components/LinkServicePanel.vue';
 import SessionsPanel from '../components/SessionsPanel.vue';
+import SitesPanel from '../components/SitesPanel.vue';
 
 const { t } = useTranslation('ext');
 const router = useRouter();
@@ -58,6 +59,7 @@ const toggles: { section: string; items: { key: BooleanSetting; label: string }[
     section: 'settings_wallet',
     items: [
       { key: 'allowSigningRequests', label: 'settings_signing_requests' },
+      { key: 'allowSiteConnections', label: 'settings_site_connections' },
       { key: 'promptCloseOnComplete', label: 'settings_close_on_complete' },
       { key: 'transactionFees', label: 'settings_fees' },
     ],
@@ -223,6 +225,7 @@ async function reset(): Promise<void> {
 
     <ExplorerPanel />
 
+    <SitesPanel />
     <SessionsPanel />
     <LinkServicePanel />
 

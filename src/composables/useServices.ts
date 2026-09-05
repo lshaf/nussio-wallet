@@ -9,6 +9,7 @@ import type { GovernanceService } from '@/services/governance.service';
 import type { HistoryService } from '@/services/history.service';
 import type { PendingService } from '@/services/pending.service';
 import type { PingService } from '@/services/ping.service';
+import type { ProviderService } from '@/services/provider.service';
 import type { RequestService } from '@/services/request.service';
 import type { ResourcesService } from '@/services/resources.service';
 import type { SessionService } from '@/services/session.service';
@@ -31,6 +32,7 @@ export const useGovernanceService = () => proxy<GovernanceService>('GovernanceSe
 export const useHistoryService = () => proxy<HistoryService>('HistoryService');
 export const usePendingService = () => proxy<PendingService>('PendingService');
 export const usePingService = () => proxy<PingService>('PingService');
+export const useProviderService = () => proxy<ProviderService>('ProviderService');
 export const useRequestService = () => proxy<RequestService>('RequestService');
 export const useResourcesService = () => proxy<ResourcesService>('ResourcesService');
 export const useSessionService = () => proxy<SessionService>('SessionService');

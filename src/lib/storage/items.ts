@@ -8,6 +8,7 @@ import {
   type LinkStatus,
   type AbiCacheEntry,
   type Blockchain,
+  type ConnectedSite,
   type Contact,
   type CustomToken,
   type PendingRequest,
@@ -19,9 +20,10 @@ import {
 
 export const settingsItem = storage.defineItem<Settings>('local:settings', {
   fallback: settingsSchema.parse({}),
-  version: 2,
+  version: 3,
   migrations: {
     2: (stored: unknown) => settingsSchema.parse(stored ?? {}),
+    3: (stored: unknown) => settingsSchema.parse(stored ?? {}),
   },
 });
 
@@ -61,6 +63,11 @@ export const contactsItem = storage.defineItem<Contact[]>('local:contacts', {
 });
 
 export const customTokensItem = storage.defineItem<CustomToken[]>('local:customTokens', {
+  fallback: [],
+  version: 1,
+});
+
+export const connectedSitesItem = storage.defineItem<ConnectedSite[]>('local:connectedSites', {
   fallback: [],
   version: 1,
 });

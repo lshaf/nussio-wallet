@@ -81,6 +81,7 @@ export const settingsSchema = z.object({
   idleTimeoutMinutes: z.number().int().min(0).default(15),
   refreshRateSeconds: z.number().int().min(0).default(30),
   allowSigningRequests: z.boolean().default(true),
+  allowSiteConnections: z.boolean().default(true),
   allowDangerousTransactions: z.boolean().default(false),
   promptCloseOnComplete: z.boolean().default(true),
   transactionFees: z.boolean().default(false),
@@ -94,6 +95,16 @@ export const settingsSchema = z.object({
   filterSpamTransfersUnder: z.number().min(0).default(0),
 });
 export type Settings = z.infer<typeof settingsSchema>;
+
+export const connectedSiteSchema = z.object({
+  origin: z.string().min(1).max(2048),
+  chainId: chainIdSchema,
+  actor: accountNameSchema,
+  permission: permissionNameSchema,
+  createdAt: z.number(),
+  lastUsedAt: z.number(),
+});
+export type ConnectedSite = z.infer<typeof connectedSiteSchema>;
 
 export const sessionSchema = z.object({
   network: chainIdSchema,

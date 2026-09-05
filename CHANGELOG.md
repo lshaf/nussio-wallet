@@ -21,12 +21,16 @@ Notable changes per release. Dates are the tag date.
 - Resources: PowerUp and REX rentals, RAM buy and sell, delegation reclaim.
 - Governance: producer voting with a 30-slot selector, proxies, proxy registration.
 - Interface: English and Bahasa Indonesia, light and dark themes, block explorer chooser.
+- `window.nussio` provider: `login`, `transact`, `sign`, `isConnected` and `disconnect`, each behind
+  the signing prompt, with per-origin connections listed and revocable under Settings.
 
 ### Security
 
 - Sender guard on the service messaging channel, blocking calls that do not come from an extension
   page of this extension (CVE-2023-40580 shape).
 - Signing request size and decompression caps; per-origin rate limit on link capture.
+- Provider calls are gated per origin: only `login` works unconnected, method names come from a
+  fixed allowlist, arguments are capped at 32 KB, and the origin is read from the message sender.
 - Threat model in `docs/security.md`.
 
 ### Fixed

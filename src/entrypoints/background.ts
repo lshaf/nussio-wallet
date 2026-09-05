@@ -6,6 +6,7 @@ import { createRateLimiter, originOf } from '@/lib/messaging/rate-limit';
 import { settingsItem } from '@/lib/storage/items';
 import { registerServices } from '@/services';
 import { ensureSeededChains } from '@/services/chain.service';
+import { handleProviderCall } from '@/services/provider.service';
 import { requestService } from '@/services/request.service';
 import { ensureConnected, sessionService } from '@/services/session.service';
 import { walletService } from '@/services/wallet.service';
@@ -15,6 +16,7 @@ const OPEN_LIMIT = 5;
 const OPEN_WINDOW_MS = 10_000;
 
 const openLimiter = createRateLimiter({ limit: OPEN_LIMIT, windowMs: OPEN_WINDOW_MS });
+const providerLimiter = createRateLimiter({ limit: OPEN_LIMIT, windowMs: OPEN_WINDOW_MS });
 const MIN_IDLE_SECONDS = 15;
 const CONTEXT_MENU_ID = 'anchor-open-request';
 
@@ -62,6 +64,13 @@ export default defineBackground(() => {
     const requester = originOf(sender?.url);
     if (!openLimiter.allow(requester)) return { id: '' };
     return openIfAllowed(data, requester === 'unknown' ? null : requester);
+  });
+
+  onMessage('provider:call', ({ data, sender }) => {
+    const origin = originOf(sender?.url);
+    if (origin === 'unknown') throw new Error('unknown_origin');
+    if (!providerLimiter.allow(origin)) throw new Error('rate_limited');
+    return handleProviderCall(data.method, data.params, origin);
   });
 
   browser.runtime.onInstalled.addListener(() => {
