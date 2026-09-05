@@ -22,6 +22,11 @@ const bloks: Record<string, string> = {
   libre: 'https://libre.bloks.io',
 };
 
+const waxblock: Record<string, string> = {
+  wax: 'https://waxblock.io',
+  'wax-testnet': 'https://testnet.waxblock.io',
+};
+
 export interface ExplorerOption {
   id: string;
   label: string;
@@ -32,6 +37,13 @@ export const CUSTOM_EXPLORER = 'custom';
 
 export function explorerOptions(chain: Blockchain): ExplorerOption[] {
   const options: ExplorerOption[] = [];
+  const waxblockHost = waxblock[chain.id];
+  if (waxblockHost)
+    options.push({
+      id: 'waxblock',
+      label: 'WAXBlock',
+      template: `${waxblockHost}/transaction/{id}`,
+    });
   const slug = unicove[chain.id];
   if (slug)
     options.push({
