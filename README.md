@@ -91,25 +91,21 @@ git push origin web-v1      # site only: redeploys site/ with the current releas
 **Run workflow** button deploy the site alone, so copy and screenshot changes do not need a new
 extension release. Pushes to `main` never deploy.
 
-A release carries `dist/*.zip` for both browsers and a signed `nussio-wallet-<version>-chrome.crx`.
+A release carries `dist/*.zip` for both browsers. Chrome and Firefox sign their own uploads, so CI
+never packs a CRX.
 
-### CRX signing key
+### Local CRX
 
-The CRX is signed with an RSA key held in the `CRX_KEY` repository secret. The key fixes the
-extension id, so it is generated once and never rotated.
+`pnpm crx` packs `dist/chrome-mv3` into a signed CRX for local installs and side-loading tests. It
+needs an RSA key, which also fixes the extension id, so generate it once and keep it out of the
+repo.
 
 ```bash
 openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out nussio-crx.pem
+CRX_KEY_FILE=nussio-crx.pem pnpm crx   # writes dist/*.crx, prints the extension id
 ```
 
-Paste the whole file, `BEGIN`/`END` lines included, into Settings → Secrets and variables →
-Actions → New repository secret, named `CRX_KEY`. Keep an offline copy; losing it changes the
-extension id. Without the secret, `pnpm crx` prints a notice and CI skips the CRX, so pull requests
-from forks still pass.
-
-```bash
-CRX_KEY_FILE=nussio-crx.pem pnpm crx   # same package locally, prints the extension id
-```
+Without `CRX_KEY_FILE` the script prints a notice and exits.
 
 ## Docs
 
