@@ -38,16 +38,6 @@ export class LedgerSession {
     );
     let response: Uint8Array = new Uint8Array(0);
     for (const apdu of apdus) response = await this.sender.send(apdu);
-    const signature = toHex(parseSignature(response));
-    await this.release();
-    return signature;
-  }
-
-  async release(): Promise<void> {
-    try {
-      await this.sender.send(appConfigurationApdu());
-    } catch {
-      return;
-    }
+    return toHex(parseSignature(response));
   }
 }

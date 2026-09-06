@@ -63,8 +63,8 @@ and hides the tab):
    badge under Wallets and no key lands in the keyring.
 3. Send a small transfer. The wallet stays unlocked-free: the prompt waits on "Confirm the
    transaction on the Ledger", the device shows the action, and approving broadcasts it. The device
-   must return to its idle screen on its own; the app only repaints once the host finishes the
-   exchange, so the signing call ends with a configuration read and then releases the device.
+   must leave its review screen on its own: the app repaints only when the approval finds the
+   transaction already complete, so the whole serialisation has to reach it before it prompts.
 4. Reject on the device and confirm the dialog reports the Ledger error rather than hanging.
 5. Log in to a dApp with the same account, then transact; the prompt window takes the same path.
 

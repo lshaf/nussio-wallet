@@ -64,28 +64,10 @@ describe('LedgerSession', () => {
     expect(signing.length).toBeGreaterThan(1);
   });
 
-  it('closes the exchange after a signature so the device leaves its confirmation screen', async () => {
-    const device = new FakeLedger((apdu) =>
-      apdu.ins === INS_SIGN ? new Uint8Array(65).fill(9) : new Uint8Array([0, 1, 4, 2]),
-    );
+  it('sends nothing after the signature, so the device owns its own screen', async () => {
+    const device = new FakeLedger(() => new Uint8Array(65).fill(9));
     await new LedgerSession(device).sign("44'/194'/0'/0/0", [toHex(new Uint8Array(10).fill(1))]);
-    expect(device.sent.at(-1)?.ins).toBe(INS_GET_APP_CONFIGURATION);
-  });
-
-  it('keeps the signature when the closing exchange fails', async () => {
-    let signed = false;
-    const device = new FakeLedger((apdu) => {
-      if (apdu.ins === INS_SIGN) {
-        signed = true;
-        return new Uint8Array(65).fill(3);
-      }
-      if (signed) throw new Error('device_gone');
-      return new Uint8Array([0, 1, 4, 2]);
-    });
-    const result = await new LedgerSession(device).sign("44'/194'/0'/0/0", [
-      toHex(new Uint8Array(10).fill(1)),
-    ]);
-    expect(result).toBe(toHex(new Uint8Array(65).fill(3)));
+    expect(device.sent.at(-1)?.ins).toBe(INS_SIGN);
   });
 
   it('round-trips bytes through hex', () => {

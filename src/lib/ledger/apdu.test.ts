@@ -87,11 +87,21 @@ describe('sign apdus', () => {
     expect(carried).toBe(400 + encodePath(DEFAULT_PATH).length);
   });
 
-  it('never lets one frame straddle two chunks', () => {
+  it('packs the chunks into one stream so the tail reaches the device before it prompts', () => {
     const chunks = [new Uint8Array(10).fill(1), new Uint8Array(10).fill(2)];
     const apdus = signApdus(DEFAULT_PATH, chunks);
-    expect(apdus).toHaveLength(2);
-    expect(apdus[1]!.data.every((byte) => byte === 2)).toBe(true);
+    const path = encodePath(DEFAULT_PATH);
+    expect(apdus).toHaveLength(1);
+    expect(hex(apdus[0]!.data)).toBe(hex(path) + '01'.repeat(10) + '02'.repeat(10));
+  });
+
+  it('fills every frame before opening the next one', () => {
+    const chunks = [new Uint8Array(200).fill(1), new Uint8Array(40).fill(2)];
+    const apdus = signApdus(DEFAULT_PATH, chunks);
+    const room = 150 - encodePath(DEFAULT_PATH).length;
+    expect(apdus[0]!.data.length).toBe(150);
+    expect(apdus[1]!.data.length).toBe(240 - room);
+    expect(apdus.at(-1)!.data.at(-1)).toBe(2);
   });
 
   it('still sends a frame for an empty chunk', () => {

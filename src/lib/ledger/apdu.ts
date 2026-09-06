@@ -79,27 +79,31 @@ export function parseAppConfiguration(response: Uint8Array): string {
 
 export function signApdus(path: string, chunks: Uint8Array[]): Apdu[] {
   const encodedPath = encodePath(path);
-  const payloads: Uint8Array[] = [];
-  let first = true;
-
+  const total = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+  const body = new Uint8Array(total);
+  let written = 0;
   for (const chunk of chunks) {
-    let offset = 0;
-    do {
-      const room = first ? SLICE_SIZE - encodedPath.length : SLICE_SIZE;
-      const size = Math.min(room, chunk.length - offset);
-      const slice = chunk.slice(offset, offset + size);
-      if (first) {
-        const payload = new Uint8Array(encodedPath.length + slice.length);
-        payload.set(encodedPath, 0);
-        payload.set(slice, encodedPath.length);
-        payloads.push(payload);
-        first = false;
-      } else {
-        payloads.push(slice);
-      }
-      offset += size;
-    } while (offset < chunk.length);
+    body.set(chunk, written);
+    written += chunk.length;
   }
+
+  const payloads: Uint8Array[] = [];
+  let offset = 0;
+  do {
+    const first = payloads.length === 0;
+    const room = first ? SLICE_SIZE - encodedPath.length : SLICE_SIZE;
+    const size = Math.min(room, body.length - offset);
+    const slice = body.subarray(offset, offset + size);
+    if (first) {
+      const payload = new Uint8Array(encodedPath.length + slice.length);
+      payload.set(encodedPath, 0);
+      payload.set(slice, encodedPath.length);
+      payloads.push(payload);
+    } else {
+      payloads.push(slice.slice());
+    }
+    offset += size;
+  } while (offset < body.length);
 
   return payloads.map((data, index) => ({
     cla: CLA,
