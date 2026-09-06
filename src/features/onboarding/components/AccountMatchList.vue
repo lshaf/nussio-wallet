@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useTranslation } from 'i18next-vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -24,8 +25,13 @@ function toggle(match: AccountMatch, checked: boolean | 'indeterminate'): void {
       : selected.value.filter((entry) => entry !== key);
 }
 
-function selectAll(): void {
-  selected.value = props.matches.map(id);
+const allSelected = computed(
+  () =>
+    props.matches.length > 0 && props.matches.every((match) => selected.value.includes(id(match))),
+);
+
+function toggleAll(): void {
+  selected.value = allSelected.value ? [] : props.matches.map(id);
 }
 </script>
 
@@ -33,8 +39,8 @@ function selectAll(): void {
   <div class="flex flex-col gap-2">
     <div class="flex items-center justify-between">
       <p class="text-sm font-medium">{{ t(props.title) }}</p>
-      <Button v-if="matches.length > 1" variant="link" size="sm" @click="selectAll">
-        {{ t('action_select_all') }}
+      <Button v-if="matches.length > 1" variant="link" size="sm" @click="toggleAll">
+        {{ allSelected ? t('action_unselect_all') : t('action_select_all') }}
       </Button>
     </div>
     <div
