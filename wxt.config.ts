@@ -1,6 +1,17 @@
+import { createPublicKey } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'wxt';
 import tailwindcss from '@tailwindcss/vite';
 import { version } from './package.json';
+
+function publicKeyFrom(file: string | undefined): string | undefined {
+  if (!file) return undefined;
+  return createPublicKey(readFileSync(file, 'utf8'))
+    .export({ type: 'spki', format: 'der' })
+    .toString('base64');
+}
+
+const extensionKey = publicKeyFrom(process.env.CRX_KEY_FILE);
 
 export default defineConfig({
   srcDir: 'src',
@@ -38,6 +49,7 @@ export default defineConfig({
       : {}),
     web_accessible_resources: [{ resources: ['inpage.js'], matches: ['<all_urls>'] }],
     action: { default_title: 'Nussio Wallet' },
+    ...(browser !== 'firefox' && extensionKey ? { key: extensionKey } : {}),
     content_security_policy: {
       extension_pages:
         browser === 'firefox'
