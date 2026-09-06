@@ -155,7 +155,7 @@ onMounted(async () => {
       >
         <div class="flex items-center gap-2 text-sm">
           <Loader2 class="size-5 animate-spin" />
-          {{ t('tx_busy_description') }}
+          {{ prompt.ledgerWaiting.value ? t('tx_ledger_waiting') : t('tx_busy_description') }}
         </div>
       </div>
 

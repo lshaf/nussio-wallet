@@ -4,6 +4,12 @@ Notable changes per release. Dates are the tag date.
 
 ## Unreleased
 
+### Added
+
+- Ledger support over WebHID: import accounts from a device running the Antelope app, then sign
+  in-app transactions and dApp signing requests on it. The transaction is serialised and the
+  signature assembled in the service worker, so the extension pages only move APDU packets.
+
 ### Changed
 
 - The Firefox build is now Manifest V3, matching Chrome. Both declare the same content security

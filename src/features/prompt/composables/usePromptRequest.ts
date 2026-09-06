@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue';
+import { useLedger } from '@/composables/useLedger';
 import { useRequestService } from '@/composables/useServices';
 import type { RequestSigner } from '@/lib/storage/schemas';
 import type { RequestOutcome, RequestView } from '@/services/request.service';
@@ -20,6 +21,7 @@ export type PromptStage =
 export function usePromptRequest(id: string) {
   const service = useRequestService();
   const app = useAppStore();
+  const ledger = useLedger();
 
   const view = ref<RequestView | null>(null);
   const outcome = ref<RequestOutcome | null>(null);
@@ -54,7 +56,11 @@ export function usePromptRequest(id: string) {
   const needsUnlock = computed(() => {
     const wallet = signerWallet.value;
     return Boolean(
-      wallet && wallet.mode !== 'watch' && wallet.mode !== 'cold' && !app.status.unlocked,
+      wallet &&
+      wallet.mode !== 'watch' &&
+      wallet.mode !== 'cold' &&
+      wallet.mode !== 'ledger' &&
+      !app.status.unlocked,
     );
   });
   const signError = computed(() =>
@@ -83,6 +89,9 @@ export function usePromptRequest(id: string) {
     busy.value = true;
     try {
       outcome.value = await service.sign(id, current.signer, options);
+      if (outcome.value.status === 'ledger') {
+        outcome.value = await signOnDevice(current.signer, outcome.value, options);
+      }
       if (outcome.value.status === 'done') {
         const record = await service.get(id);
         if (record) view.value = { ...current, status: record.status };
@@ -90,6 +99,23 @@ export function usePromptRequest(id: string) {
     } finally {
       busy.value = false;
     }
+  }
+
+  async function signOnDevice(
+    signer: RequestSigner,
+    pending: Extract<RequestOutcome, { status: 'ledger' }>,
+    options: { acceptFee?: boolean },
+  ): Promise<RequestOutcome> {
+    const signature = await ledger.sign({
+      path: pending.path,
+      legacy: pending.legacy,
+      chunks: pending.chunks,
+    });
+    if (!signature) {
+      const message = ledger.error.value ?? 'ledger_failed';
+      return { status: 'error', error: { kind: 'ledger', name: message, message, details: [] } };
+    }
+    return service.sign(id, signer, { ...options, ledgerSignature: signature });
   }
 
   async function cancel(): Promise<void> {
@@ -123,6 +149,7 @@ export function usePromptRequest(id: string) {
     signerWallet,
     needsUnlock,
     signError,
+    ledgerWaiting: ledger.waiting,
     load,
     sign,
     cancel,

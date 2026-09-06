@@ -41,5 +41,5 @@ the encryption of every backup they take.
   format is opt-in per export instead of being the only option.
 - Legacy decryption stays a lazy `import('crypto-js')`, so the 60 kB dependency is not in the
   common bundle.
-- Ledger `paths` are carried through the file shape but always empty until WebHID lands (M9); the
-  field is written so desktop backups round-trip without losing it.
+- Ledger `paths` carry the derivation path of every `ledger` wallet, so a device account restores
+  without re-deriving it, and desktop backups round-trip without losing the field.

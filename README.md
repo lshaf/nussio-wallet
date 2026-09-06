@@ -43,6 +43,7 @@ First time: `pnpm exec playwright install chromium`.
 4. Import an account:
    - **Watch**: any existing account, e.g. `eosio`.
    - **Private key**: a Jungle4 account you own (create one at https://monitor4.jungletestnet.io and paste its active key).
+   - **Ledger**: a device running the Antelope app, over WebHID. Chromium only; the tab is hidden on Firefox.
 5. Home shows the selected wallet; use the top bar to switch chain/account and lock/unlock; Settings → Danger zone resets everything.
 
 ### Manual (Firefox)

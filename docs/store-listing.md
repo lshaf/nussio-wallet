@@ -16,8 +16,8 @@ on your device.
 Nussio Wallet keeps Antelope accounts in your browser and signs for them without sending your keys
 anywhere.
 
-- Import accounts by private key, watch any account read-only, or let the wallet find accounts your
-  keys already control.
+- Import accounts by private key, from a Ledger running the Antelope app, watch any account
+  read-only, or let the wallet find accounts your keys already control.
 - See balances, CPU, NET and RAM, staking, REX and voting position across every account on a chain.
 - Send tokens, stake and unstake, claim refunds, rent through PowerUp or REX, and buy or sell RAM.
 - Sign requests from apps that support Anchor. Log in once and the app can keep sending requests
@@ -25,6 +25,8 @@ anywhere.
 - Vote for block producers, set a proxy, register as one, and edit account permissions.
 - Tools for keys, contacts, custom tokens, contract tables and actions, transaction history, API
   node latency and encrypted backups that Anchor Desktop can also read.
+
+A Ledger account signs on the device, so its key never reaches the browser at all.
 
 Private keys are encrypted with your password using 600,000 rounds of PBKDF2 and AES-256-GCM. They
 are decrypted only inside the extension's background worker, only while unlocked, and never leave

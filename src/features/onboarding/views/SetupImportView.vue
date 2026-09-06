@@ -5,10 +5,12 @@ import { useTranslation } from 'i18next-vue';
 import { ArrowLeft } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { hidSupported } from '@/lib/ledger/hid';
 import ChainSwitcher from '@/components/layout/ChainSwitcher.vue';
 import type { Wallet } from '@/lib/storage/schemas';
 import { useAppStore } from '@/stores/app.store';
 import ImportDetect from '../components/ImportDetect.vue';
+import ImportLedger from '../components/ImportLedger.vue';
 import ImportManual from '../components/ImportManual.vue';
 import ImportPrivateKey from '../components/ImportPrivateKey.vue';
 import ImportWatch from '../components/ImportWatch.vue';
@@ -17,6 +19,7 @@ const { t } = useTranslation('ext');
 const router = useRouter();
 const app = useAppStore();
 const tab = ref('key');
+const ledgerSupported = hidSupported();
 const canCancel = computed(() => app.setupRoute === null);
 
 async function onImported(wallets: Wallet[]): Promise<void> {
@@ -42,6 +45,9 @@ async function onImported(wallets: Wallet[]): Promise<void> {
           <TabsTrigger value="key">{{ t('import_tab_key') }}</TabsTrigger>
           <TabsTrigger value="watch">{{ t('import_tab_watch') }}</TabsTrigger>
           <TabsTrigger value="detect">{{ t('import_tab_detect') }}</TabsTrigger>
+          <TabsTrigger v-if="ledgerSupported" value="ledger">
+            {{ t('import_tab_ledger') }}
+          </TabsTrigger>
           <TabsTrigger v-if="app.settings.advancedOptions" value="manual">{{
             t('import_tab_manual')
           }}</TabsTrigger>
@@ -49,6 +55,9 @@ async function onImported(wallets: Wallet[]): Promise<void> {
         <TabsContent value="key"><ImportPrivateKey @imported="onImported" /></TabsContent>
         <TabsContent value="watch"><ImportWatch @imported="onImported" /></TabsContent>
         <TabsContent value="detect"><ImportDetect @imported="onImported" /></TabsContent>
+        <TabsContent v-if="ledgerSupported" value="ledger">
+          <ImportLedger @imported="onImported" />
+        </TabsContent>
         <TabsContent value="manual"><ImportManual @imported="onImported" /></TabsContent>
       </Tabs>
     </div>

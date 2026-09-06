@@ -1,6 +1,14 @@
 import { createProxyService, registerService } from '@webext-core/proxy-service';
 import { browser } from 'wxt/browser';
-import { Checksum256, PrivateKey, SignedTransaction, type Transaction } from '@wharfkit/antelope';
+import {
+  Bytes,
+  Checksum256,
+  KeyType,
+  PrivateKey,
+  Signature,
+  SignedTransaction,
+  Transaction,
+} from '@wharfkit/antelope';
 import type {
   AbiMap,
   ResolvedSigningRequest,
@@ -8,6 +16,7 @@ import type {
   TransactionContext,
 } from '@wharfkit/signing-request';
 import { clientFor } from '@/lib/antelope/client';
+import { legacyPublicKey } from '@/lib/antelope/keys';
 import {
   abiMapToRecord,
   abiProviderFor,
@@ -35,6 +44,9 @@ import {
   type DecodedAction,
   type TxError,
 } from '@/lib/antelope/transaction';
+import { DEFAULT_PATH } from '@/lib/ledger/paths';
+import { ledgerChunks } from '@/lib/ledger/serialize';
+import { fromHex, toHex } from '@/lib/ledger/session';
 import {
   blockchainsItem,
   pendingRequestsItem,
@@ -98,6 +110,13 @@ export type RequestOutcome =
       expiration: string;
       actions: DecodedAction[];
     }
+  | {
+      status: 'ledger';
+      path: string;
+      legacy: string;
+      chunks: string[];
+      actions: DecodedAction[];
+    }
   | { status: 'fee_required'; fee: string; costs: Record<string, string> }
   | { status: 'error'; error: TxError };
 
@@ -109,7 +128,7 @@ export interface RequestService {
   sign(
     id: string,
     signer: RequestSigner,
-    options?: { acceptFee?: boolean },
+    options?: { acceptFee?: boolean; ledgerSignature?: string },
   ): Promise<RequestOutcome>;
   cancel(id: string): Promise<void>;
   focus(id: string): Promise<void>;
@@ -179,6 +198,18 @@ async function readRecord(id: string): Promise<PendingRequest> {
   const record = (await pendingRequestsItem.getValue()).find((entry) => entry.id === id);
   if (!record) throw new Error('unknown_request');
   return record;
+}
+
+interface PreparedLedger {
+  transaction: Record<string, unknown>;
+  cosignatures: string[];
+  fuel: FuelState;
+  fee?: string;
+}
+
+function preparedFrom(record: PendingRequest): PreparedLedger | null {
+  const prepared = record.prepared as PreparedLedger | undefined;
+  return prepared?.transaction ? prepared : null;
 }
 
 async function patchRecord(id: string, patch: Partial<PendingRequest>): Promise<PendingRequest> {
@@ -475,8 +506,9 @@ export const requestService: RequestService = {
         );
       }
 
-      const key = await signingKeyFor(wallet.pubkey);
-      if (!key) throw new Error('locked');
+      const ledger = wallet.mode === 'ledger';
+      const key = ledger ? undefined : await signingKeyFor(wallet.pubkey);
+      if (!ledger && !key) throw new Error('locked');
       await patchRecord(id, { status: 'signing' });
 
       const identity = request.isIdentity();
@@ -486,7 +518,15 @@ export const requestService: RequestService = {
       let fuel: FuelState = 'none';
       let fee: string | undefined;
 
-      const endpoint = broadcast ? fuelEndpointFor(chain) : null;
+      const resumed = ledger && options.ledgerSignature ? preparedFrom(context.record) : null;
+      if (resumed) {
+        transaction = Transaction.from(resumed.transaction as never);
+        cosignatures = resumed.cosignatures;
+        fuel = resumed.fuel;
+        fee = resumed.fee;
+      }
+
+      const endpoint = broadcast && !resumed ? fuelEndpointFor(chain) : null;
       if (endpoint && String(transaction.actions[0]?.account) !== FUEL_NOOP_CONTRACT) {
         const fuelSigner = { actor: wallet.account, permission: wallet.authorization };
         const esr = await encodeTransactionRequest(transaction, chain.chainId, abiRecord);
@@ -508,8 +548,26 @@ export const requestService: RequestService = {
         }
       }
 
+      if (ledger && !options.ledgerSignature) {
+        await patchRecord(id, {
+          prepared: { transaction: transactionToJson(transaction), cosignatures, fuel, fee },
+        });
+        return store(
+          {
+            status: 'ledger',
+            path: wallet.path ?? DEFAULT_PATH,
+            legacy: legacyPublicKey(wallet.pubkey),
+            chunks: ledgerChunks(chain.chainId, transaction).map(toHex),
+            actions: context.actions,
+          },
+          'ready',
+        );
+      }
+
       const digest = transaction.signingDigest(Checksum256.from(chain.chainId));
-      const signature = String(PrivateKey.from(key).signDigest(digest));
+      const signature = options.ledgerSignature
+        ? String(new Signature(KeyType.K1, Bytes.from(fromHex(options.ledgerSignature))))
+        : String(PrivateKey.from(key as string).signDigest(digest));
       const signatures = [...cosignatures, signature];
 
       let transactionId: string | undefined;

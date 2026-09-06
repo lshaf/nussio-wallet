@@ -202,6 +202,7 @@ export const pendingRequestSchema = z.object({
   signer: requestSignerSchema.optional(),
   windowId: z.number().optional(),
   outcome: z.unknown().optional(),
+  prepared: z.unknown().optional(),
 });
 export type PendingRequest = z.infer<typeof pendingRequestSchema>;
 

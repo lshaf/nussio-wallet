@@ -11,6 +11,10 @@ export const P2_NONE = 0x00;
 const SLICE_SIZE = 150;
 const SIGNATURE_BYTES = 65;
 
+export interface ApduSender {
+  send(apdu: Apdu): Promise<Uint8Array>;
+}
+
 export interface Apdu {
   cla: number;
   ins: number;

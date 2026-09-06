@@ -21,7 +21,10 @@ import { useAppStore } from '@/stores/app.store';
 import ActionList from './ActionList.vue';
 import UnsignedExport from './UnsignedExport.vue';
 
-const props = defineProps<{ busy: boolean; result: TransactResult | null }>();
+const props = withDefaults(
+  defineProps<{ busy: boolean; result: TransactResult | null; ledgerWaiting?: boolean }>(),
+  { ledgerWaiting: false },
+);
 const open = defineModel<boolean>('open', { default: false });
 const emit = defineEmits<{ proceed: []; retry: [] }>();
 
@@ -36,7 +39,7 @@ const explorer = computed(() => {
 });
 
 const title = computed(() => {
-  if (props.busy) return t('tx_busy_title');
+  if (props.busy) return t(props.ledgerWaiting ? 'tx_ledger_title' : 'tx_busy_title');
   switch (props.result?.status) {
     case 'success':
       return t('tx_success_title');
@@ -74,7 +77,9 @@ function onUnlocked(): void {
           />
           {{ title }}
         </DialogTitle>
-        <DialogDescription v-if="busy">{{ t('tx_busy_description') }}</DialogDescription>
+        <DialogDescription v-if="busy">
+          {{ ledgerWaiting ? t('tx_ledger_waiting') : t('tx_busy_description') }}
+        </DialogDescription>
       </DialogHeader>
 
       <template v-if="!busy && result">

@@ -229,6 +229,7 @@ function vote(): void {
     <TransactionResultDialog
       v-model:open="transact.open.value"
       :busy="transact.busy.value"
+      :ledger-waiting="transact.ledgerWaiting.value"
       :result="transact.result.value"
       @proceed="transact.proceedWithFee"
       @retry="run(lastActions)"

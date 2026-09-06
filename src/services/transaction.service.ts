@@ -1,6 +1,7 @@
 import { createProxyService, registerService } from '@webext-core/proxy-service';
-import { ABI, SignedTransaction } from '@wharfkit/antelope';
+import { ABI, Bytes, KeyType, Signature, SignedTransaction } from '@wharfkit/antelope';
 import { clientFor } from '@/lib/antelope/client';
+import { legacyPublicKey } from '@/lib/antelope/keys';
 import { encodeTransactionRequest, isSigningRequestUri } from '@/lib/antelope/esr';
 import {
   FUEL_NOOP_CONTRACT,
@@ -10,6 +11,7 @@ import {
 } from '@/lib/antelope/fuel';
 import {
   EXPIRE_EXPORT_SECONDS,
+  EXPIRE_LEDGER_SECONDS,
   EXPIRE_SIGN_SECONDS,
   buildTransaction,
   decodeActions,
@@ -24,6 +26,9 @@ import {
   type DecodedAction,
   type TxError,
 } from '@/lib/antelope/transaction';
+import { DEFAULT_PATH } from '@/lib/ledger/paths';
+import { ledgerChunks } from '@/lib/ledger/serialize';
+import { fromHex, toHex } from '@/lib/ledger/session';
 import { abiCacheItem, blockchainsItem, settingsItem, walletsItem } from '@/lib/storage/items';
 import type { Blockchain } from '@/lib/storage/schemas';
 import { signingKeyFor, type WalletRef } from './wallet.service';
@@ -57,6 +62,19 @@ export type TransactResult =
       expiration: string;
     }
   | {
+      status: 'ledger';
+      chainId: string;
+      transaction: Record<string, unknown>;
+      cosignatures: string[];
+      path: string;
+      legacy: string;
+      chunks: string[];
+      fuel: FuelState;
+      fee?: string;
+      actions: DecodedAction[];
+      expiration: string;
+    }
+  | {
       status: 'fee_required';
       chainId: string;
       fee: string;
@@ -78,8 +96,16 @@ export type InspectResult =
     }
   | { kind: 'invalid'; error: string };
 
+export interface LedgerCompletion {
+  chainId: string;
+  transaction: Record<string, unknown>;
+  cosignatures: string[];
+  signature: string;
+}
+
 export interface TransactionService {
   transact(request: TransactRequest): Promise<TransactResult>;
+  completeLedger(request: LedgerCompletion): Promise<TransactResult>;
   inspect(chainId: string, input: string): Promise<InspectResult>;
   broadcast(chainId: string, input: string): Promise<TransactResult>;
   hasContract(chainId: string, account: string): Promise<boolean>;
@@ -148,10 +174,15 @@ export const transactionService: TransactionService = {
         };
       }
 
-      const key = await signingKeyFor(wallet.pubkey);
-      if (!key) throw new Error('locked');
+      const ledger = wallet.mode === 'ledger';
+      const key = ledger ? undefined : await signingKeyFor(wallet.pubkey);
+      if (!ledger && !key) throw new Error('locked');
 
-      const { transaction, abis } = await buildTransaction(reader, actions, EXPIRE_SIGN_SECONDS);
+      const { transaction, abis } = await buildTransaction(
+        reader,
+        actions,
+        ledger ? EXPIRE_LEDGER_SECONDS : EXPIRE_SIGN_SECONDS,
+      );
       decoded = decodeActions(transaction, abis);
       let final = transaction;
       let cosignatures: string[] = [];
@@ -187,7 +218,23 @@ export const transactionService: TransactionService = {
         }
       }
 
-      const signed = signTransaction(final, key, chainId, cosignatures);
+      if (ledger) {
+        return {
+          status: 'ledger',
+          chainId,
+          transaction: transactionToJson(final),
+          cosignatures,
+          path: wallet.path ?? DEFAULT_PATH,
+          legacy: legacyPublicKey(wallet.pubkey),
+          chunks: ledgerChunks(chainId, final).map(toHex),
+          fuel,
+          fee,
+          actions: decoded,
+          expiration: String(final.expiration),
+        };
+      }
+
+      const signed = signTransaction(final, key as string, chainId, cosignatures);
       const response = await clientFor(chain.node).v1.chain.send_transaction(signed);
       const blockNum = Number(response.processed?.block_num ?? 0);
       return {
@@ -201,6 +248,18 @@ export const transactionService: TransactionService = {
       };
     } catch (error) {
       return failure(chainId, error, decoded);
+    }
+  },
+
+  async completeLedger({ chainId, transaction, cosignatures, signature }) {
+    try {
+      const parsed = String(new Signature(KeyType.K1, Bytes.from(fromHex(signature))));
+      return await transactionService.broadcast(
+        chainId,
+        JSON.stringify({ ...transaction, signatures: [...cosignatures, parsed] }),
+      );
+    } catch (error) {
+      return failure(chainId, error);
     }
   },
 

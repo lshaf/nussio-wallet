@@ -52,6 +52,24 @@ The MAIN-world check races the page's first inline script and fails about one ru
 capture does not depend on winning that race — the isolated content script listens for the same
 clicks — so re-run before treating a single failure as a regression.
 
+## Ledger, per release
+
+WebHID needs a real device, so this is a hand walk in Chrome, Edge or Brave (Firefox has no WebHID
+and hides the tab):
+
+1. Unlock a Ledger with the Antelope app open, then Import → **Ledger** → Connect device. Chrome
+   asks which device to share; the app version appears and the first five paths are read.
+2. Accounts that use those keys on the enabled chain are listed; import one. It shows a **Ledger**
+   badge under Wallets and no key lands in the keyring.
+3. Send a small transfer. The wallet stays unlocked-free: the prompt waits on "Confirm the
+   transaction on the Ledger", the device shows the action, and approving broadcasts it. The device
+   must return to its idle screen on its own; the app only repaints once the host finishes the
+   exchange, so the signing call ends with a configuration read and then releases the device.
+4. Reject on the device and confirm the dialog reports the Ledger error rather than hanging.
+5. Log in to a dApp with the same account, then transact; the prompt window takes the same path.
+
+The device signs the Fuel-cosigned transaction, so the bytes it displays are the ones broadcast.
+
 ## Known build warnings
 
 `pnpm build` prints one warning, and it is expected:
@@ -108,4 +126,6 @@ Status 2026-09-05: both pass. Transfer `65f4c16c…` and `21c09209…` are on WA
 ## Not covered by tests
 
 - A real Anchor Desktop backup file. Interop is proven against a file this repo generates.
-- Ledger, cold wallet, keycert recovery: not built (M9).
+- Ledger signing on a real device. The APDU framing, HID packets and BER serialisation have unit
+  tests against a fake device; nothing drives real hardware. See the manual check below.
+- Cold wallet, keycert recovery: not built (M9).

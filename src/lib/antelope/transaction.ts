@@ -42,6 +42,7 @@ export type TxErrorKind =
   | 'forbidden'
   | 'fee_required'
   | 'fuel_invalid'
+  | 'ledger'
   | 'network'
   | 'invalid'
   | 'unknown';
@@ -55,6 +56,7 @@ export interface TxError {
 
 export const EXPIRE_SIGN_SECONDS = 120;
 export const EXPIRE_EXPORT_SECONDS = 3600;
+export const EXPIRE_LEDGER_SECONDS = 300;
 
 export async function loadAbis(
   reader: ChainReader,
@@ -220,6 +222,9 @@ export function normalizeChainError(error: unknown): TxError {
     ];
     const kind = known.find((entry) => entry === error.message);
     if (kind) return { kind, name: error.message, message: error.message, details: [] };
+    if (error.message.startsWith('ledger_') || error.message === 'hid_unsupported') {
+      return { kind: 'ledger', name: error.message, message: error.message, details: [] };
+    }
     if (error.name === 'FuelValidationError') {
       return { kind: 'fuel_invalid', name: error.name, message: error.message, details: [] };
     }
