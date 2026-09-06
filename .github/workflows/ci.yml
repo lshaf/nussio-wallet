@@ -30,12 +30,20 @@ jobs:
       - run: pnpm test:e2e
       - run: pnpm zip
       - run: pnpm zip:firefox
+      - name: Pack the signed CRX
+        env:
+          CRX_KEY: ${{ secrets.CRX_KEY }}
+        run: pnpm crx
       - uses: actions/upload-artifact@v4
         with:
-          name: extension-zips
-          path: dist/*.zip
+          name: extension-packages
+          path: |
+            dist/*.zip
+            dist/*.crx
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/v')
         with:
-          files: dist/*.zip
+          files: |
+            dist/*.zip
+            dist/*.crx
           generate_release_notes: true

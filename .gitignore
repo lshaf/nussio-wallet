@@ -28,3 +28,6 @@ web-ext.config.ts
 test-results
 playwright-report
 site/downloads
+
+# signing keys, never commit
+*.pem
