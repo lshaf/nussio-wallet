@@ -109,6 +109,14 @@ nodes and the buoy relay. The full end-to-end suite passes without it, including
 and broadcast. It is declared as `optional_host_permissions` so a user pointing at a custom node
 that sends no CORS headers can still grant access, which no code requests yet.
 
+Chrome parses `optional_host_permissions` (Manifest V3 only; the Manifest V2 spelling was host
+patterns inside `optional_permissions`). Loading the build and reading `chrome.permissions.getAll()`
+shows `<all_urls>` in `origins` while `permissions.contains({origins: ['<all_urls>']})` is false:
+the origins come from the content script matches, not from a host permission. So dropping
+`host_permissions` stops the wallet asking for host access, but the install prompt still says it can
+read and change data on all sites, because a content script that matches every site says the same
+thing.
+
 The content scripts stay on `<all_urls>` and that is the remaining broad grant. It cannot become
 `activeTab`: the capture patches `attachShadow` and `window.open` at `document_start`, before page
 scripts run, and `window.nussio` has to exist when a dApp first looks for it. `activeTab` only
