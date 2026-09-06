@@ -8,6 +8,9 @@ Notable changes per release. Dates are the tag date.
 
 - The Firefox build is now Manifest V3, matching Chrome. Both declare the same content security
   policy for extension pages.
+- Dropped the `<all_urls>` host permission. Every endpoint the wallet uses answers with permissive
+  CORS, so the install no longer asks to read and change data on every site. It stays available as
+  an optional permission for a custom node that needs it.
 
 ## 1.0.0 — 2026-09-05
 

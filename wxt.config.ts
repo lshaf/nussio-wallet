@@ -24,7 +24,8 @@ export default defineConfig({
       'clipboardWrite',
       ...(browser === 'firefox' ? [] : ['sidePanel']),
     ],
-    host_permissions: ['<all_urls>'],
+    optional_host_permissions: ['<all_urls>'],
+
     ...(browser === 'firefox'
       ? {
           browser_specific_settings: {

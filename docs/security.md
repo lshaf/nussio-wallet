@@ -88,22 +88,31 @@ throws malformed, truncated and bomb payloads at both. Forbidden actions (`updat
 
 ## Permissions
 
-| permission                     | why                                                                                                                   |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| `storage`                      | wallets, keyring, settings, session state                                                                             |
-| `alarms`                       | socket heartbeat and idle lock                                                                                        |
-| `idle`                         | idle auto-lock                                                                                                        |
-| `contextMenus`                 | "Open with Nussio Wallet" on links                                                                                    |
-| `clipboardWrite`               | copy key, request and transaction text (Firefox needs it)                                                             |
-| `sidePanel`                    | side panel mode (Chrome only)                                                                                         |
-| `host_permissions: <all_urls>` | API nodes, Hyperion history, Fuel and the buoy relay are user-configurable hosts, and `esr:` links appear on any site |
+| permission                              | why                                                                                       |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `storage`                               | wallets, keyring, settings, session state                                                 |
+| `alarms`                                | socket heartbeat and idle lock                                                            |
+| `idle`                                  | idle auto-lock                                                                            |
+| `contextMenus`                          | "Open with Nussio Wallet" on links                                                        |
+| `clipboardWrite`                        | copy key, request and transaction text (Firefox needs it)                                 |
+| `sidePanel`                             | side panel mode (Chrome only)                                                             |
+| `optional_host_permissions: <all_urls>` | not granted at install; a safety valve for a custom node that does not send CORS headers  |
+| `content_scripts` on `<all_urls>`       | `esr:` links and dApps live on any origin, and the capture has to run at `document_start` |
 
 `tabs` was removed: `tabs.create` does not require it. Both builds are Manifest V3 and declare
 `script-src 'self'; object-src 'self'` for extension pages, with `frame-ancestors 'none'` added on
 Chrome, which Firefox does not accept there.
 
-Narrowing `<all_urls>` is open work: Firefox should move the host access to
-`optional_host_permissions`, and link capture could use `activeTab` if store review pushes back.
+`host_permissions` was dropped after testing that every endpoint the wallet uses answers with
+`Access-Control-Allow-Origin: *` — the Greymass nodes that also serve Fuel, the Hyperion history
+nodes and the buoy relay. The full end-to-end suite passes without it, including a real signature
+and broadcast. It is declared as `optional_host_permissions` so a user pointing at a custom node
+that sends no CORS headers can still grant access, which no code requests yet.
+
+The content scripts stay on `<all_urls>` and that is the remaining broad grant. It cannot become
+`activeTab`: the capture patches `attachShadow` and `window.open` at `document_start`, before page
+scripts run, and `window.nussio` has to exist when a dApp first looks for it. `activeTab` only
+grants access after a click on the extension action, which is too late for both.
 
 ## Dependency audit
 
@@ -132,4 +141,5 @@ Narrowing `<all_urls>` is open work: Firefox should move the host access to
 ## Open items before release
 
 - Dependency audit and a review of storage migrations from every shipped version.
-- Firefox host permissions should become optional.
+- Nothing requests the optional host permission yet, so a custom node without CORS headers fails
+  with a network error instead of offering the grant.

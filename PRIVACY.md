@@ -38,10 +38,10 @@ Every one of these learns your IP address, as any web request does.
 
 ## Permissions
 
-`storage`, `alarms`, `idle`, `contextMenus`, `clipboardWrite`, `sidePanel` and access to all sites.
-The site access exists because blockchain API nodes, history nodes and the link relay are
-addresses you choose, and because signing-request links can appear on any website. See
-`docs/security.md` for the full justification.
+`storage`, `alarms`, `idle`, `contextMenus`, `clipboardWrite` and `sidePanel`. The extension does
+not hold host permissions: it asks for none at install, and its content script runs on all sites
+only to recognise the signing-request links you click and to offer `window.nussio` to apps. Page
+content is not read. See `docs/security.md` for the full justification.
 
 ## Your data, your control
 
