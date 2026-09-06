@@ -52,6 +52,24 @@ The MAIN-world check races the page's first inline script and fails about one ru
 capture does not depend on winning that race — the isolated content script listens for the same
 clicks — so re-run before treating a single failure as a regression.
 
+## Known build warnings
+
+`pnpm build` prints one warning, and it is expected:
+
+```
+Module "crypto" has been externalized for browser compatibility, imported by asmcrypto.js
+```
+
+`asmcrypto.js` reaches the bundle through `@greymass/anchor-link-session-manager`, which imports
+`AES_CBC` to unseal incoming dApp messages. The node `require('crypto')` sits in asmcrypto's
+`getRandomValues`, which only its RSA prime search calls. The session manager never generates
+randomness: it has no `sealMessage`, and `unsealMessage` builds `AES_CBC` from a key and IV derived
+from the shared secret, then decrypts. So the externalised import is unreachable.
+
+It is worth re-checking if that dependency ever starts sealing messages, because the same function
+would also fail on the browser branch inside a service worker: it tests `window.crypto` before
+`self.crypto`, and `window` does not exist there.
+
 ## Live-chain checks
 
 The suite reads real chains, so a failure can mean a node is down rather than a regression:
