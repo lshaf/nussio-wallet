@@ -4,15 +4,15 @@ Run before every release. `pnpm build` first; the e2e suite loads `dist/chrome-m
 
 ## Automated
 
-| target         | command                                                                      | status 2026-09-05                                         |
-| -------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Chromium       | `pnpm test:e2e`                                                              | 19 passed, 1 skipped (`idle-session`, needs `E2E_SLOW=1`) |
-| Microsoft Edge | `pnpm test:e2e:edge`                                                         | 19 passed, 1 skipped                                      |
-| Brave          | `pnpm test:e2e:brave`                                                        | 19 passed, 1 skipped                                      |
-| Firefox MV3    | `pnpm build:firefox && pnpm exec web-ext lint --source-dir dist/firefox-mv3` | 0 errors, 3 warnings                                      |
-| Firefox MV3    | `pnpm test:firefox`                                                          | 4 checks passed on Firefox 155                            |
-| Bundle budgets | `pnpm check:bundle`                                                          | popup 520 KB, prompt 578 KB, app 1108 KB, 2.44 MB total   |
-| Accessibility  | part of `pnpm test:e2e` (`a11y.spec.ts`)                                     | no serious or critical findings                           |
+| target         | command                                                                      | last run                                                                     |
+| -------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Chromium       | `pnpm test:e2e`                                                              | 2026-09-08: 19 passed, 3 skipped (`idle-session` and the two live-key specs) |
+| Microsoft Edge | `pnpm test:e2e:edge`                                                         | 2026-09-05: 19 passed, 1 skipped                                             |
+| Brave          | `pnpm test:e2e:brave`                                                        | 2026-09-05: 19 passed, 1 skipped                                             |
+| Firefox MV3    | `pnpm build:firefox && pnpm exec web-ext lint --source-dir dist/firefox-mv3` | 2026-09-08: 0 errors, 3 warnings                                             |
+| Firefox MV3    | `pnpm test:firefox`                                                          | 2026-09-08: 4 checks passed                                                  |
+| Bundle budgets | `pnpm check:bundle`                                                          | 2026-09-08: popup 522 KB, prompt 585 KB, app 1119 KB, 2.45 MB total          |
+| Accessibility  | part of `pnpm test:e2e` (`a11y.spec.ts`)                                     | 2026-09-08: no serious or critical findings                                  |
 
 `session-transact` and the other relay tests talk to the live buoy service, so they can time out
 when the whole suite runs in parallel; Playwright retries once locally and twice in CI.
