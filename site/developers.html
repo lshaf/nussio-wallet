@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nussio Wallet for app developers — sign requests from your dApp</title>
+    <meta
+      name="description"
+      content="How to reach Nussio Wallet from an Antelope app: wharfkit and the Anchor plugin work unchanged, ESR links are captured on any page, sessions survive with every extension page closed, and window.nussio is there for apps that would rather call the wallet directly."
+    />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <meta property="og:title" content="Nussio Wallet for app developers" />
+    <meta
+      property="og:description"
+      content="Your app already speaks it. wharfkit with the Anchor plugin works unchanged, and window.nussio is there when you want to call the wallet directly."
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="screenshots/prompt.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=Red+Hat+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="rail" aria-hidden="true">
+      <ol>
+        <li>
+          <a href="#top"><i></i></a>
+        </li>
+        <li>
+          <a href="#provider"><i></i></a>
+        </li>
+        <li>
+          <a href="#reference"><i></i></a>
+        </li>
+        <li>
+          <a href="#anchor"><i></i></a>
+        </li>
+        <li>
+          <a href="#reach"><i></i></a>
+        </li>
+        <li>
+          <a href="#limits"><i></i></a>
+        </li>
+        <li>
+          <a href="#test"><i></i></a>
+        </li>
+      </ol>
+    </div>
+
+    <header class="top">
+      <div class="wrap">
+        <a class="wordmark" href="index.html">
+          <svg viewBox="0 0 128 128" role="img" aria-label="Nussio Wallet">
+            <rect x="6" y="6" width="116" height="116" rx="34" fill="#1c3d8f" />
+            <path
+              d="M36 82 L36 26 L53 26 L75 60 L75 26 L92 26 L92 82 L75 82 L53 48 L53 82 Z"
+              fill="#ffffff"
+            />
+            <rect x="36" y="92" width="56" height="11" rx="5.5" fill="#ffffff" opacity="0.24" />
+            <rect x="36" y="92" width="34" height="11" rx="5.5" fill="#3fbf9a" />
+          </svg>
+          Nussio Wallet
+        </a>
+        <nav>
+          <a href="#provider">Provider</a>
+          <a href="#reference">Reference</a>
+          <a href="#anchor">Anchor apps</a>
+          <a class="keep" href="index.html#install">Install</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="wrap">
+          <div class="hero-grid">
+            <div>
+              <h1>One line<br /><span class="go">to the wallet.</span></h1>
+              <p class="lead">
+                Every page gets <span class="mono">window.nussio</span>: log in, transact, sign,
+                done. And because the wallet answers the same protocols as Anchor — signing requests
+                and anchor-link sessions — an app already built for Anchor works unchanged.
+              </p>
+              <div class="actions">
+                <a class="btn" href="#provider">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                  Quick start
+                </a>
+                <a
+                  class="btn btn-quiet"
+                  href="https://github.com/lshaf/nussio-wallet/blob/main/docs/dapp-integration.md"
+                >
+                  Integration doc
+                </a>
+              </div>
+            </div>
+            <figure>
+              <img src="screenshots/prompt.png" alt="The signing prompt showing a decoded action" />
+              <figcaption>
+                Every request your app sends lands here first. There is no silent signing and no API
+                that reads a key.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="scale">
+            <ul>
+              <li><span class="mono">window.nussio</span> provider</li>
+              <li>EOSIO Signing Requests</li>
+              <li>anchor-link sessions</li>
+              <li class="testnets">Chrome, Edge, Brave and Firefox</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="provider">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>One object, five methods</h2>
+            <p>
+              Every page gets a frozen <span class="mono">window.nussio</span> in the page world.
+              Nothing to install, nothing to bundle: feature-detect it, call
+              <span class="mono">login()</span>, and transact.
+            </p>
+          </div>
+
+          <pre style="margin-top: 0"><code>if (window.nussio?.isNussioWallet) {
+  const { actor, permission } = await window.nussio.login()
+
+  await window.nussio.transact({
+    action: {
+      account: 'eosio.token',
+      name: 'transfer',
+      data: { from: actor, to: 'teamgreymass', quantity: '1.0000 EOS', memo: '' },
+    },
+  })
+}</code></pre>
+
+          <p class="after-code">
+            Five methods, nothing else. There is no call that reads a key, and no call that skips
+            the prompt. <a href="#reference">Every option is listed below</a>.
+          </p>
+        </div>
+      </section>
+      <section id="reference">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Every method, every option</h2>
+            <p>
+              Arguments the provider does not recognise are ignored. Anything malformed rejects with
+              <span class="mono">invalid_params</span> before a prompt ever opens.
+            </p>
+          </div>
+
+          <p class="subhead" style="margin-top: 0">On the object itself</p>
+          <div class="opts">
+            <div>
+              <span class="name">isNussioWallet</span>
+              <span class="what"
+                >Always <span class="mono">true</span>. Feature-detect on this rather than on the
+                object alone.</span
+              >
+            </div>
+            <div>
+              <span class="name">version</span>
+              <span class="what">The extension version, as a string. Useful in a bug report.</span>
+            </div>
+          </div>
+          <p class="after-code">
+            The object is frozen and defined non-writable and non-configurable, so a later script on
+            the page cannot replace it.
+          </p>
+
+          <div class="method">
+            <h3>login(chainId?: string): Promise&lt;LoginResult&gt;</h3>
+            <p>
+              Opens an identity request in the prompt. On approval the origin is remembered as a
+              connection, which is what every other method requires.
+            </p>
+
+            <p class="subhead">Options</p>
+            <dl class="opts">
+              <div>
+                <dt>chainId</dt>
+                <dd>
+                  Optional 64-character chain id. Left out, the wallet uses the chain the user has
+                  selected, or the first enabled chain if that one is off. A chain the user has not
+                  enabled rejects with <span class="mono">unknown_chain</span>, and a value that is
+                  not a string rejects with <span class="mono">invalid_params</span>.
+                </dd>
+              </div>
+            </dl>
+
+            <p class="subhead">Resolves with</p>
+            <dl class="opts">
+              <div>
+                <dt>chainId</dt>
+                <dd>The chain the user logged in on.</dd>
+              </div>
+              <div>
+                <dt>actor</dt>
+                <dd>Account name, e.g. <span class="mono">teamgreymass</span>.</dd>
+              </div>
+              <div>
+                <dt>permission</dt>
+                <dd>The permission chosen in the prompt, e.g. <span class="mono">active</span>.</dd>
+              </div>
+            </dl>
+
+            <pre><code><span class="c">// current chain</span>
+const { chainId, actor, permission } = await window.nussio.login()
+
+<span class="c">// or pin the chain your app runs on</span>
+const JUNGLE4 =
+  '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d'
+
+await window.nussio.login(JUNGLE4)</code></pre>
+          </div>
+
+          <div class="method">
+            <h3>transact(args: TransactArgs | string): Promise&lt;TransactResult&gt;</h3>
+            <p>
+              Builds a signing request from what you pass, opens the prompt, and — unless you turn
+              broadcast off — pushes the signed transaction. Requires a connection. TAPOS, expiry
+              and ABI lookups are the wallet's job; send actions, not a packed transaction.
+            </p>
+
+            <p class="subhead">Options</p>
+            <dl class="opts">
+              <div>
+                <dt>action</dt>
+                <dd>
+                  A single action object:
+                  <span class="mono">{ account, name, authorization?, data }</span>. Ignored when
+                  <span class="mono">actions</span> is present.
+                </dd>
+              </div>
+              <div>
+                <dt>actions</dt>
+                <dd>An array of those, signed in the order given. Wins over every other source.</dd>
+              </div>
+              <div>
+                <dt>transaction</dt>
+                <dd>
+                  An object with an <span class="mono">actions</span> array. Only that array is
+                  read; header fields you set are replaced by the wallet's own.
+                </dd>
+              </div>
+              <div>
+                <dt>broadcast</dt>
+                <dd>
+                  Defaults to <span class="mono">true</span>. Set <span class="mono">false</span> to
+                  get the signatures back without pushing; <span class="mono">blockNum</span> is
+                  then absent and <span class="mono">transactionId</span> is the id of the
+                  unbroadcast transaction.
+                </dd>
+              </div>
+              <div>
+                <dt>chainId</dt>
+                <dd>
+                  Optional. Defaults to the chain of the connection, not the wallet's current
+                  selection, so switching chains in the UI cannot move a request under your app.
+                </dd>
+              </div>
+              <div>
+                <span class="name">a string</span>
+                <span class="what"
+                  >Passing a request URI instead of an object is the same call as
+                  <span class="mono">sign()</span>.</span
+                >
+              </div>
+            </dl>
+
+            <p class="subhead">Authorization</p>
+            <p class="after-code">
+              An action with no <span class="mono">authorization</span>, or an empty one, is signed
+              as the connected account. An action that names its own authorization is passed through
+              untouched and the prompt shows exactly what was asked for — including an account the
+              wallet cannot sign for, which then fails as <span class="mono">authorization</span>.
+            </p>
+
+            <p class="subhead">Resolves with</p>
+            <dl class="opts">
+              <div>
+                <dt>chainId</dt>
+                <dd>The chain the transaction was signed for.</dd>
+              </div>
+              <div>
+                <dt>transactionId</dt>
+                <dd>Transaction id. Present for both broadcast and signed-only results.</dd>
+              </div>
+              <div>
+                <dt>blockNum</dt>
+                <dd>Block number, when the node reported one.</dd>
+              </div>
+              <div>
+                <dt>signatures</dt>
+                <dd>
+                  Every signature on the transaction, cosigner first when Greymass Fuel covered the
+                  resources.
+                </dd>
+              </div>
+            </dl>
+
+            <pre><code><span class="c">// one action, signed as the connected account</span>
+await window.nussio.transact({
+  action: {
+    account: 'eosio.token',
+    name: 'transfer',
+    data: { from: actor, to: 'teamgreymass',
+            quantity: '1.0000 EOS', memo: 'coffee' },
+  },
+})
+
+<span class="c">// several actions, and sign without broadcasting</span>
+const { signatures } = await window.nussio.transact({
+  broadcast: false,
+  actions: [
+    { account: 'eosio', name: 'buyrambytes',
+      data: { payer: actor, receiver: actor, bytes: 4096 } },
+    { account: 'eosio', name: 'delegatebw',
+      authorization: [{ actor, permission: 'active' }],
+      data: { from: actor, receiver: actor, stake_net_quantity: '0.1000 EOS',
+              stake_cpu_quantity: '0.1000 EOS', transfer: false } },
+  ],
+})
+
+<span class="c">// an object shaped like a transaction: only its actions are used</span>
+await window.nussio.transact({ transaction: { actions: [myAction] } })</code></pre>
+          </div>
+
+          <div class="method">
+            <h3>sign(request: string): Promise&lt;TransactResult&gt;</h3>
+            <p>
+              Hands an existing signing request to the wallet — one your backend built, or one you
+              received from somewhere else. Requires a connection, and resolves exactly like
+              <span class="mono">transact()</span>.
+            </p>
+
+            <p class="subhead">Options</p>
+            <dl class="opts">
+              <div>
+                <dt>request</dt>
+                <dd>
+                  <span class="req">required</span> A request URI with an
+                  <span class="mono">esr:</span>, <span class="mono">esr-anchor:</span>,
+                  <span class="mono">anchor:</span> or <span class="mono">eosio:</span> scheme, up
+                  to 16 KB. Anything else rejects with <span class="mono">invalid_params</span>. The
+                  chain comes from the request, so it can differ from the one you logged in on.
+                </dd>
+              </div>
+            </dl>
+
+            <pre><code>const { transactionId } = await window.nussio.sign(
+  'esr://gmNgZGBY1mTC_MoglIGBIVzX5uxpRqAQGMBoexAJAA',
+)</code></pre>
+          </div>
+
+          <div class="method">
+            <h3>isConnected(): Promise&lt;boolean&gt;</h3>
+            <p>
+              True when this exact origin has an approved login. Takes no arguments. Cheap enough to
+              call on page load; it never opens a prompt.
+            </p>
+
+            <pre><code>if (window.nussio?.isNussioWallet &amp;&amp; !(await window.nussio.isConnected())) {
+  showConnectButton()
+}</code></pre>
+          </div>
+
+          <div class="method">
+            <h3>disconnect(): Promise&lt;boolean&gt;</h3>
+            <p>
+              Drops this origin's connection and resolves <span class="mono">true</span>. Takes no
+              arguments, opens no prompt, and is safe to call when there is nothing to drop. The
+              next <span class="mono">transact()</span> rejects with
+              <span class="mono">not_connected</span> until the user logs in again.
+            </p>
+
+            <pre><code>await window.nussio.disconnect()</code></pre>
+          </div>
+        </div>
+      </section>
+      <section id="anchor">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Already built for Anchor?</h2>
+            <p>
+              Then there is nothing to add. Point wharfkit at the Anchor wallet plugin and the
+              extension is picked up the same way the desktop app is, so one integration serves both
+              — and reaches every other Anchor-compatible wallet too.
+            </p>
+          </div>
+
+          <div class="stack">
+            <pre><code><span class="c">// npm i @wharfkit/session @wharfkit/web-renderer @wharfkit/wallet-plugin-anchor</span>
+import { SessionKit } from '@wharfkit/session'
+import { WebRenderer } from '@wharfkit/web-renderer'
+import { WalletPluginAnchor } from '@wharfkit/wallet-plugin-anchor'
+
+const kit = new SessionKit({
+  appName: 'my-app',
+  chains: [{ id: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
+             url: 'https://jungle4.greymass.com' }],
+  ui: new WebRenderer(),
+  walletPlugins: [new WalletPluginAnchor()],
+})
+
+const { session } = await kit.login()
+
+await session.transact({
+  action: {
+    account: 'eosio.token',
+    name: 'transfer',
+    authorization: [session.permissionLevel],
+    data: { from: session.actor, to: 'teamgreymass', quantity: '1.0000 EOS', memo: '' },
+  },
+})</code></pre>
+
+            <p class="caveat">
+              wharfkit first tries <span class="mono">window.location.href = 'esr:…'</span>, which
+              no extension can intercept — browsers do not route unknown schemes to one. It logs a
+              failure and falls back to its <b>Launch Anchor</b> button, and that button is
+              captured. Nothing to change on your side; the failed attempt in the console is
+              expected.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="reach">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Four ways in</h2>
+            <p>
+              However the request is delivered, it ends at the same prompt with the actions decoded
+              against the on-chain ABI.
+            </p>
+          </div>
+
+          <div class="ledger">
+            <div>
+              <h3 class="sig">esr: · esr-anchor: · anchor: · eosio:</h3>
+              <p>
+                A content script captures the click before the page sees it, including links inside
+                closed shadow roots, and opens the prompt window.
+              </p>
+            </div>
+            <div>
+              <h3 class="sig">window.open('esr:…')</h3>
+              <p>Patched in the page world, so a popup-based launcher is captured too.</p>
+            </div>
+            <div>
+              <h3 class="sig">A pasted request</h3>
+              <p>
+                Users can paste a request URI into the popup, or into Broadcast → Signing request in
+                the full wallet.
+              </p>
+            </div>
+            <div>
+              <h3 class="sig">A session request</h3>
+              <p>
+                After a login that carries a <span class="mono">link</span> info key, requests
+                travel sealed over the buoy relay. They reach the wallet with every extension page
+                closed, and the prompt window opens on its own.
+              </p>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 3rem">What comes back from a login</h3>
+          <p class="after-code">
+            An identity request carrying the <span class="mono">link</span> info key gets
+            <span class="mono">link_ch</span>, <span class="mono">link_key</span>,
+            <span class="mono">link_name</span> and <span class="mono">link_meta</span> in the
+            callback — everything <span class="mono">anchor-link</span> needs to open a session.
+            <span class="mono">link_meta</span> reports <span class="mono">sameDevice: false</span>,
+            so wharfkit offers the link and QR path the extension can capture rather than a
+            same-device redirect it cannot.
+          </p>
+        </div>
+      </section>
+      <section id="limits">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>What the wallet will not do</h2>
+            <p>
+              The rules below are enforced in the extension, not in your page, so an app cannot opt
+              out of them. Design for the refusal rather than around it.
+            </p>
+          </div>
+
+          <div class="boundary">
+            <div>
+              <h3>Always</h3>
+              <ul>
+                <li>Every call opens the prompt. There is <b>no silent signing</b>.</li>
+                <li>
+                  The origin is read from the message sender, <b>never</b> from anything the page
+                  passes.
+                </li>
+                <li>
+                  <span class="mono">login</span> is the only method that works unconnected;
+                  everything else rejects with <span class="mono">not_connected</span>.
+                </li>
+                <li>
+                  A user can drop a connection under Settings → Connected websites, or turn the
+                  provider off entirely.
+                </li>
+              </ul>
+            </div>
+            <div class="out">
+              <h3>Refused</h3>
+              <ul>
+                <li>
+                  <span class="mono">updateauth</span>, <span class="mono">linkauth</span> and
+                  <span class="mono">deleteauth</span> on <b>owner</b> or <b>active</b>, unless the
+                  user has enabled dangerous transactions.
+                </li>
+                <li>Requests over <b>16 KB</b>, or that decompress past <b>500 KB</b>.</li>
+                <li>More than <b>five</b> capture attempts from one origin in ten seconds.</li>
+                <li>A prompt left open for five minutes, which rejects as a decline.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 3rem">Rejections are strings</h3>
+          <ul class="chips">
+            <li>not_connected</li>
+            <li>rejected</li>
+            <li>connections_disabled</li>
+            <li>invalid_params</li>
+            <li>unknown_method</li>
+            <li>unknown_chain</li>
+            <li>no_chains</li>
+            <li>rate_limited</li>
+            <li>params_too_large</li>
+            <li>too_many_requests</li>
+            <li>unknown_origin</li>
+          </ul>
+
+          <p class="after-code">
+            A request that reaches the chain and fails there rejects with the wallet's own error
+            kind instead: <span class="mono">authorization</span>, <span class="mono">cpu</span>,
+            <span class="mono">net</span>, <span class="mono">ram</span>,
+            <span class="mono">expired</span>, <span class="mono">duplicate</span>,
+            <span class="mono">assert</span>, <span class="mono">forbidden</span>,
+            <span class="mono">network</span>, <span class="mono">fuel_invalid</span>,
+            <span class="mono">ledger</span>, <span class="mono">invalid</span> or
+            <span class="mono">unknown</span>. Match on the string; do not parse the message.
+          </p>
+
+          <p class="caveat">
+            Cancelling a request posts <span class="mono">{"rejected": …}</span> to the callback
+            URL. Treat that as a user decline, not a timeout. Background POST callbacks and
+            foreground redirects both work, with the standard template variables including
+            <span class="mono">cid</span>, <span class="mono">sig0…N</span>,
+            <span class="mono">bn</span> and <span class="mono">tx</span>.
+          </p>
+        </div>
+      </section>
+
+      <section id="test">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Try it on Jungle 4</h2>
+            <p>
+              A testnet account and a local build are enough to walk the whole path, login through
+              session transact.
+            </p>
+          </div>
+
+          <ol class="steps">
+            <li>
+              <span
+                ><b>Install the wallet.</b> Take the Chrome build from the
+                <a href="index.html#install">install page</a>, or run
+                <span class="mono">pnpm build</span> and load
+                <span class="mono">dist/chrome-mv3</span> unpacked.</span
+              >
+            </li>
+            <li>
+              <span
+                ><b>Import a Jungle 4 account.</b> Set a password, enable Jungle 4, and import its
+                active key.</span
+              >
+            </li>
+            <li>
+              <span
+                ><b>Log in from your app.</b> Point it at Jungle 4 and use the Anchor plugin. The
+                prompt opens on the identity request.</span
+              >
+            </li>
+            <li>
+              <span
+                ><b>Call transact().</b> Close every extension page first — the request still
+                arrives, over the session channel opened at login.</span
+              >
+            </li>
+          </ol>
+
+          <p class="after-code">
+            Something behaving differently from Anchor is a bug worth reporting.
+            <a href="https://github.com/lshaf/nussio-wallet/issues">Open an issue</a> with the
+            request URI and what the prompt showed.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          MIT licensed. Built on the feature set and protocols of
+          <a href="https://github.com/greymass/anchor">Anchor Wallet</a> by Greymass, also MIT, and
+          reusing its locales, chain logos and protocol handling. Not affiliated with or endorsed by
+          Greymass. The Nussio Wallet name and icon are its own.
+        </p>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="https://github.com/lshaf/nussio-wallet">Source</a>
+          <a href="https://github.com/lshaf/nussio-wallet/releases">Releases</a>
+          <a href="https://github.com/lshaf/nussio-wallet/blob/main/docs/dapp-integration.md"
+            >Integration doc</a
+          >
+          <a href="https://github.com/lshaf/nussio-wallet/blob/main/docs/security.md"
+            >Threat model</a
+          >
+          <a href="https://github.com/lshaf/nussio-wallet/blob/main/PRIVACY.md">Privacy</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var marks = Array.prototype.slice.call(document.querySelectorAll('.rail a'));
+        if (!marks.length || !('IntersectionObserver' in window)) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              marks.forEach(function (mark) {
+                mark.setAttribute(
+                  'aria-current',
+                  String(mark.getAttribute('href') === '#' + entry.target.id),
+                );
+              });
+            });
+          },
+          { rootMargin: '-45% 0px -45% 0px' },
+        );
+        ['top', 'provider', 'reference', 'anchor', 'reach', 'limits', 'test'].forEach(
+          function (id) {
+            var node = document.getElementById(id);
+            if (node) observer.observe(node);
+          },
+        );
+      })();
+    </script>
+  </body>
+</html>
