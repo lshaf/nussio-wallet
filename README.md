@@ -93,7 +93,8 @@ git tag -a --cleanup=whitespace v1.2.3 -F notes.md   # subject line, blank line,
                                                      # CHANGELOG section as markdown
 git push origin v1.2.3      # CI checks, zips both browsers, publishes the release,
                             # then the site redeploys with those zips
-git push origin web-v1      # site only: redeploys site/ with the current release's zips
+git push origin web-v1.2.3.r1   # site only: redeploys site/ with the current release's zips;
+                                # r2, r3… for further site-only deploys on the same version
 ```
 
 The tag message becomes the release body, so readers get the changelog on the release page rather
@@ -101,9 +102,11 @@ than a commit list. `--cleanup=whitespace` keeps the `###` headings, which git w
 drop as comments. A lightweight tag, or one with an empty body, falls back to the matching `## x.y.z`
 section of `CHANGELOG.md`.
 
-`v*` runs `.github/workflows/ci.yml`; the Pages workflow follows it on success. `web-v*` and the
-**Run workflow** button deploy the site alone, so copy and screenshot changes do not need a new
-extension release. Pushes to `main` never deploy.
+`v*` runs `.github/workflows/ci.yml`; the Pages workflow follows it on success.
+`web-v<version>.r<n>` and the **Run workflow** button deploy the site alone, so copy and screenshot
+changes do not need a new extension release. Pushes to `main` never deploy. A `web-v*` push does
+not deploy directly: the `github-pages` environment only admits the `main` ref, so the tag run
+relays itself through `workflow_dispatch` with the tag's commit as `ref`.
 
 A release carries `dist/*.zip` for both browsers. The Chrome Web Store listing is uploaded by hand
 from the same Chrome zip; Firefox signs its own uploads, so CI never packs a CRX.
