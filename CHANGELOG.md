@@ -2,6 +2,15 @@
 
 Notable changes per release. Dates are the tag date.
 
+## 1.1.2 — 2026-09-16
+
+### Changed
+
+- The manifest names its author and home page (https://nussio.xid.run/) and describes the wallet
+  without listing chains. Exported unsigned transactions download as `nussio-unsigned-*.json`.
+- The Firefox sources archive leaves out signing keys, the site, store assets and test output, and
+  ships `BUILD.md` with a `scripts/build-firefox.sh` that reproduces the add-on byte for byte.
+
 ## 1.1.1 — 2026-09-16
 
 ### Changed
