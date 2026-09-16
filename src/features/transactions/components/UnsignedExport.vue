@@ -22,7 +22,7 @@ function download(): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `anchor-unsigned-${Date.now()}.json`;
+  link.download = `nussio-unsigned-${Date.now()}.json`;
   link.click();
   URL.revokeObjectURL(url);
 }

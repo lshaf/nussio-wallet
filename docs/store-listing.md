@@ -8,48 +8,49 @@ Nussio Wallet
 
 ## Summary (132 characters max)
 
-Antelope wallet for EOS, WAX, Telos, Proton and Libre. Signs app requests, works with Ledger, keys
-never leave your device.
+Wallet for Antelope blockchains. Signs requests from apps, supports the Ledger hardware wallet, and
+keeps your keys on your device.
 
 ## Description
 
-Nussio Wallet keeps Antelope accounts in your browser and signs for them without sending your keys
-anywhere. It works on EOS, WAX, Telos, Proton, Libre, FIO, UX Network, every testnet, and any chain
-you add yourself, and it supports the Ledger hardware wallet.
+Nussio Wallet keeps your Antelope accounts in the browser and signs for them without sending your
+keys anywhere. The main public Antelope networks and their testnets come preconfigured, and any
+other Antelope chain can be added by entering its API endpoint. The Ledger hardware wallet is
+supported.
 
 ACCOUNTS
 
-- Import by private key, watch any account read-only, or let the wallet find the accounts your
-  keys already control.
-- Ledger hardware wallet support. Plug in a Ledger running the Antelope app, pick the accounts it
-  holds, and every transaction is reviewed and signed on the device. The key never touches the
-  browser.
+- Import an account with its private key, watch one read-only, or let the wallet find the accounts
+  a key already controls.
+- Ledger hardware wallet support: connect a device running the Antelope app, choose the accounts it
+  holds, and review and approve every transaction on the device. The key never touches the browser.
 
 EVERYDAY USE
 
-- Balances, CPU, NET and RAM, staking, REX and voting position for every account on a chain.
-- Send tokens, stake and unstake, claim refunds, rent resources through PowerUp or REX, buy and
+- See balances, CPU, NET and RAM usage, staking and voting position for every account on a chain.
+- Send tokens, stake and unstake, claim refunds, rent resources through PowerUp or REX, and buy or
   sell RAM.
-- Vote for block producers, set a proxy, register as one, and edit account permissions.
+- Vote for block producers or through a proxy, and manage your account's permissions.
 
 APPS
 
-- Sign requests from any app that supports Anchor. Log in once and the app can keep sending
-  requests over an encrypted channel, with every request still shown to you for approval.
-- Apps can also call the wallet directly through window.nussio: log in, transact, sign. Nothing
-  is signed silently, and the prompt always shows exactly what was asked.
+- Sign requests from any app that supports the Anchor protocol. After one login the app can keep
+  sending requests over an encrypted channel, and each one is still shown to you for approval.
+- Apps can also call the wallet directly through window.nussio. Nothing is signed silently, and the
+  prompt always shows what was requested.
 
 TOOLS
 
-- Keys, contacts, custom tokens, contract tables and actions, transaction history, API node
-  latency, and encrypted backups that Anchor Desktop can also read.
+- Manage keys and contacts, track custom tokens, browse contract tables and call actions, read
+  transaction history, compare API node latency, and make encrypted backups that Anchor Desktop can
+  also read.
 
 WHAT IT ASKS FOR
 
-- No host permissions. The extension never asks to read or change data on the sites you visit.
-  A content script only recognises signing-request links and provides window.nussio.
-- No accounts, no analytics, no telemetry. Network requests go to the blockchain nodes and relays
-  you configure, and nothing else.
+- No host permissions. The extension never asks to read or change data on the sites you visit; its
+  content script only recognises signing-request links and provides window.nussio.
+- No accounts, no analytics, no telemetry. Network requests go only to the blockchain nodes and
+  relays you configure.
 
 Private keys are encrypted with your password using 600,000 rounds of PBKDF2 and AES-256-GCM. They
 are decrypted only inside the extension's background worker, only while unlocked, and never leave
@@ -64,6 +65,9 @@ Greymass.
 Website: https://nussio.xid.run/
 For app developers: https://nussio.xid.run/developers.html
 Source: https://github.com/lshaf/nussio-wallet
+
+Do not list chain names in the summary or description. The 2026-09-16 review rejected
+"EOS, WAX, Telos, Proton, Libre, FIO, UX Network" as keyword spam (reference Yellow Argon).
 
 ## Category
 

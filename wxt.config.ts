@@ -9,13 +9,26 @@ export default defineConfig({
   modules: ['@wxt-dev/module-vue'],
   imports: false,
   manifestVersion: 3,
+  zip: {
+    excludeSources: [
+      '**/*.pem',
+      'site/**',
+      'store/**',
+      'test-results/**',
+      'playwright-report/**',
+      'stats*',
+    ],
+  },
   vite: () => ({
     plugins: [tailwindcss()],
     define: { __EXT_VERSION__: JSON.stringify(version) },
   }),
   manifest: ({ browser }) => ({
     name: 'Nussio Wallet',
-    description: 'Antelope wallet and signing request authenticator for EOS, WAX, Telos and more',
+    description:
+      'Antelope wallet and signing request authenticator. Your keys stay on your device.',
+    author: 'lshaf',
+    homepage_url: 'https://nussio.xid.run/',
     permissions: [
       'storage',
       'alarms',

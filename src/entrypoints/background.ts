@@ -18,7 +18,7 @@ const OPEN_WINDOW_MS = 10_000;
 const openLimiter = createRateLimiter({ limit: OPEN_LIMIT, windowMs: OPEN_WINDOW_MS });
 const providerLimiter = createRateLimiter({ limit: OPEN_LIMIT, windowMs: OPEN_WINDOW_MS });
 const MIN_IDLE_SECONDS = 15;
-const CONTEXT_MENU_ID = 'anchor-open-request';
+const CONTEXT_MENU_ID = 'nussio-open-request';
 
 async function applyIdleTimeout(): Promise<void> {
   const { idleTimeoutMinutes } = await settingsItem.getValue();

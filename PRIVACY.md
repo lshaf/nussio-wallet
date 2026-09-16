@@ -1,6 +1,6 @@
 # Privacy policy
 
-Nussio Wallet, last updated 2026-09-05.
+Nussio Wallet, last updated 2026-09-16.
 
 ## What the extension stores
 
@@ -38,7 +38,7 @@ Every one of these learns your IP address, as any web request does.
 
 ## Permissions
 
-`storage`, `alarms`, `idle`, `contextMenus`, `clipboardWrite` and `sidePanel`. The extension does
+`storage`, `alarms`, `idle`, `contextMenus`, `clipboardWrite`, and on Chrome `sidePanel`. The extension does
 not hold host permissions: it asks for none at install, and its content script runs on all sites
 only to recognise the signing-request links you click and to offer `window.nussio` to apps. Page
 content is not read. See `docs/security.md` for the full justification.
