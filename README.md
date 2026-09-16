@@ -4,6 +4,9 @@ Browser-extension wallet for Antelope chains, built on the feature set and proto
 
 Functional parity with the desktop app, redesigned for Manifest V3. Not a code port.
 
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/nussio-wallet/mmemhingmgdnkjifmnfepboidlnjpacc)
+(Chrome, Edge, Brave), or take a zip for either browser from the [releases page](https://github.com/lshaf/nussio-wallet/releases).
+
 ## Stack
 
 WXT · Vue 3 (`<script setup>`) · TypeScript · Pinia · Vue Router · TanStack Vue Query · Tailwind v4 + shadcn-vue · `@webext-core/messaging` + `proxy-service` · zod · `@wharfkit/antelope` · `@wharfkit/signing-request` · `@greymass/anchor-link-session-manager` · i18next
@@ -83,17 +86,24 @@ Tools (`#/tools`) holds the wallet-maintenance screens:
 ## Releasing
 
 ```bash
+git tag -a --cleanup=whitespace v1.2.3 -F notes.md   # subject line, blank line, then the
+                                                     # CHANGELOG section as markdown
 git push origin v1.2.3      # CI checks, zips both browsers, publishes the release,
                             # then the site redeploys with those zips
 git push origin web-v1      # site only: redeploys site/ with the current release's zips
 ```
 
+The tag message becomes the release body, so readers get the changelog on the release page rather
+than a commit list. `--cleanup=whitespace` keeps the `###` headings, which git would otherwise
+drop as comments. A lightweight tag, or one with an empty body, falls back to the matching `## x.y.z`
+section of `CHANGELOG.md`.
+
 `v*` runs `.github/workflows/ci.yml`; the Pages workflow follows it on success. `web-v*` and the
 **Run workflow** button deploy the site alone, so copy and screenshot changes do not need a new
 extension release. Pushes to `main` never deploy.
 
-A release carries `dist/*.zip` for both browsers. Chrome and Firefox sign their own uploads, so CI
-never packs a CRX.
+A release carries `dist/*.zip` for both browsers. The Chrome Web Store listing is uploaded by hand
+from the same Chrome zip; Firefox signs its own uploads, so CI never packs a CRX.
 
 ### Local CRX
 

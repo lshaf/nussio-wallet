@@ -358,8 +358,8 @@
           </div>
 
           <p class="caveat">
-            Nussio Wallet is pre-1.0 and you are the only custodian. Export a backup before you rely
-            on it, and keep the owner key somewhere offline.
+            You are the only custodian of these keys. Export a backup before you rely on the wallet,
+            and keep the owner key somewhere offline.
           </p>
         </div>
       </section>
@@ -367,10 +367,11 @@
       <section id="install">
         <div class="wrap">
           <div class="section-head">
-            <h2>Two minutes, loaded by hand</h2>
+            <h2>One click, or one zip</h2>
             <p>
-              There is no store listing yet. GitHub Actions packages each release after the same
-              typecheck, lint, unit and end-to-end run the repository uses.
+              Chrome, Edge and Brave install from the Chrome Web Store and update on their own.
+              Firefox and the unpacked builds come as zips, packaged by GitHub Actions after the
+              same typecheck, lint, unit and end-to-end run the repository uses.
             </p>
           </div>
 
@@ -398,13 +399,42 @@
 
           <div id="panel-chrome" role="region" aria-label="Chrome, Edge and Brave install">
             <div class="download">
-              <a class="btn" href="downloads/nussio-wallet-chrome.zip" download>
+              <a
+                class="btn"
+                href="https://chromewebstore.google.com/detail/nussio-wallet/mmemhingmgdnkjifmnfepboidlnjpacc"
+                rel="noopener"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+                Get it on the Chrome Web Store
+              </a>
+              <span class="download-meta">Also installs on Edge and Brave</span>
+            </div>
+            <ol class="steps">
+              <li>
+                <span>
+                  <b>Add to Chrome</b> on the store page. The store handles the install and every
+                  update after it.
+                </span>
+              </li>
+              <li>
+                <span>
+                  Open the wallet from the toolbar icon, set a password, enable a chain, then import
+                  or watch an account.
+                </span>
+              </li>
+            </ol>
+
+            <h3 style="margin-top: 2.5rem">Or load the zip unpacked</h3>
+            <div class="download">
+              <a class="btn btn-quiet" href="downloads/nussio-wallet-chrome.zip" download>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 4v11" />
                   <path d="M7 12l5 5 5-5" />
                   <path d="M4 20h16" />
                 </svg>
-                Download for Chrome
+                Download the zip
               </a>
               <span class="download-meta" data-meta="chrome">Manifest V3 build</span>
             </div>
@@ -419,12 +449,6 @@
                 <span>
                   Open <span class="mono">chrome://extensions</span>, turn on <b>Developer mode</b>,
                   then <b>Load unpacked</b> and pick the folder.
-                </span>
-              </li>
-              <li>
-                <span>
-                  Open the wallet from the toolbar icon, set a password, enable a chain, then import
-                  or watch an account.
                 </span>
               </li>
             </ol>
