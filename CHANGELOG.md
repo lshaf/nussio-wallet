@@ -2,6 +2,15 @@
 
 Notable changes per release. Dates are the tag date.
 
+## 1.1.1 — 2026-09-16
+
+### Changed
+
+- Nussio Wallet is on the Chrome Web Store. The site's install section now leads with the listing
+  for Chrome, Edge and Brave and keeps the zip as the unpacked alternative; Firefox is unchanged.
+- Release notes on GitHub come from the tag message, or the matching changelog section, instead of
+  a generated commit list.
+
 ## 1.1.0 — 2026-09-08
 
 ### Added
