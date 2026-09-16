@@ -9,13 +9,15 @@
       content="A browser-extension wallet for Antelope chains. Keys are encrypted on your machine and never cross the bridge to a page. Works with EOS, WAX, Telos, Proton, Libre, FIO, UX Network and any chain you add."
     />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://nussio.xid.run/" />
+    <meta property="og:url" content="https://nussio.xid.run/" />
     <meta property="og:title" content="Nussio Wallet" />
     <meta
       property="og:description"
       content="The key stays. The signature goes. A browser-extension wallet for Antelope chains."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="screenshots/home.png" />
+    <meta property="og:image" content="https://nussio.xid.run/screenshots/home.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -77,8 +79,9 @@
               <h1>The key stays.<br /><span class="go">The signature goes.</span></h1>
               <p class="lead">
                 Nussio Wallet holds your Antelope accounts in the browser and signs for them without
-                letting a private key reach the page asking. It speaks the same signing request and
-                session protocol as Anchor, so apps built for Anchor connect unchanged.
+                letting a private key reach the page asking — or keeps the key on a Ledger and signs
+                there. It speaks the same signing request and session protocol as Anchor, so apps
+                built for Anchor connect unchanged.
               </p>
               <div class="actions">
                 <a class="btn" href="#install">
@@ -138,6 +141,14 @@
               <p>
                 Generate or import into an encrypted keyring on this machine, or watch any account
                 read-only with no key at all.
+              </p>
+            </div>
+            <div>
+              <h3>Ledger hardware wallet</h3>
+              <p>
+                Plug in a Ledger running the Antelope app, pick the accounts it holds, and every
+                transaction — your own or one an app sends — is reviewed and signed on the device.
+                The key never enters the browser. Chrome, Edge and Brave.
               </p>
             </div>
             <div>
@@ -303,6 +314,10 @@
                 </li>
                 <li>
                   <b>Wallets, contacts, tracked tokens and settings</b>, in extension storage.
+                </li>
+                <li>
+                  <b>Ledger keys</b>, which never enter the browser at all: the device shows the
+                  transaction and returns only a signature.
                 </li>
               </ul>
             </div>

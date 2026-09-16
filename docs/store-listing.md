@@ -8,25 +8,48 @@ Nussio Wallet
 
 ## Summary (132 characters max)
 
-Antelope wallet and signing request authenticator for EOS, WAX, Telos, Proton and Libre. Keys stay
-on your device.
+Antelope wallet for EOS, WAX, Telos, Proton and Libre. Signs app requests, works with Ledger, keys
+never leave your device.
 
 ## Description
 
 Nussio Wallet keeps Antelope accounts in your browser and signs for them without sending your keys
-anywhere.
+anywhere. It works on EOS, WAX, Telos, Proton, Libre, FIO, UX Network, every testnet, and any chain
+you add yourself, and it supports the Ledger hardware wallet.
 
-- Import accounts by private key, from a Ledger running the Antelope app, watch any account
-  read-only, or let the wallet find accounts your keys already control.
-- See balances, CPU, NET and RAM, staking, REX and voting position across every account on a chain.
-- Send tokens, stake and unstake, claim refunds, rent through PowerUp or REX, and buy or sell RAM.
-- Sign requests from apps that support Anchor. Log in once and the app can keep sending requests
-  through an encrypted channel, with every request still needing your approval.
+ACCOUNTS
+
+- Import by private key, watch any account read-only, or let the wallet find the accounts your
+  keys already control.
+- Ledger hardware wallet support. Plug in a Ledger running the Antelope app, pick the accounts it
+  holds, and every transaction is reviewed and signed on the device. The key never touches the
+  browser.
+
+EVERYDAY USE
+
+- Balances, CPU, NET and RAM, staking, REX and voting position for every account on a chain.
+- Send tokens, stake and unstake, claim refunds, rent resources through PowerUp or REX, buy and
+  sell RAM.
 - Vote for block producers, set a proxy, register as one, and edit account permissions.
-- Tools for keys, contacts, custom tokens, contract tables and actions, transaction history, API
-  node latency and encrypted backups that Anchor Desktop can also read.
 
-A Ledger account signs on the device, so its key never reaches the browser at all.
+APPS
+
+- Sign requests from any app that supports Anchor. Log in once and the app can keep sending
+  requests over an encrypted channel, with every request still shown to you for approval.
+- Apps can also call the wallet directly through window.nussio: log in, transact, sign. Nothing
+  is signed silently, and the prompt always shows exactly what was asked.
+
+TOOLS
+
+- Keys, contacts, custom tokens, contract tables and actions, transaction history, API node
+  latency, and encrypted backups that Anchor Desktop can also read.
+
+WHAT IT ASKS FOR
+
+- No host permissions. The extension never asks to read or change data on the sites you visit.
+  A content script only recognises signing-request links and provides window.nussio.
+- No accounts, no analytics, no telemetry. Network requests go to the blockchain nodes and relays
+  you configure, and nothing else.
 
 Private keys are encrypted with your password using 600,000 rounds of PBKDF2 and AES-256-GCM. They
 are decrypted only inside the extension's background worker, only while unlocked, and never leave
@@ -37,6 +60,10 @@ Available in English and Bahasa Indonesia.
 Nussio Wallet is open source under the MIT license and is built on the feature set, translations
 and protocol handling of Anchor Wallet by Greymass. It is not affiliated with or endorsed by
 Greymass.
+
+Website: https://nussio.xid.run/
+For app developers: https://nussio.xid.run/developers.html
+Source: https://github.com/lshaf/nussio-wallet
 
 ## Category
 

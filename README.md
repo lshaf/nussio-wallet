@@ -4,6 +4,9 @@ Browser-extension wallet for Antelope chains, built on the feature set and proto
 
 Functional parity with the desktop app, redesigned for Manifest V3. Not a code port.
 
+Site: [nussio.xid.run](https://nussio.xid.run/) · for app developers:
+[nussio.xid.run/developers.html](https://nussio.xid.run/developers.html)
+
 Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/nussio-wallet/mmemhingmgdnkjifmnfepboidlnjpacc)
 (Chrome, Edge, Brave), or take a zip for either browser from the [releases page](https://github.com/lshaf/nussio-wallet/releases).
 
