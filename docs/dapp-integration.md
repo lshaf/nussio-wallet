@@ -1,8 +1,35 @@
 # Integrating a dApp
 
-Nussio Wallet speaks the protocols Anchor speaks, so apps built on
-[wharfkit](https://wharfkit.com) with `@wharfkit/wallet-plugin-anchor` work unchanged. There is
-nothing Nussio-specific to install.
+Apps built on [wharfkit](https://wharfkit.com) have two routes in. The
+[`nussio-wharfkit-plugin`](https://www.npmjs.com/package/nussio-wharfkit-plugin) wallet plugin talks
+to the extension directly. And because Nussio Wallet speaks the protocols Anchor speaks, an app
+using `@wharfkit/wallet-plugin-anchor` works unchanged with nothing Nussio-specific installed.
+
+## The wharfkit plugin
+
+```sh
+npm i nussio-wharfkit-plugin @wharfkit/session
+```
+
+```ts
+import { SessionKit } from '@wharfkit/session';
+import { WalletPluginNussio } from 'nussio-wharfkit-plugin';
+
+const kit = new SessionKit({ ..., walletPlugins: [new WalletPluginNussio()] });
+```
+
+| session call   | what the plugin does                                                                                                                                                        |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `kit.login()`  | `window.nussio.login(chainId)` for the chain wharfkit selected. The prompt asks the user to pick an account and approve the site.                                           |
+| `transact()`   | Encodes the resolved transaction as a non-broadcast signing request and calls `window.nussio.sign(uri)`. The extension signs; wharfkit broadcasts exactly what it resolved. |
+| `kit.logout()` | `window.nussio.disconnect()`, dropping the site connection. Never throws.                                                                                                   |
+
+`requiresChainSelect` is `true`, so the chain comes from `kit.login({ chain })`, the single
+configured chain, or the UI's chain picker; it must be enabled in the extension. Fuel does not run on
+this path because the extension never broadcasts, so use
+`@wharfkit/transact-plugin-resource-provider` for cosigned resources. Extension rejections surface
+as `NussioWalletError` carrying the same string codes the provider uses. Source, tests and the full
+option list live at [lshaf/nussio-wharfkit-plugin](https://github.com/lshaf/nussio-wharfkit-plugin).
 
 ## What the wallet handles
 
@@ -44,9 +71,10 @@ callback URL, so an app should treat that as a user decline rather than a timeou
 
 1. `pnpm build`, then load `dist/chrome-mv3` unpacked.
 2. Import a Jungle 4 account.
-3. Point your app at Jungle 4 and log in with the Anchor plugin; the prompt opens on the identity
-   request.
-4. Call `transact()`; the request arrives through the session channel.
+3. Point your app at Jungle 4 and log in with the Nussio plugin or the Anchor plugin; the prompt
+   opens on the identity request.
+4. Call `transact()`; with the Nussio plugin the prompt opens directly, with the Anchor plugin the
+   request arrives through the session channel.
 
 ## The `window.nussio` provider
 

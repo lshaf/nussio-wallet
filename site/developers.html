@@ -6,7 +6,7 @@
     <title>Nussio Wallet for app developers — sign requests from your dApp</title>
     <meta
       name="description"
-      content="How to reach Nussio Wallet from an Antelope app: wharfkit and the Anchor plugin work unchanged, ESR links are captured on any page, sessions survive with every extension page closed, and window.nussio is there for apps that would rather call the wallet directly."
+      content="How to reach Nussio Wallet from an Antelope app: a wharfkit wallet plugin on npm, the Anchor plugin working unchanged, ESR links captured on any page, and window.nussio for apps that would rather call the wallet directly."
     />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="canonical" href="https://nussio.xid.run/developers.html" />
@@ -14,7 +14,7 @@
     <meta property="og:title" content="Nussio Wallet for app developers" />
     <meta
       property="og:description"
-      content="Your app already speaks it. wharfkit with the Anchor plugin works unchanged, and window.nussio is there when you want to call the wallet directly."
+      content="One npm install for wharfkit apps, the Anchor plugin working unchanged, and window.nussio when you want to call the wallet directly."
     />
     <meta property="og:type" content="article" />
     <meta property="og:image" content="https://nussio.xid.run/screenshots/prompt.png" />
@@ -31,6 +31,9 @@
       <ol>
         <li>
           <a href="#top"><i></i></a>
+        </li>
+        <li>
+          <a href="#wharfkit"><i></i></a>
         </li>
         <li>
           <a href="#provider"><i></i></a>
@@ -68,6 +71,7 @@
           Nussio Wallet
         </a>
         <nav>
+          <a href="#wharfkit">wharfkit</a>
           <a href="#provider">Provider</a>
           <a href="#reference">Reference</a>
           <a href="#anchor">Anchor apps</a>
@@ -83,12 +87,14 @@
             <div>
               <h1>One line<br /><span class="go">to the wallet.</span></h1>
               <p class="lead">
-                Every page gets <span class="mono">window.nussio</span>: log in, transact, sign,
-                done. And because the wallet answers the same protocols as Anchor — signing requests
-                and anchor-link sessions — an app already built for Anchor works unchanged.
+                On wharfkit, add <span class="mono">nussio-wharfkit-plugin</span> and the wallet
+                shows up in the login dialog. Without it, every page still gets
+                <span class="mono">window.nussio</span>: log in, transact, sign, done. And because
+                the wallet answers the same protocols as Anchor, an app already built for Anchor
+                works unchanged.
               </p>
               <div class="actions">
-                <a class="btn" href="#provider">
+                <a class="btn" href="#wharfkit">
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
@@ -113,6 +119,7 @@
 
           <div class="scale">
             <ul>
+              <li>wharfkit wallet plugin</li>
               <li><span class="mono">window.nussio</span> provider</li>
               <li>EOSIO Signing Requests</li>
               <li>anchor-link sessions</li>
@@ -122,6 +129,104 @@
         </div>
       </section>
 
+      <section id="wharfkit">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>On wharfkit? One install</h2>
+            <p>
+              <a href="https://www.npmjs.com/package/nussio-wharfkit-plugin"
+                ><span class="mono">nussio-wharfkit-plugin</span></a
+              >
+              is a <span class="mono">WalletPlugin</span> for
+              <span class="mono">@wharfkit/session</span>. It talks to the extension directly
+              through <span class="mono">window.nussio</span>: no relay, no QR code, no callback
+              URL. Login opens the prompt; every transaction opens the prompt.
+            </p>
+          </div>
+
+          <div class="stack">
+            <pre><code><span class="c">// npm i nussio-wharfkit-plugin @wharfkit/session @wharfkit/web-renderer</span>
+import { SessionKit } from '@wharfkit/session'
+import { WebRenderer } from '@wharfkit/web-renderer'
+import { WalletPluginNussio } from 'nussio-wharfkit-plugin'
+
+const kit = new SessionKit({
+  appName: 'my-app',
+  chains: [{ id: '73e4385a2708e6d7048834fbc1079f2fabb17b3c125b146af438971e90716c4d',
+             url: 'https://jungle4.greymass.com' }],
+  ui: new WebRenderer(),
+  walletPlugins: [new WalletPluginNussio()],
+})
+
+const { session } = await kit.login()
+
+await session.transact({
+  action: {
+    account: 'eosio.token',
+    name: 'transfer',
+    authorization: [session.permissionLevel],
+    data: { from: session.actor, to: 'teamgreymass', quantity: '1.0000 EOS', memo: '' },
+  },
+})</code></pre>
+          </div>
+
+          <p class="subhead">What the plugin does</p>
+          <div class="opts">
+            <div>
+              <span class="name">login</span>
+              <span class="what"
+                >Calls <span class="mono">window.nussio.login(chainId)</span> for the chain wharfkit
+                selected — from <span class="mono">kit.login({ chain })</span>, your single
+                configured chain, or the dialog's chain picker. The user picks the account in the
+                prompt.</span
+              >
+            </div>
+            <div>
+              <span class="name">sign</span>
+              <span class="what"
+                >Encodes the resolved transaction as a non-broadcast signing request and hands it to
+                <span class="mono">window.nussio.sign()</span>. The extension only signs; wharfkit
+                broadcasts what it resolved, so TAPOS, expiry and any transact-plugin actions are
+                exactly what the user approved.</span
+              >
+            </div>
+            <div>
+              <span class="name">logout</span>
+              <span class="what"
+                >Calls <span class="mono">window.nussio.disconnect()</span>, dropping the site
+                connection in the extension. Never throws.</span
+              >
+            </div>
+            <div>
+              <span class="name">restore</span>
+              <span class="what"
+                ><span class="mono">kit.restore()</span> works as with any plugin. The extension
+                keeps the connection until the user removes it under Settings → Connected websites;
+                after that the next transaction rejects with
+                <span class="mono">not_connected</span> and the app should log in again.</span
+              >
+            </div>
+            <div>
+              <span class="name">not installed</span>
+              <span class="what"
+                >The plugin waits up to two seconds for <span class="mono">window.nussio</span>,
+                then fails with a message that names the wallet. Its metadata carries the store
+                link, so web-renderer can offer it.</span
+              >
+            </div>
+          </div>
+
+          <p class="caveat">
+            Greymass Fuel only runs for requests the extension broadcasts itself. With this plugin
+            wharfkit broadcasts, so add
+            <span class="mono">@wharfkit/transact-plugin-resource-provider</span> when you want
+            cosigned resources. Errors from the extension arrive as
+            <span class="mono">NussioWalletError</span> with the same string codes listed
+            <a href="#limits">below</a>; source and tests are on
+            <a href="https://github.com/lshaf/nussio-wharfkit-plugin">GitHub</a>.
+          </p>
+        </div>
+      </section>
       <section id="provider">
         <div class="wrap">
           <div class="section-head">
@@ -395,9 +500,11 @@ await window.nussio.transact({ transaction: { actions: [myAction] } })</code></p
           <div class="section-head">
             <h2>Already built for Anchor?</h2>
             <p>
-              Then there is nothing to add. Point wharfkit at the Anchor wallet plugin and the
-              extension is picked up the same way the desktop app is, so one integration serves both
-              — and reaches every other Anchor-compatible wallet too.
+              Then there is nothing to add. The extension answers the same protocols as the desktop
+              app — signing requests and anchor-link sessions — so wharfkit with the Anchor wallet
+              plugin picks it up unchanged, and that one integration reaches every other
+              Anchor-compatible wallet too. Ship both plugins if you like; the user chooses in the
+              login dialog.
             </p>
           </div>
 
@@ -594,14 +701,15 @@ await session.transact({
             </li>
             <li>
               <span
-                ><b>Log in from your app.</b> Point it at Jungle 4 and use the Anchor plugin. The
-                prompt opens on the identity request.</span
+                ><b>Log in from your app.</b> Point it at Jungle 4 with the Nussio plugin, or the
+                Anchor plugin. The prompt opens on the identity request.</span
               >
             </li>
             <li>
               <span
-                ><b>Call transact().</b> Close every extension page first — the request still
-                arrives, over the session channel opened at login.</span
+                ><b>Call transact().</b> With the Nussio plugin the prompt opens straight away. With
+                the Anchor plugin, close every extension page first — the request still arrives,
+                over the session channel opened at login.</span
               >
             </li>
           </ol>
@@ -656,7 +764,7 @@ await session.transact({
           },
           { rootMargin: '-45% 0px -45% 0px' },
         );
-        ['top', 'provider', 'reference', 'anchor', 'reach', 'limits', 'test'].forEach(
+        ['top', 'wharfkit', 'provider', 'reference', 'anchor', 'reach', 'limits', 'test'].forEach(
           function (id) {
             var node = document.getElementById(id);
             if (node) observer.observe(node);
