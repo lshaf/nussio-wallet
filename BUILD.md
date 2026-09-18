@@ -5,10 +5,9 @@ produces the Chrome build (`pnpm zip`), which is not needed for review.
 
 ## Environment
 
-- Linux or macOS. The release was built on macOS (arm64); GitHub Actions builds the same output on
-  `ubuntu-latest`.
-- Node.js 22.x — the release used 22.18.0. Install from https://nodejs.org or with your version
-  manager (`nvm install 22`).
+- Linux or macOS, x86-64 or ARM64. Verified identical output on Ubuntu (Node 22 and Node 24, ARM64)
+  and macOS (Apple silicon).
+- Node.js 22 or 24. Install from https://nodejs.org or with a version manager (`nvm install 22`).
 - pnpm 11.25.0, pinned in the `packageManager` field of `package.json`. Node ships Corepack, which
   installs exactly that version:
 
@@ -17,23 +16,32 @@ produces the Chrome build (`pnpm zip`), which is not needed for review.
   corepack prepare pnpm@11.25.0 --activate
   ```
 
-No other tools are required. Network access is needed once, to fetch the dependencies listed in
-`pnpm-lock.yaml`.
+Use pnpm, not npm or yarn: `pnpm-lock.yaml` fixes every dependency version, and another package
+manager resolves them differently and produces a different bundle.
+
+Network access is needed once, to fetch the dependencies listed in `pnpm-lock.yaml`.
 
 ## Steps
 
 ```bash
 unzip nussio-wallet-<version>-sources.zip -d nussio-wallet
 cd nussio-wallet
-./scripts/build-firefox.sh
-```
-
-The script checks the Node version, enables Corepack if `pnpm` is missing, installs dependencies
-with `--frozen-lockfile`, and runs `pnpm zip:firefox`. Done by hand, that is:
-
-```bash
 pnpm install --frozen-lockfile
 pnpm zip:firefox
+```
+
+`scripts/build-firefox.sh` runs the same two commands after checking the Node version, and prints
+the SHA-256 of the results. The zip archive does not keep the execute bit, so run it through `sh`:
+
+```bash
+sh scripts/build-firefox.sh
+```
+
+To build in a clean container instead of a local toolchain, from the unzipped directory:
+
+```bash
+docker run --rm -v "$PWD":/work -w /work node:22 sh -c \
+  "corepack enable && corepack prepare pnpm@11.25.0 --activate && sh scripts/build-firefox.sh"
 ```
 
 ## Output
@@ -43,8 +51,9 @@ pnpm zip:firefox
 - `dist/nussio-wallet-<version>-sources.zip` — this source archive, regenerated.
 
 The bundler (WXT 0.20 on Vite with Rolldown) names chunks by content hash and writes zip entries
-with a fixed 1980-01-01 timestamp, so a rebuild from the same sources yields the same archive.
-To compare against the uploaded file, unzip both and `diff -r` the directories.
+with a fixed 1980-01-01 timestamp, so a rebuild from the same sources yields the same archive:
+`sha256sum dist/nussio-wallet-<version>-firefox.zip` matches the uploaded file. If it does not,
+unzip both and `diff -r` the directories to see which file moved.
 
 ## What is generated, and from what
 

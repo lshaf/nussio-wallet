@@ -1,4 +1,6 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+@source '../**/*.{vue,ts,html}';
+@source not '../**/*.test.ts';
 @import 'tw-animate-css';
 @import '@fontsource-variable/archivo/standard.css';
 @import '@fontsource-variable/red-hat-mono/index.css';
