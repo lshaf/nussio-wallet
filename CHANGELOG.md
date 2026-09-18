@@ -2,6 +2,16 @@
 
 Notable changes per release. Dates are the tag date.
 
+## 1.1.3 — 2026-09-18
+
+### Fixed
+
+- The build is reproducible from the sources archive alone. Tailwind scanned every text file in
+  the tree for class names, so prose in README, docs or the site could add a utility, change the
+  stylesheet hash and rename every chunk. The scan is now pinned to `src/`.
+- `BUILD.md` no longer relies on the execute bit the zip drops: the two pnpm commands come first,
+  the script runs through `sh`, and a Docker one-liner rebuilds in a clean container.
+
 ## 1.1.2 — 2026-09-16
 
 ### Changed
