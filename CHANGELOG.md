@@ -17,6 +17,11 @@ Notable changes per release. Dates are the tag date.
 - `pnpm dev` and the new `pnpm build:dev` name the extension "Nussio Wallet - DEV" and build into
   `dist/chrome-mv3-dev`, so a development copy is easy to tell apart from the store install.
 
+### Security
+
+- Dependencies move past new advisories: `zod` 4.6.7, `vite` 8.3.5, and `source-map-js` pinned to
+  1.2.2 or later through a pnpm override.
+
 ## 1.1.3 — 2026-09-18
 
 ### Fixed
