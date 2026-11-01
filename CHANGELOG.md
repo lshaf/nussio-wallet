@@ -2,6 +2,21 @@
 
 Notable changes per release. Dates are the tag date.
 
+## 1.1.4 — 2026-11-01
+
+### Fixed
+
+- A failed Ledger signature names its cause instead of always saying the device is locked. The
+  prompt and the transaction result show the status code with a hint: contract data not allowed,
+  rejected on the device, device locked, Antelope app closed, wrong device, no device, or no USB
+  access. Logging in to a dApp signs an `identity` action the Antelope app does not know, so the
+  device refuses it until Settings → Contract data is set to Allowed; the hint now says so.
+
+### Added
+
+- `pnpm dev` and the new `pnpm build:dev` name the extension "Nussio Wallet - DEV" and build into
+  `dist/chrome-mv3-dev`, so a development copy is easy to tell apart from the store install.
+
 ## 1.1.3 — 2026-09-18
 
 ### Fixed
