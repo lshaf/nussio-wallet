@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import UnlockDialog from '@/components/dialogs/UnlockDialog.vue';
 import { chainLogo } from '@/lib/antelope/logos';
+import { ledgerHint } from '@/lib/ledger/errors';
 import FuelBanner from '@/features/prompt/components/FuelBanner.vue';
 import IdentityStage from '@/features/prompt/components/IdentityStage.vue';
 import ReviewStage from '@/features/prompt/components/ReviewStage.vue';
@@ -40,6 +41,12 @@ const title = computed(() => {
 const signerLabel = computed(() => {
   const signer = prompt.view.value?.signer;
   return signer ? `${signer.account}@${signer.authorization}` : '';
+});
+
+const signErrorHint = computed(() => {
+  const error = prompt.signError.value;
+  if (!error) return '';
+  return error.kind === 'ledger' ? ledgerHint(error.message) : error.kind;
 });
 
 const unsignedResult = computed<Extract<TransactResult, { status: 'unsigned' }> | null>(() => {
@@ -234,12 +241,13 @@ onMounted(async () => {
           <div class="min-w-0 flex-1">
             <p class="font-medium">{{ t(`tx_error_${prompt.signError.value.kind}_title`) }}</p>
             <p class="text-muted-foreground text-xs">
-              {{ t(`tx_error_${prompt.signError.value.kind}`) }}
+              {{ t(`tx_error_${signErrorHint}`) }}
             </p>
             <p
               v-if="
                 prompt.signError.value.kind === 'assert' ||
-                prompt.signError.value.kind === 'unknown'
+                prompt.signError.value.kind === 'unknown' ||
+                prompt.signError.value.kind === 'ledger'
               "
               class="mt-1 font-mono text-xs break-all"
             >

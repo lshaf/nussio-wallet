@@ -16,6 +16,7 @@ import {
 import UnlockDialog from '@/components/dialogs/UnlockDialog.vue';
 import DangerLink from '@/components/shared/DangerLink.vue';
 import { transactionUrl } from '@/lib/antelope/explorers';
+import { ledgerHint } from '@/lib/ledger/errors';
 import type { TransactResult } from '@/services/transaction.service';
 import { useAppStore } from '@/stores/app.store';
 import ActionList from './ActionList.vue';
@@ -133,9 +134,19 @@ function onUnlocked(): void {
         </div>
 
         <div v-else-if="result.status === 'error'" class="flex flex-col gap-3">
-          <p class="text-sm">{{ t(`tx_error_${result.error.kind}`) }}</p>
+          <p class="text-sm">
+            {{
+              t(
+                `tx_error_${result.error.kind === 'ledger' ? ledgerHint(result.error.message) : result.error.kind}`,
+              )
+            }}
+          </p>
           <p
-            v-if="result.error.kind === 'assert' || result.error.kind === 'unknown'"
+            v-if="
+              result.error.kind === 'assert' ||
+              result.error.kind === 'unknown' ||
+              result.error.kind === 'ledger'
+            "
             class="bg-muted rounded-md p-2 font-mono text-xs break-all"
           >
             {{ result.error.message }}
