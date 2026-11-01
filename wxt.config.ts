@@ -19,6 +19,13 @@ export default defineConfig({
       'stats*',
     ],
   },
+  hooks: {
+    'build:manifestGenerated': (wxt, manifest) => {
+      if (wxt.config.mode !== 'development') return;
+      manifest.name = `${manifest.name} - DEV`;
+      if (manifest.action) manifest.action.default_title = manifest.name;
+    },
+  },
   vite: () => ({
     plugins: [tailwindcss()],
     define: { __EXT_VERSION__: JSON.stringify(version) },
